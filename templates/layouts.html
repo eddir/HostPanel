@@ -1,0 +1,22 @@
+{% load static %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Хост панель</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static "panel/css/sb-admin-2.min.css" %}">
+    <link rel="stylesheet" href="{% static "panel/css/app.css" %}">
+</head>
+<body id="page-top" class="bg-dark">
+
+<div id="wrapper">
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<script src="{% static "panel/js/sb-admin-2.min.js" %}"></script>
+<script src="https://kit.fontawesome.com/a26f2e3b53.js" crossorigin="anonymous"></script>
+</body>
+</html>

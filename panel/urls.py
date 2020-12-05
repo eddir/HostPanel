@@ -7,5 +7,12 @@ app_name = 'panel'
 
 urlpatterns = [
     path('', views.ServerListView.as_view(), name='index'),
-    path('server/add/', ServerCreate.as_view(), name="server.add"),
+    path('server/<int:pk>/', views.ServerDetailView.as_view(), name="server.view"),
+    path('server/add/', views.create_server, name="server.add"),
+]
+
+urlpatterns += [
+    path('server/create/', views.ServerCreate.as_view(), name='server.create'),
+    path('server/<int:pk>/update/', views.ServerUpdate.as_view(), name='server.update'),
+    path('server/<int:pk>/delete/', views.ServerDelete.as_view(), name='server.delete'),
 ]

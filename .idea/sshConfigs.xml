@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="linksss.ru" id="9588cdc4-15a0-4058-84cb-b27fa9875a4e" port="22" customName="hostpanel.linksss.ru" nameFormat="CUSTOM" username="msf">
+        <option name="customName" value="hostpanel.linksss.ru" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>

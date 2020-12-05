@@ -1,0 +1,16 @@
+{% extends "layouts.html" %}
+
+{% block content %}
+
+        <div class="card shadow my-4">
+            <div class="card-header py-3">
+                <h1 class="p-0 font-weight-bold text-primary">{{ server.name }}</h1>
+            </div>
+            <div class="card-body">
+                <p>IP: <span>{{ server.ip }}</span></p>
+                <p>Root: <span>{{ server.user_root }}</span></p>
+                <p>User: <span>{{ server.user_single }}</span></p>
+            </div>
+        </div>
+
+{% endblock %}

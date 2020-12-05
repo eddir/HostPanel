@@ -1,18 +1,6 @@
-{% load static %}
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Хост панель</title>
+{% extends "layouts.html" %}
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static "panel/css/sb-admin-2.min.css" %}">
-    <link rel="stylesheet" href="{% static "panel/css/app.css" %}">
-</head>
-<body id="page-top" class="bg-dark">
-
-<div id="wrapper">
-    <div class="container">
-
+{% block content %}
 
         <div class="card shadow my-4">
             <div class="card-header py-3">
@@ -23,41 +11,53 @@
                 {% if server_list %}
 
                     <div class="table-responsive">
-                        {% for server in server_list %}
 
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table class="table table-bordered dataTable" role="grid">
-                                        <thead>
-                                        <tr role="row">
-                                            <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
-                                                colspan="1" aria-sort="ascending"
-                                                aria-label="Name: activate to sort column descending"
-                                            >IP адрес
-                                            </th>
-                                            <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
-                                                colspan="1" aria-sort="ascending"
-                                                aria-label="Name: activate to sort column descending"
-                                            >название
-                                            </th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-bordered dataTable" role="grid">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                            colspan="1" aria-sort="ascending"
+                                            aria-label="Name: activate to sort column descending"
+                                        >IP адрес
+                                        </th>
+                                        <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                            colspan="1" aria-sort="ascending"
+                                            aria-label="Name: activate to sort column descending"
+                                        >название
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for server in server_list %}
                                         <tr role="row">
                                             <td><b><a href="/server/{{ server.id }}/">{{ server.ip }}</a></b></td>
                                             <td><b><a href="/server/{{ server.id }}/">{{ server.name }}</a></b></td>
-                                            <td style="width:1%"><button type="button" class="btn btn-success"><span class="icon text-black-50"><i class="fas fa-pause-circle"></i></span></button></td>
-                                            <td style="width:1%"><button type="button" class="btn btn-warning"><span class="icon text-black-50"><i class="fas fa-sync-alt"></i></span></button></td>
-                                            <td style="width:1%"><button type="button" class="btn btn-danger"><span class="icon text-black-50"><i class="fas fa-trash-alt"></i></span></button></td>
+                                            <td style="width:1%">
+                                                <a href="#"class="btn btn-success"><span
+                                                        class="icon text-black-50"><i
+                                                        class="fas fa-pause-circle"></i></span></a>
+                                            </td>
+                                            <td style="width:1%">
+                                                <a href="{% url 'panel:server.update' server.id %}" class="btn btn-warning"><span
+                                                        class="icon text-black-50"><i
+                                                        class="fas fa-sync-alt"></i></span></a>
+                                            </td>
+                                            <td style="width:1%">
+                                                <a href="{% url 'panel:server.delete' server.id %}" class="btn btn-danger"><span
+                                                        class="icon text-black-50"><i
+                                                        class="fas fa-trash-alt"></i></span></a>
+                                            </td>
                                         </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
 
                 {% else %}
@@ -78,6 +78,11 @@
 
                 <form action="{% url 'panel:server.add' %}" method="post">
                     {% csrf_token %}
+
+                    <table>
+                        {{ form }}
+                    </table>
+
                     <div class="row">
 
                         <div class="form-group col-sm-6">
@@ -95,20 +100,20 @@
                         <div class="form-group col-sm-6">
                             <label>
                                 Рут пользователь
-                                <input type="text" value="root" name="root" class="form-control form-control-sm">
+                                <input type="text" value="root" name="user_root" class="form-control form-control-sm">
                             </label>
                         </div>
                         <div class="form-group col-sm-6">
                             <label>
                                 Рут пароль
-                                <input type="text" placeholder="" name="root_password"
+                                <input type="text" placeholder="" name="password_root"
                                        class="form-control form-control-sm">
                             </label>
                         </div>
                         <div class="form-group col-sm-6">
                             <label>
                                 Рабочий пользователь
-                                <input type="text" value="msf" name="user" class="form-control form-control-sm">
+                                <input type="text" value="msf" name="user_single" class="form-control form-control-sm">
                             </label>
                         </div>
                         <div class="form-group col-sm-6">
@@ -136,10 +141,4 @@
             </div>
         </div>
 
-    </div>
-</div>
-
-<script src="{% static "panel/js/sb-admin-2.min.js" %}"></script>
-<script src="https://kit.fontawesome.com/a26f2e3b53.js" crossorigin="anonymous"></script>
-</body>
-</html>
+{% endblock %}
