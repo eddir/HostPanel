@@ -9,7 +9,16 @@
             <div class="card-body">
                 <p>IP: <span>{{ server.ip }}</span></p>
                 <p>Root: <span>{{ server.user_root }}</span></p>
+                <p>Root пароль: <span>{{ server.password_root }}</span></p>
                 <p>User: <span>{{ server.user_single }}</span></p>
+                <p>User пароль: <span>{{ server.password_single }}</span></p>
+                <p>Последний отклик: <span>{{ status.created_at }} GMT+0</span></p>
+                <p>CPU: <span>{{ status.cpu_usage }}%</span></p>
+                <p>RAM: <span>{{ status.ram_usage }} / {{ status.ram_available }}</span></p>
+                <p>HDD: <span>{{ status.hdd_usage }} / {{ status.hdd_available }}</span></p>
+                <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
+                <a href="#" class="btn btn-success">Старт</a>
+                <a href="#" class="btn btn-danger">Стоп</a>
             </div>
         </div>
 

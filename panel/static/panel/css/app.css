@@ -1,3 +1,10 @@
 .table-responsive {
-        overflow-x: visible;
-    }
+    overflow-x: visible;
+}
+
+.toast {
+    position: fixed;
+    margin: 20px;
+    z-index: 10;
+    right: 0;
+}

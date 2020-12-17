@@ -11,3 +11,16 @@ class Server(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ServerStatus(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    server = models.ForeignKey(Server, on_delete=models.CASCADE)
+    cpu_usage = models.SmallIntegerField()
+    ram_usage = models.IntegerField()
+    ram_available = models.IntegerField()
+    hdd_usage = models.IntegerField()
+    hdd_available = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = "Server status"
