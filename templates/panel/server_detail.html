@@ -6,20 +6,20 @@
             <div class="card-header py-3">
                 <h1 class="p-0 font-weight-bold text-primary">{{ server.name }}</h1>
             </div>
-            <div class="card-body">
-                <p>IP: <span>{{ server.ip }}</span></p>
-                <p>Root: <span>{{ server.user_root }}</span></p>
-                <p>Root пароль: <span>{{ server.password_root }}</span></p>
-                <p>User: <span>{{ server.user_single }}</span></p>
-                <p>User пароль: <span>{{ server.password_single }}</span></p>
-                <p>Последний отклик: <span>{{ status.created_at }} GMT+0</span></p>
-                <p>CPU: <span>{{ status.cpu_usage }}%</span></p>
-                <p>RAM: <span>{{ status.ram_usage }} / {{ status.ram_available }}</span></p>
-                <p>HDD: <span>{{ status.hdd_usage }} / {{ status.hdd_available }}</span></p>
-                <p>{{ server.log|default:"" }}</p>
+            <div class="card-body" v-if="server.server">
+                <p>IP: <span v-text="server.server.ip"></span></p>
+                <p>Root: <span v-text="server.server.user_root"></span></p>
+                <p>Root пароль: <span v-text="server.server.password_root"></span></p>
+                <p>User: <span v-text="server.server.user_single">{{ server.user_single }}</span></p>
+                <p>User пароль: <span v-text="server.server.password_single"> {{ server.password_single }}</span></p>
+                <p>Последний отклик: <span v-text="server.server.created_at">{{ status.created_at }} GMT+0</span></p>
+                <p>CPU: <span v-text="server.status.cpu_usage">{{ status.cpu_usage }}%</span></p>
+                <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
+                <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+                <p v-html="server.server.log"></p>
                 <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
-                <a href="start" class="btn btn-success">Старт</a>
-                <a href="stop" class="btn btn-danger">Стоп</a>
+                <a href="start" @click.prevent="startServer()" class="btn btn-success">Старт</a>
+                <a href="stop" @click.prevent="stopServer()" class="btn btn-danger">Стоп</a>
             </div>
         </div>
 

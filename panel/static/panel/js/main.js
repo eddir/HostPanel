@@ -8,6 +8,7 @@ var watchVM = new Vue({
         message: "",
         error: "",
         servers: {},
+        server: {},
         form: {
             name: "Server ###",
             ip: "18.209.176.200",
@@ -16,21 +17,56 @@ var watchVM = new Vue({
             user_single: "msf",
             password_single: "7#dJ^Y7Qe",
             ssh_key: false,
-        } // create an object to hold all form values
+        }
     },
     mounted: function () {
-        this.$nextTick(this.getServers)
+        path = location.pathname.split("/")
+
+        if (path[1] === "") {
+            this.$nextTick(this.getServers);
+        } else if (path[1] === "server") {
+            this.$nextTick(this.getServer);
+        }
     },
     methods: {
+        startServer: function () {
+            axios.put('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)
+                .then(function (response) {
+                    watchVM.alertSuccess("Сервер запущен");
+                    watchVM.getServer();
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error.data);
+                })
+        },
+        stopServer: function () {
+            axios.delete('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)
+                .then(function (response) {
+                    watchVM.alertSuccess("Сервер остановлен");
+                    watchVM.getServer();
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error.data);
+                })
+        },
         createServer: function () {
             axios.post('/api/servers/', this.form)
                 .then(function (response) {
-                    watchVM.alertSuccess("Сервер добавлен")
+                    watchVM.alertSuccess("Сервер добавлен");
                     watchVM.getServers();
                 })
                 .catch(function (error) {
-                    console.log(Object.keys(error.data).map(e => e.name))
                     watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
+                })
+        },
+        getServer: function () {
+            axios.get('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/')
+                .then(function (response) {
+                    watchVM.server = response.data;
+                    console.log(watchVM.server);
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error)
                 })
         },
         getServers: function () {

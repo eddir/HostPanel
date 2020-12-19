@@ -4,6 +4,8 @@ from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, FormView, CreateView, DetailView, UpdateView, DeleteView
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -64,24 +66,6 @@ def create_server(request):
     return render(request, 'panel/index.html', {'form': form})
 
 
-def start_server(request, pk):
-    try:
-        msg = tasks.start_server(pk)
-    except Exception as e:
-        msg = str(e)
-
-    return HttpResponse(msg)
-
-
-def stop_server(request, pk):
-    try:
-        msg = tasks.stop_server(pk)
-    except Exception as e:
-        msg = str(e)
-
-    return HttpResponse(msg)
-
-
 class ServerView(APIView):
 
     def get(self, request):
@@ -99,6 +83,22 @@ class ServerView(APIView):
             init_server(server_saved.id)
 
         return Response({"success": "Сервер '{}' добавлен.".format(server_saved.name)})
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ServerInstanceView(APIView):
+
+    def get(self, request, pk):
+        return Response({"server": Server.objects.filter(id=pk).values()[0],
+                         "status": ServerStatus.objects.filter(server=pk).values()[0]})
+
+    def put(self, request, pk):
+        tasks.start_server(pk)
+        return Response({"success": "Сервер запущен."})
+
+    def delete(self, request, pk):
+        tasks.stop_server(pk)
+        return Response({"success": "Сервер остановлен."})
 
 
 @method_decorator(csrf_exempt, name='dispatch')
