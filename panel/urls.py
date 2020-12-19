@@ -15,6 +15,8 @@ urlpatterns += [
     path('server/create/', views.ServerCreate.as_view(), name='server.create'),
     path('server/<int:pk>/update/', views.ServerUpdate.as_view(), name='server.update'),
     path('server/<int:pk>/delete/', views.ServerDelete.as_view(), name='server.delete'),
+    path('server/<int:pk>/start/', views.start_server, name='server.start'),
+    path('server/<int:pk>/stop/', views.stop_server, name='server.stop'),
 ]
 
 urlpatterns += [

@@ -8,6 +8,8 @@ class Server(models.Model):
     user_single = models.CharField('Name of working user', max_length=32)
     password_root = models.CharField(max_length=32)
     password_single = models.CharField(max_length=32, blank=True)
+    ssh_key = models.BooleanField('Connect via ssh key')
+    log = models.TextField(null=True, blank=True, default=None)
 
     def __str__(self):
         return self.name

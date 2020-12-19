@@ -1,5 +1,6 @@
 import os
 import socket
+from datetime import datetime
 from pprint import pprint
 import tarfile
 
@@ -24,79 +25,126 @@ def init_server(server_id):
     :param server_id:
     :return:
     """
-
-    print("Подключение...")
+    client = None
 
     server = Server.objects.get(id=server_id)
     server.password_single = User.objects.make_random_password()
     server.save()
 
     try:
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname=server.ip, username=server.user_root, password=server.password_root, port=22,
-                       timeout=10)
-    except AuthenticationException:
-        print("Ошибка авторизации")
-    except socket.error:
-        print("Сервер не отвечает")
-    except:
-        print("Неизвестная проблема")
-        return
+        print("Подключение...")
+        client = ssh_connect(server.ip, server.user_root, server.password_root, server.ssh_key)
 
         # Создание пользователя
-    stdin, stdout, stderr = client.exec_command(
-        'sudo useradd -m -d /home/%s -s /bin/bash -c "HostPanel single user" -U %s'
-        % (server.user_single, server.user_single))
+        print("Создание пользователя")
+        ssh_command(client, 'sudo useradd -m -d /home/%s -s /bin/bash -c "HostPanel single user" -U %s' %
+                    (server.user_single, server.user_single))
+
+        # Настройка окружения
+        ssh_command(client, 'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config')
+        ssh_command(client, 'sudo service sshd restart')
+        ssh_command(client, 'sudo apt install python3-psutil')
+
+        # Смена пароля пользователя
+        stdin, stdout, stderr = ssh_command(client, 'echo "%s:%s" | sudo chpasswd' % (server.user_single, server.password_single))
+        client.close()
+
+        # Упаковка файлов
+        tar = tarfile.open(settings.MEDIA_ROOT + 'package.tar.gz', "w:gz")
+        os.chdir(settings.MEDIA_ROOT + 'package/')
+        for name in os.listdir("."):
+            tar.add(name)
+        tar.close()
+
+        # Погрузка файлов
+        print("Загрузка файлов")
+        transport = paramiko.Transport((server.ip, 22))
+        transport.connect(username=server.user_single, password=server.password_single)
+        client = paramiko.SFTPClient.from_transport(transport)
+        client.put(settings.MEDIA_ROOT + 'package.tar.gz', '/home/%s/package.tar.gz' % server.user_single)
+        client.close()
+        os.remove(settings.MEDIA_ROOT + 'package.tar.gz')
+
+        # Анбоксиснг
+        print("Распаковка")
+        client = ssh_connect(server.ip, server.user_single, server.password_single)
+        ssh_command(client, 'tar -xzvf package.tar.gz ')
+
+        print("Запуск клиента...")
+        ssh_command(client, 'python3 client.py %s %s &' % (server.id, server.user_single))
+
+        print("Клиент вероятно запущен....")
+        server_log(server, "Инициализация сервера.")
+        server.save()
+        client.close()
+
+        print("Завершено для " + server.name)
+    except Exception as e:
+        print(str(e))
+        server_log(server, str(e))
+
+        if client is not None:
+            client.close()
+
+
+def start_server(server_id):
+    server = Server.objects.get(id=server_id)
+    client = ssh_connect(server.ip, server.user_single, server.password_single)
+
+    try:
+        ssh_command(client, "python3 client.py start &")
+        server_log(server, "Запуск мастер сервера.")
+    except Exception as e:
+        server_log(server, str(e))
+        return False
+
+
+def stop_server(server_id):
+    server = Server.objects.get(id=server_id)
+    client = ssh_connect(server.ip, server.user_single, server.password_single)
+
+    try:
+        stdin, stdout, stderr = ssh_command(client, "python3 client.py stop")
+        server_log(server, "Остановка мастер сервера.")
+        return stdout
+    except Exception as e:
+        server_log(server, str(e))
+        return False
+
+
+def server_log(server, message):
+    if not server.log:
+        server.log = ""
+
+    server.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
+    server.save()
+
+
+def ssh_connect(hostname, username, password, ssh_key=False, port=22):
+    try:
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        if ssh_key:
+            client.connect(hostname=hostname, username=username, key_filename=settings.MEDIA_ROOT + 'hostpanel.pem',
+                           port=port, timeout=3)
+        else:
+            client.connect(hostname=hostname, username=username, password=password, port=port, timeout=3)
+
+    except AuthenticationException as e:
+        raise Exception("Ошибка авторизации: %s" % str(e))
+    except socket.error:
+        raise Exception("Сервер не отвечает")
+
+    return client
+
+
+def ssh_command(client, command):
+    stdin, stdout, stderr = client.exec_command(command)
+
     if stdout.channel.recv_exit_status() != 0:
         raise Exception(stdout.read() + stderr.read())
 
-    # Настройка окружения
-    stdin, stdout, stderr = client.exec_command('sudo apt install python3-psutil')
-    if stdout.channel.recv_exit_status() != 0:
-        raise Exception(stdout.read() + stderr.read())
-
-    # Смена пароля пользователя
-    stdin, stdout, stderr = client.exec_command('echo "%s:%s" | sudo chpasswd' %
-                                                (server.user_single, server.password_single))
-    if stdout.channel.recv_exit_status() != 0:
-        raise Exception(stdout.read() + stderr.read())
-
-    client.close()
-
-    print("Загрузка файлов")
-
-    # Упаковка файлов
-    tar = tarfile.open(settings.MEDIA_ROOT + 'package.tar.gz', "w:gz")
-    os.chdir(settings.MEDIA_ROOT + 'package/')
-    for name in os.listdir("."):
-        tar.add(name)
-    tar.close()
-
-    # Погрузка файлов
-    transport = paramiko.Transport((server.ip, 22))
-    transport.connect(username=server.user_single, password=server.password_single)
-    sftp = paramiko.SFTPClient.from_transport(transport)
-    sftp.put(settings.MEDIA_ROOT + 'package.tar.gz', '/home/%s/package.tar.gz' % server.user_single)
-    sftp.close()
-    os.remove(settings.MEDIA_ROOT + 'package.tar.gz')
-
-    client.connect(hostname=server.ip, username=server.user_single, password=server.password_single, port=22)
-
-    # Анбоксиснг
-    stdin, stdout, stderr = client.exec_command('tar -xzvf package.tar.gz ')
-    if stdout.channel.recv_exit_status() != 0:
-        raise Exception(stdout.read() + stderr.read())
-
-    print("Запуск клиента...")
-
-    stdin, stdout, stderr = client.exec_command(('python3 client.py %s %s &' % (server.id, server.user_single)))
-
-    print("Клиент вероятно запущен....")
-
-    client.close()
-
-    print("Завершено для " + server.name)
+    return stdin, stdout, stderr
 
 
 class SFTPClient(paramiko.SFTPClient):

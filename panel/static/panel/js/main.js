@@ -10,11 +10,12 @@ var watchVM = new Vue({
         servers: {},
         form: {
             name: "Server ###",
-            ip: "54.198.195.121",
+            ip: "18.209.176.200",
             user_root: "ubuntu",
             password_root: "7#dJ^Y7Qe",
             user_single: "msf",
             password_single: "7#dJ^Y7Qe",
+            ssh_key: false,
         } // create an object to hold all form values
     },
     mounted: function () {
@@ -28,7 +29,8 @@ var watchVM = new Vue({
                     watchVM.getServers();
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error)
+                    console.log(Object.keys(error.data).map(e => e.name))
+                    watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
                 })
         },
         getServers: function () {
@@ -52,7 +54,7 @@ var watchVM = new Vue({
             toasts.toast({delay: 5000});
             toasts.toast('show');
         },
-        notImplemented: function() {
+        notImplemented: function () {
             this.alertFailure("Фича не реализована")
         }
     }

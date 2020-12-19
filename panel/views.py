@@ -1,12 +1,13 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, FormView, CreateView, DetailView, UpdateView, DeleteView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from panel import tasks
 from panel.forms import ServerForm, ServerModelForm
 from panel.models import Server, ServerStatus
 from panel.serializers import ServerSerializer, ServerStatusSerializer
@@ -61,6 +62,24 @@ def create_server(request):
         form = ServerForm()
 
     return render(request, 'panel/index.html', {'form': form})
+
+
+def start_server(request, pk):
+    try:
+        msg = tasks.start_server(pk)
+    except Exception as e:
+        msg = str(e)
+
+    return HttpResponse(msg)
+
+
+def stop_server(request, pk):
+    try:
+        msg = tasks.stop_server(pk)
+    except Exception as e:
+        msg = str(e)
+
+    return HttpResponse(msg)
 
 
 class ServerView(APIView):

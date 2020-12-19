@@ -10,6 +10,7 @@ class ServerForm(forms.Form):
     user_root = forms.CharField(label="Логин от рут пользователя", required=True)
     user_single = forms.CharField(label="Логин от обычного пользователя", required=True)
     password_root = forms.CharField(label="Пароль от рут пользователя", required=True)
+    ssh_key = forms.BooleanField(label="Подключаться через ssh ключ или пароль", required=True)
 
     def add_server(self):
         pass
@@ -18,4 +19,4 @@ class ServerForm(forms.Form):
 class ServerModelForm(ModelForm):
     class Meta:
         model = Server
-        fields = ['name', 'ip', 'user_root', 'user_single', 'password_root']
+        fields = ['name', 'ip', 'user_root', 'user_single', 'password_root', 'ssh_key']

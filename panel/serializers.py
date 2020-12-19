@@ -9,7 +9,7 @@ from panel.models import Server, ServerStatus
 class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
-        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single')
+        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key')
 
 
 class ServerStatusSerializer(serializers.ModelSerializer):

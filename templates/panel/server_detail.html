@@ -16,9 +16,10 @@
                 <p>CPU: <span>{{ status.cpu_usage }}%</span></p>
                 <p>RAM: <span>{{ status.ram_usage }} / {{ status.ram_available }}</span></p>
                 <p>HDD: <span>{{ status.hdd_usage }} / {{ status.hdd_available }}</span></p>
+                <p>{{ server.log|default:"" }}</p>
                 <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
-                <a href="#" class="btn btn-success">Старт</a>
-                <a href="#" class="btn btn-danger">Стоп</a>
+                <a href="start" class="btn btn-success">Старт</a>
+                <a href="stop" class="btn btn-danger">Стоп</a>
             </div>
         </div>
 
