@@ -1,9 +1,10 @@
 import os
 import socket
+import time
 from datetime import datetime
 from pprint import pprint
 import tarfile
-
+import socket
 from background_task import background
 import paramiko
 from paramiko.ssh_exception import AuthenticationException
@@ -41,12 +42,14 @@ def init_server(server_id):
                     (server.user_single, server.user_single))
 
         # Настройка окружения
-        ssh_command(client, 'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config')
+        ssh_command(client,
+                    'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config')
         ssh_command(client, 'sudo service sshd restart')
         ssh_command(client, 'sudo apt install python3-psutil')
 
         # Смена пароля пользователя
-        stdin, stdout, stderr = ssh_command(client, 'echo "%s:%s" | sudo chpasswd' % (server.user_single, server.password_single))
+        stdin, stdout, stderr = ssh_command(client, 'echo "%s:%s" | sudo chpasswd' % (
+        server.user_single, server.password_single))
         client.close()
 
         # Упаковка файлов
@@ -169,3 +172,20 @@ class SFTPClient(paramiko.SFTPClient):
                 pass
             else:
                 raise
+
+
+def get_online(server):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    client_socket.settimeout(1.0)
+    message = b'test'
+    addr = ("127.0.0.1", 12000)
+
+    start = time.time()
+    client_socket.sendto(message, addr)
+    try:
+        data, server = client_socket.recvfrom(1024)
+        end = time.time()
+        elapsed = end - start
+        return f'{data}{elapsed}'
+    except socket.timeout:
+        return 'REQUEST TIMED OUT'

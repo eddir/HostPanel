@@ -1,4 +1,9 @@
+import os
+
 from django.db import models
+from django.dispatch import receiver
+
+from HostPanel.settings import MEDIA_ROOT
 
 
 class Server(models.Model):
@@ -26,3 +31,33 @@ class ServerStatus(models.Model):
 
     class Meta:
         verbose_name_plural = "Server status"
+
+
+class Package(models.Model):
+
+    class PackageTypes(models.TextChoices):
+        MASTER = 0
+        SPAWNER = 1
+        ROOM = 2
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=32)
+    type = models.PositiveSmallIntegerField(
+        choices=PackageTypes.choices,
+        default=PackageTypes.MASTER,
+    )
+    archive = models.FileField()
+
+
+@receiver(models.signals.post_delete, sender=Package)
+def auto_delete_file_on_delete_package(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `Package` object is deleted.
+    """
+    if instance.archive:
+        if os.path.isfile(instance.archive.path):
+            os.remove(instance.archive.path)
+        else:
+            print("Не удалилось")
+            print(MEDIA_ROOT + instance.archive.path)

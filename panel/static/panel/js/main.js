@@ -9,6 +9,7 @@ var watchVM = new Vue({
         error: "",
         servers: {},
         server: {},
+        packages: {},
         form: {
             name: "Server ###",
             ip: "18.209.176.200",
@@ -24,8 +25,10 @@ var watchVM = new Vue({
 
         if (path[1] === "") {
             this.$nextTick(this.getServers);
-        } else if (path[1] === "server") {
+        } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
+        } else if (path[1] === "packages" && path.length === 3) {
+            this.$nextTick(this.getPackages);
         }
     },
     methods: {

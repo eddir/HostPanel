@@ -1,0 +1,20 @@
+{% extends "layouts.html" %}
+
+{% block content %}
+
+    <div class="card shadow my-4">
+        <div class="card-header py-3">
+            <h1 class="p-0 font-weight-bold text-primary">Удаление сборки</h1>
+        </div>
+        <div class="card-body">
+
+            <p>Удаляем сборку {{ package.name }}?</p>
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Да, конечно."/>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
