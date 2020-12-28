@@ -33,31 +33,24 @@ class ServerStatus(models.Model):
         verbose_name_plural = "Server status"
 
 
-class Package(models.Model):
-
-    class PackageTypes(models.TextChoices):
-        MASTER = 0
-        SPAWNER = 1
-        ROOM = 2
-
+class MPackage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
-    type = models.PositiveSmallIntegerField(
-        choices=PackageTypes.choices,
-        default=PackageTypes.MASTER,
-    )
-    archive = models.FileField()
+    master = models.FileField(null=True)
 
 
-@receiver(models.signals.post_delete, sender=Package)
+class SRPackage(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=32)
+    spawner = models.FileField(null=True)
+    room = models.FileField(null=True)
+
+
+@receiver(models.signals.post_delete, sender=MPackage)
 def auto_delete_file_on_delete_package(sender, instance, **kwargs):
     """
     Deletes file from filesystem
     when corresponding `Package` object is deleted.
     """
-    if instance.archive:
-        if os.path.isfile(instance.archive.path):
-            os.remove(instance.archive.path)
-        else:
-            print("Не удалилось")
-            print(MEDIA_ROOT + instance.archive.path)
+    if instance.master and os.path.isfile(instance.master.path):
+        os.remove(instance.master.path)

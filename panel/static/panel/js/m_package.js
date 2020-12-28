@@ -10,8 +10,7 @@ var watchVM = new Vue({
         packages: {},
         form: {
             name: "Сборка ###",
-            type: "1",
-            file: ""
+            master: "",
         }
     },
     mounted: function () {
@@ -19,7 +18,7 @@ var watchVM = new Vue({
     },
     methods: {
         getPackages: function () {
-            axios.get('/api/package/')
+            axios.get('/api/m_package/')
                 .then(function (response) {
                     watchVM.packages = response.data.packages;
                 })
@@ -31,9 +30,8 @@ var watchVM = new Vue({
             let formData = new FormData();
             formData.append('name', this.form.name);
             formData.append('type', this.form.type);
-            formData.append('file', this.form.file);
-            formData.append('size', "0");
-            axios.post('/api/package/',
+            formData.append('master', this.form.master);
+            axios.post('/api/m_package/',
                 formData,
                 {
                     headers: {
@@ -47,15 +45,8 @@ var watchVM = new Vue({
                 watchVM.alertFailure("Ошибка. " + e.response);
             });
         },
-        handleFileUpload() {
-            this.form.file = this.$refs.file.files[0];
-        },
-        getType(type_id) {
-            return {
-                0: "Master",
-                1: "Spawner",
-                2: "Room",
-            }[type_id];
+        handleFileUpload(event) {
+            this.form.master = event.target.files[0];
         },
         alertSuccess: function (message) {
             this.message = message;

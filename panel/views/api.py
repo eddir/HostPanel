@@ -9,8 +9,9 @@ from rest_framework.views import APIView
 
 from HostPanel.settings import MEDIA_ROOT
 from panel import tasks
-from panel.models import ServerStatus, Server, Package
-from panel.serializers import PackageSerializer, ServerStatusSerializer, ServerSerializer
+from panel.models import ServerStatus, Server, MPackage, SRPackage
+from panel.serializers import MPackageSerializer, ServerStatusSerializer, ServerSerializer, MPackageSerializer, \
+    SRPackageSerializer
 from panel.tasks import init_server
 
 
@@ -79,44 +80,27 @@ class ServerOnlineView(APIView):
         return Response({"online": tasks.get_online(Server.objects.get(pk=pk))})
 
 
-class PackageView(APIView):
-    # Загрузка сборки
+class MPackageView(APIView):
+    # Загрузка сборки master
     parser_classes = (MultiPartParser,)
 
     def get(self, request):
-        packages = Package.objects.all()
-        serializer = PackageSerializer(packages, many=True)
+        packages = MPackage.objects.all()
+        serializer = MPackageSerializer(packages, many=True)
         return Response({"packages": serializer.data})
 
     def post(self, request):
-        """
-        file_obj = request.FILES['file']
-        destination = open('/Users/Username/' + file_obj.name, 'wb+')
-        for chunk in file_obj.chunks():
-            destination.write(chunk)
-        destination.close()
-        """
-
         data = request.data
-        data["archive"] = request.FILES['file']
+        data["master"] = request.FILES['master']
 
-        serializer = PackageSerializer(data=data)
+        serializer = MPackageSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})
 
 
-"""
-    def post(self, request):
-        serializer = PackageSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-        return Response({"success": "Статус сервера обновлён."})
-"""
-
-
 @method_decorator(csrf_exempt, name='dispatch')
-class PackageInstanceView(APIView):
+class MPackageInstanceView(APIView):
     # Получение информации о сборке
 
     def get(self, request, pk):
@@ -124,7 +108,7 @@ class PackageInstanceView(APIView):
             return Response({
                 "code": True,
                 "data": {
-                    "package": Package.objects.filter(id=pk).values()[0]
+                    "package": MPackage.objects.filter(id=pk).values()[0]
                 }
             })
         except IndexError:
@@ -135,3 +119,25 @@ class PackageInstanceView(APIView):
                     "message": "Undefined value"
                 }
             })
+
+
+class SRPackageView(APIView):
+    # Загрузка сборки spawner + room
+    parser_classes = (MultiPartParser,)
+
+    def get(self, request):
+        packages = SRPackage.objects.all()
+        serializer = SRPackageSerializer(packages, many=True)
+        return Response({"packages": serializer.data})
+
+    def post(self, request):
+        data = request.data
+        pprint(request.FILES)
+        data["spawner"] = request.FILES['spawner']
+        data["room"] = request.FILES['room']
+
+        serializer = SRPackageSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response({"success": "Сборка загружена"})
+

@@ -2,6 +2,14 @@
 
 {% block content %}
 
+
+    <div class="card shadow my-4">
+        <div class="card-body">
+            <a class="btn btn-primary" href="{% url 'panel:m_packages' %}">M сборки</a>
+            <a class="btn btn-primary" href="{% url 'panel:sr_packages' %}">SR сборки</a>
+        </div>
+    </div>
+
     <div class="card shadow my-4">
         <div class="card-header py-3">
             <h1 class="p-0 font-weight-bold text-primary">Сервера</h1>
@@ -112,7 +120,7 @@
                     </div>
                     <div class="form-group col-sm-6">
                         <label>
-                            Сборка
+                            Сборка Master
                             <select id="installation" class="form-control">
                                 <option selected>Сборка #1</option>
                             </select>
@@ -138,12 +146,6 @@
 
             </form>
 
-        </div>
-    </div>
-
-    <div class="card shadow my-4">
-        <div class="card-body">
-            <a class="btn btn-primary" href="{% url 'panel:packages' %}">Сборки</a>
         </div>
     </div>
 
