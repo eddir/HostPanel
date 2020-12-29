@@ -9,15 +9,19 @@ var watchVM = new Vue({
         error: "",
         servers: {},
         server: {},
-        packages: {},
+        m_packages: {},
+        sr_packages: {},
+        loaded: false,
         form: {
             name: "Server ###",
-            ip: "18.209.176.200",
+            ip: "34.230.83.252",
             user_root: "ubuntu",
             password_root: "7#dJ^Y7Qe",
             user_single: "msf",
             password_single: "7#dJ^Y7Qe",
-            ssh_key: false,
+            ssh_key: true,
+            m_package: null,
+            sr_package: null,
         }
     },
     mounted: function () {
@@ -27,8 +31,6 @@ var watchVM = new Vue({
             this.$nextTick(this.getServers);
         } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
-        } else if (path[1] === "packages" && path.length === 3) {
-            this.$nextTick(this.getPackages);
         }
     },
     methods: {
@@ -65,10 +67,11 @@ var watchVM = new Vue({
         getServer: function () {
             axios.get('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/')
                 .then(function (response) {
+                    watchVM.loaded = true;
                     watchVM.server = response.data;
-                    console.log(watchVM.server);
                 })
                 .catch(function (error) {
+                    watchVM.loaded = true;
                     watchVM.alertFailure(error)
                 })
         },
@@ -76,6 +79,11 @@ var watchVM = new Vue({
             axios.get('/api/servers/')
                 .then(function (response) {
                     watchVM.servers = response.data.servers;
+                    watchVM.m_packages = response.data.m_packages;
+                    watchVM.sr_packages = response.data.sr_packages;
+
+                    watchVM.form.m_package = response.data.m_packages[0].id;
+                    watchVM.form.sr_package = response.data.sr_packages[0].id;
                 })
                 .catch(function (error) {
                     watchVM.alertFailure(error)

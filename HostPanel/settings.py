@@ -120,3 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CSRF_COOKIE_NAME = "XCSRF-TOKEN"
+
+REST_FRAMEWORK = {
+    'DATE_INPUT_FORMATS': ["%d-%m-%Y", ],
+}

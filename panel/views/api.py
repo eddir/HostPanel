@@ -19,9 +19,14 @@ class ServerView(APIView):
     # Инициализация и получение списка всех серверов
 
     def get(self, request):
-        servers = Server.objects.all()
-        serializer = ServerSerializer(servers, many=True)
-        return Response({"servers": serializer.data})
+        servers = ServerSerializer(Server.objects.all(), many=True)
+        m_packages = MPackageSerializer(MPackage.objects.all(), many=True)
+        sr_packages = SRPackageSerializer(SRPackage.objects.all(), many=True)
+        return Response({
+            "servers": servers.data,
+            "m_packages": m_packages.data,
+            "sr_packages": sr_packages.data,
+        })
 
     def post(self, request):
         server = request.data
@@ -41,8 +46,11 @@ class ServerInstanceView(APIView):
 
     def get(self, request, pk):
         try:
-            return Response({"server": Server.objects.filter(id=pk).values()[0],
-                             "status": ServerStatus.objects.filter(server=pk).values()[0] or None})
+            return Response({"server": Server.objects.filter(id=pk).values(
+                'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
+                'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
+                'sr_package__created_at')[0],
+                             "status": ServerStatus.objects.filter(server=pk).values().last() or None})
         except IndexError:
             return Response({"server": None, "status": None})
 
@@ -140,4 +148,3 @@ class SRPackageView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})
-

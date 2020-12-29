@@ -2,26 +2,36 @@
 
 {% block content %}
 
-        <div class="card shadow my-4">
-            <div class="card-header py-3">
-                <h1 class="p-0 font-weight-bold text-primary">{{ server.name }}</h1>
-            </div>
-            <div class="card-body" v-if="server.server">
-                <p>IP: <span v-text="server.server.ip"></span></p>
-                <p>Root: <span v-text="server.server.user_root"></span></p>
-                <p>Root пароль: <span v-text="server.server.password_root"></span></p>
-                <p>User: <span v-text="server.server.user_single">{{ server.user_single }}</span></p>
-                <p>User пароль: <span v-text="server.server.password_single"> {{ server.password_single }}</span></p>
-                <p>Последний отклик: <span v-text="server.server.created_at">{{ status.created_at }} GMT+0</span></p>
-                <p>CPU: <span v-text="server.status.cpu_usage">{{ status.cpu_usage }}%</span></p>
-                <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
-                <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
-                <p v-html="server.server.log"></p>
-                <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
-                <a href="start" @click.prevent="startServer()" class="btn btn-success">Старт</a>
-                <a href="stop" @click.prevent="stopServer()" class="btn btn-danger">Стоп</a>
-            </div>
+    <div class="card shadow my-4">
+        <div class="card-header py-3">
+            <h1 class="p-0 font-weight-bold text-primary">{{ server.name }}</h1>
         </div>
+        <div class="card-body" v-if="server.server">
+            <p>IP: <span v-text="server.server.ip"></span></p>
+            <p>Root: <span v-text="server.server.user_root"></span></p>
+            <p>Root пароль: <span v-text="server.server.password_root"></span></p>
+            <p>User: <span v-text="server.server.user_single"></span></p>
+            <p>User пароль: <span v-text="server.server.password_single"></span></p>
+            <p>Последний отклик: <span v-text="server.status.created_at"></span></p>
+            <p>M сборка: <span v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span></p>
+            <p>SR сборка: <span v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span></p>
+            <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
+            <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
+            <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+            <p v-html="server.server.log"></p>
+            <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
+            <a href="start" @click.prevent="startServer()" class="btn btn-success">Старт</a>
+            <a href="stop" @click.prevent="stopServer()" class="btn btn-danger">Стоп</a>
+        </div>
+        <div class="card-body" v-else-if="loaded">
+            <p>Сервер пока не создан. Это могло произойти по двум причинам:
+            <ol>
+                <li>Сервер прямо сейчас создаётся и в скором времени информация о нём появится в панели.</li>
+                <li>Произошла непревиденная ошибка в процессе его создания.</li>
+            </ol>
+            </p>
+        </div>
+    </div>
 
 {% endblock %}
 

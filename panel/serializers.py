@@ -11,7 +11,8 @@ from panel.models import Server, ServerStatus, MPackage, SRPackage
 class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
-        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key')
+        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
+                  'm_package', 'sr_package')
 
 
 class MPackageSerializer(serializers.ModelSerializer):
@@ -23,6 +24,11 @@ class MPackageSerializer(serializers.ModelSerializer):
 
     def get_master_size(self, package):
         return os.path.getsize(package.master.path)
+
+    def to_representation(self, instance):
+        representation = super(MPackageSerializer, self).to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%d.%m.%Y %H:%M:%S")
+        return representation
 
 
 class SRPackageSerializer(serializers.ModelSerializer):
@@ -38,6 +44,11 @@ class SRPackageSerializer(serializers.ModelSerializer):
 
     def get_room_size(self, package):
         return os.path.getsize(package.room.path)
+
+    def to_representation(self, instance):
+        representation = super(SRPackageSerializer, self).to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%d.%m.%Y %H:%M:%S")
+        return representation
 
 
 class ServerStatusSerializer(serializers.ModelSerializer):

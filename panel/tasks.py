@@ -36,20 +36,22 @@ def init_server(server_id):
         print("Подключение...")
         client = ssh_connect(server.ip, server.user_root, server.password_root, server.ssh_key)
 
-        # Создание пользователя
-        print("Создание пользователя")
-        ssh_command(client, 'sudo useradd -m -d /home/%s -s /bin/bash -c "HostPanel single user" -U %s' %
-                    (server.user_single, server.user_single))
-
-        # Настройка окружения
+        # Команды для установки необходимых компонентов и создания пользователя
+        print("Настройка VPS")
         ssh_command(client,
-                    'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config')
-        ssh_command(client, 'sudo service sshd restart')
-        ssh_command(client, 'sudo apt install python3-psutil')
+                    # Создание пользователя
+                    'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && '
+                    # Разрешение на вход в ssh по паролю
+                    'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" '
+                    '/etc/ssh/sshd_config && '
+                    "sudo service sshd restart && "
+                    # Установка пароля
+                    'echo "{0}:{1}" | sudo chpasswd && '
+                    # Установка зависимостей
+                    "sudo apt install -y python3-psutil unzip"
 
-        # Смена пароля пользователя
-        stdin, stdout, stderr = ssh_command(client, 'echo "%s:%s" | sudo chpasswd' % (
-        server.user_single, server.password_single))
+                    .format(server.user_single, server.password_single))
+
         client.close()
 
         # Упаковка файлов
@@ -59,25 +61,40 @@ def init_server(server_id):
             tar.add(name)
         tar.close()
 
-        # Погрузка файлов
+        # Погрузка архивов M и SR
         print("Загрузка файлов")
         transport = paramiko.Transport((server.ip, 22))
         transport.connect(username=server.user_single, password=server.password_single)
         client = paramiko.SFTPClient.from_transport(transport)
+
+        print("package.tar.gz")
         client.put(settings.MEDIA_ROOT + 'package.tar.gz', '/home/%s/package.tar.gz' % server.user_single)
+        print("master")
+        client.put(server.m_package.master.path, '/home/%s/master_package.zip' % server.user_single)
+        print("spawner")
+        client.put(server.sr_package.spawner.path, '/home/%s/spawner_package.zip' % server.user_single)
+        print("room")
+        client.put(server.sr_package.room.path, '/home/%s/room_package.zip' % server.user_single)
         client.close()
         os.remove(settings.MEDIA_ROOT + 'package.tar.gz')
 
         # Анбоксиснг
         print("Распаковка")
         client = ssh_connect(server.ip, server.user_single, server.password_single)
-        ssh_command(client, 'tar -xzvf package.tar.gz ')
+        ssh_command(client,
+                    "mkdir -p /home/{0}/Caretaker /home/{0}/Master /home/{0}/Pack/Spawner /home/{0}/Pack/Room && "
+                    "tar -xzvf package.tar.gz --directory /home/{0}/Caretaker && "
+                    "unzip master_package.zip -d /home/{0}/Master && "
+                    "unzip spawner_package.zip -d /home/{0}/Pack/Spawner && "
+                    "unzip room_package.zip -d /home/{0}/Pack/Room &&"
+                    "rm package.tar.gz master_package.zip spawner_package.zip room_package.zip"
+                    .format(server.user_single))
 
         print("Запуск клиента...")
-        ssh_command(client, 'python3 client.py %s %s &' % (server.id, server.user_single))
+        ssh_command(client, 'python3 /home/{1}/Caretaker/client.py {0} {1} &'.format(server.id, server.user_single))
 
         print("Клиент вероятно запущен....")
-        server_log(server, "Инициализация сервера.")
+        server_log(server, "Инициализация сервера прошла успешно.")
         server.save()
         client.close()
 

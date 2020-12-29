@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
 from panel.forms import ServerForm, ServerModelForm
-from panel.models import ServerStatus, Server
+from panel.models import ServerStatus, Server, MPackage, SRPackage
 from panel.tasks import init_server
 
 
