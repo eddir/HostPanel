@@ -55,8 +55,8 @@ def init_server(server_id):
         client.close()
 
         # Упаковка файлов
-        tar = tarfile.open(settings.MEDIA_ROOT + 'package.tar.gz', "w:gz")
-        os.chdir(settings.MEDIA_ROOT + 'package/')
+        tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
+        os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
         for name in os.listdir("."):
             tar.add(name)
         tar.close()
@@ -68,27 +68,34 @@ def init_server(server_id):
         client = paramiko.SFTPClient.from_transport(transport)
 
         print("package.tar.gz")
-        client.put(settings.MEDIA_ROOT + 'package.tar.gz', '/home/%s/package.tar.gz' % server.user_single)
-        print("master")
-        client.put(server.m_package.master.path, '/home/%s/master_package.zip' % server.user_single)
-        print("spawner")
-        client.put(server.sr_package.spawner.path, '/home/%s/spawner_package.zip' % server.user_single)
-        print("room")
-        client.put(server.sr_package.room.path, '/home/%s/room_package.zip' % server.user_single)
+        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % server.user_single)
+
+        unzip = rm = ""
+        if server.m_package:
+            print("master")
+            client.put(server.m_package.master.path, '/home/%s/master_package.zip' % server.user_single)
+            unzip = "unzip master_package.zip -d /home/{0}/ && "
+            rm = "master_package.zip"
+        elif server.sr_package:
+            print("spawner")
+            client.put(server.sr_package.spawner.path, '/home/%s/spawner_package.zip' % server.user_single)
+            print("room")
+            client.put(server.sr_package.room.path, '/home/%s/room_package.zip' % server.user_single)
+            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && "
+            rm = "spawner_package.zip room_package.zip"
+        else:
+            client.close()
+            raise Exception("Не найдена ни одна сборка для сервера #" + str(server.id))
+
         client.close()
-        os.remove(settings.MEDIA_ROOT + 'package.tar.gz')
+        os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
 
         # Анбоксиснг
         print("Распаковка")
         client = ssh_connect(server.ip, server.user_single, server.password_single)
-        ssh_command(client,
-                    "mkdir -p /home/{0}/Caretaker /home/{0}/Master /home/{0}/Pack/Spawner /home/{0}/Pack/Room && "
-                    "tar -xzvf package.tar.gz --directory /home/{0}/Caretaker && "
-                    "unzip master_package.zip -d /home/{0}/Master && "
-                    "unzip spawner_package.zip -d /home/{0}/Pack/Spawner && "
-                    "unzip room_package.zip -d /home/{0}/Pack/Room &&"
-                    "rm package.tar.gz master_package.zip spawner_package.zip room_package.zip"
-                    .format(server.user_single))
+        ssh_command(client, ("mkdir -p /home/{0}/Caretaker && "
+                             "tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && " + unzip +
+                             "rm Caretaker.tar.gz " + rm).format(server.user_single))
 
         print("Запуск клиента...")
         ssh_command(client, 'python3 /home/{1}/Caretaker/client.py {0} {1} &'.format(server.id, server.user_single))

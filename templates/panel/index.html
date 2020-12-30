@@ -128,7 +128,8 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Сборка Master
-                            <select v-model="form.m_package" id="installation" class="form-control">
+                            <select v-model="form.m_package" @change="changePackage(true)" id="m_package" class="form-control">
+                                <option disabled selected value :value="null"> -- выберите сборку -- </option>
                                 <option v-for="package in m_packages" v-text="package.name + ' ' + package.created_at"
                                     v-bind:value="package.id"></option>
                             </select>
@@ -137,7 +138,8 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Сборка SR
-                            <select v-model="form.sr_package" id="installation" class="form-control">
+                            <select v-model="form.sr_package" @change="changePackage(false)" id="sr_package" class="form-control">
+                                <option disabled selected value :value="null"> -- выберите сборку -- </option>
                                 <option v-for="package in sr_packages" v-text="package.name + ' ' + package.created_at"
                                     v-bind:value="package.id"></option>
                             </select>

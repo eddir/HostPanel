@@ -50,8 +50,8 @@ class Server(models.Model):
     password_single = models.CharField(max_length=32, blank=True)
     ssh_key = models.BooleanField('Connect via ssh key')
     log = models.TextField(null=True, blank=True, default=None)
-    m_package = models.ForeignKey(MPackage, on_delete=PROTECT)
-    sr_package = models.ForeignKey(SRPackage, on_delete=PROTECT)
+    m_package = models.ForeignKey(MPackage, on_delete=PROTECT, null=True)
+    sr_package = models.ForeignKey(SRPackage, on_delete=PROTECT, null=True)
 
     def __str__(self):
         return self.name

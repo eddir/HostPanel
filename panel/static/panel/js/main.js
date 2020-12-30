@@ -34,6 +34,9 @@ var watchVM = new Vue({
         }
     },
     methods: {
+        changePackage: function (isMaster) {
+            isMaster ? this.form['sr_package'] = null : this.form['m_package'] = null;
+        },
         startServer: function () {
             axios.put('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)
                 .then(function (response) {
@@ -81,9 +84,6 @@ var watchVM = new Vue({
                     watchVM.servers = response.data.servers;
                     watchVM.m_packages = response.data.m_packages;
                     watchVM.sr_packages = response.data.sr_packages;
-
-                    watchVM.form.m_package = response.data.m_packages[0].id;
-                    watchVM.form.sr_package = response.data.sr_packages[0].id;
                 })
                 .catch(function (error) {
                     watchVM.alertFailure(error)
