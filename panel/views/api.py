@@ -98,10 +98,7 @@ class MPackageView(APIView):
         return Response({"packages": serializer.data})
 
     def post(self, request):
-        data = request.data
-        data["master"] = request.FILES['master']
-
-        serializer = MPackageSerializer(data=data)
+        serializer = MPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})
@@ -139,12 +136,7 @@ class SRPackageView(APIView):
         return Response({"packages": serializer.data})
 
     def post(self, request):
-        data = request.data
-        pprint(request.FILES)
-        data["spawner"] = request.FILES['spawner']
-        data["room"] = request.FILES['room']
-
-        serializer = SRPackageSerializer(data=data)
+        serializer = SRPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})

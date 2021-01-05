@@ -38,6 +38,7 @@
                                 >Вес room
                                 </th>
                                 <th></th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -46,6 +47,13 @@
                                     <td><p v-text="package.created_at"></p></td>
                                     <td><b v-text="package.spawner_size"></b></td>
                                     <td><b v-text="package.room_size"></b></td>
+                                    <td style="width:1%">
+                                        <a v-bind:href="'/sr_package/' + package.id + '/edit/'" class="btn btn-warning">
+                                            <span class="icon text-black-50">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                        </a>
+                                    </td>
                                     <td style="width:1%">
                                         <a v-bind:href="'/sr_package/' + package.id + '/delete/'" class="btn btn-danger">
                                             <span class="icon text-black-50">

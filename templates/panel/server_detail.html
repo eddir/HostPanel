@@ -12,12 +12,19 @@
             <p>Root пароль: <span v-text="server.server.password_root"></span></p>
             <p>User: <span v-text="server.server.user_single"></span></p>
             <p>User пароль: <span v-text="server.server.password_single"></span></p>
-            <p>Последний отклик: <span v-text="server.status.created_at"></span></p>
-            <p>M сборка: <span v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span></p>
-            <p>SR сборка: <span v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span></p>
-            <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
-            <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
-            <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+
+            <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
+
+            <p>M сборка: <span
+                    v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span></p>
+            <p>SR сборка: <span
+                    v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span></p>
+
+            <template v-if="server.status">
+                <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
+                <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
+                <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+            </template>
             <p v-html="server.server.log"></p>
             <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
             <a href="start" @click.prevent="startServer()" class="btn btn-success">Старт</a>

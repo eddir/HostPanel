@@ -14,6 +14,55 @@ from HostPanel import settings
 from panel.models import Server
 
 
+def upload_package(server, ssh=None):
+    # Упаковка файлов
+    tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
+    os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
+    for name in os.listdir("."):
+        tar.add(name)
+    tar.close()
+
+    # Погрузка архивов M и SR
+    print("Загрузка файлов")
+    transport = paramiko.Transport((server.ip, 22))
+    transport.connect(username=server.user_single, password=server.password_single)
+    client = paramiko.SFTPClient.from_transport(transport)
+
+    print("package.tar.gz")
+    client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % server.user_single)
+
+    if server.m_package:
+        print("master")
+        client.put(server.m_package.master.path, '/home/%s/master_package.zip' % server.user_single)
+
+        unzip, rm = "unzip master_package.zip -d /home/{0}/ && ", "master_package.zip"
+
+    elif server.sr_package:
+        print("spawner")
+        client.put(server.sr_package.spawner.path, '/home/%s/spawner_package.zip' % server.user_single)
+        print("room")
+        client.put(server.sr_package.room.path, '/home/%s/room_package.zip' % server.user_single)
+
+        unzip, rm = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && ", \
+                    "spawner_package.zip room_package.zip"
+    else:
+        client.close()
+        raise Exception("Не найдена ни одна сборка для сервера #" + str(server.id))
+
+    client.close()
+    os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
+
+    # Анбоксиснг
+    print("Распаковка")
+    if ssh is None:
+        ssh = ssh_connect(server.ip, server.user_single, server.password_single)
+    ssh_command(ssh, ("mkdir -p /home/{0}/Caretaker && "
+                      "tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && " + unzip +
+                      "rm Caretaker.tar.gz " + rm).format(server.user_single))
+
+    return ssh
+
+
 @background()
 def init_server(server_id):
     """
@@ -54,56 +103,20 @@ def init_server(server_id):
 
         client.close()
 
-        # Упаковка файлов
-        tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
-        os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
-        for name in os.listdir("."):
-            tar.add(name)
-        tar.close()
-
-        # Погрузка архивов M и SR
-        print("Загрузка файлов")
-        transport = paramiko.Transport((server.ip, 22))
-        transport.connect(username=server.user_single, password=server.password_single)
-        client = paramiko.SFTPClient.from_transport(transport)
-
-        print("package.tar.gz")
-        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % server.user_single)
-
-        unzip = rm = ""
-        if server.m_package:
-            print("master")
-            client.put(server.m_package.master.path, '/home/%s/master_package.zip' % server.user_single)
-            unzip = "unzip master_package.zip -d /home/{0}/ && "
-            rm = "master_package.zip"
-        elif server.sr_package:
-            print("spawner")
-            client.put(server.sr_package.spawner.path, '/home/%s/spawner_package.zip' % server.user_single)
-            print("room")
-            client.put(server.sr_package.room.path, '/home/%s/room_package.zip' % server.user_single)
-            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && "
-            rm = "spawner_package.zip room_package.zip"
-        else:
-            client.close()
-            raise Exception("Не найдена ни одна сборка для сервера #" + str(server.id))
-
-        client.close()
-        os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
-
-        # Анбоксиснг
-        print("Распаковка")
-        client = ssh_connect(server.ip, server.user_single, server.password_single)
-        ssh_command(client, ("mkdir -p /home/{0}/Caretaker && "
-                             "tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && " + unzip +
-                             "rm Caretaker.tar.gz " + rm).format(server.user_single))
+        client = upload_package(server)
 
         print("Запуск клиента...")
-        ssh_command(client, 'python3 /home/{1}/Caretaker/client.py {0} {1} &'.format(server.id, server.user_single))
+        p_type = "Master" if server.m_package else "SR"
+        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py {0} {1} {2} &"
+                                            .format(server.id, server.user_single, p_type))
+        print("python3 ~/Caretaker/client.py {0} {1} {2} &"
+              .format(server.id, server.user_single, p_type))
+        print(stdout.readlines())
+        print(stderr.readlines())
 
         print("Клиент вероятно запущен....")
         server_log(server, "Инициализация сервера прошла успешно.")
         server.save()
-        client.close()
 
         print("Завершено для " + server.name)
     except Exception as e:
@@ -114,25 +127,64 @@ def init_server(server_id):
             client.close()
 
 
-def start_server(server_id):
+def update_server(server_id):
     server = Server.objects.get(id=server_id)
     client = ssh_connect(server.ip, server.user_single, server.password_single)
 
     try:
-        ssh_command(client, "python3 client.py start &")
-        server_log(server, "Запуск мастер сервера.")
+        stop_server(server, client, False)
+
+        # обновление
+
+        if server.m_package:
+            ssh_command(client, "rm -rf /home/{0}/Master /home/{0}/Caretaker/"
+                        .format(server.user_single))
+        elif server.sr_package:
+            ssh_command(client, "rm -rf /home/{0}/Caretaker /home/{0}/Spawner/ /home/{0}/Room/"
+                        .format(server.user_single))
+
+        upload_package(server, client)
+        start_server(server, client)
+        server_log(server, "Сервер обновлён успешно.")
+
     except Exception as e:
         server_log(server, str(e))
         return False
 
 
-def stop_server(server_id):
-    server = Server.objects.get(id=server_id)
-    client = ssh_connect(server.ip, server.user_single, server.password_single)
+def start_server(server, client=None, force=True):
+    if type(server) != Server:
+        print('tut')
+        server = Server.objects.get(id=server)
+
+    if client is None:
+        client = ssh_connect(server.ip, server.user_single, server.password_single)
 
     try:
-        stdin, stdout, stderr = ssh_command(client, "python3 client.py stop")
-        server_log(server, "Остановка мастер сервера.")
+        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py start &")
+        server_log(server, "Сервер запущен.")
+
+        force and client.close()
+
+        return stdout
+    except Exception as e:
+        server_log(server, str(e))
+        return False
+
+
+def stop_server(server, client=None, force=True):
+    if type(server) != Server:
+        server = Server.objects.get(id=server)
+
+    if client is None:
+        client = ssh_connect(server.ip, server.user_single, server.password_single)
+
+    try:
+        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py stop")
+        server_log(server, "Сервер остановлен.")
+
+        force and client.close()
+
         return stdout
     except Exception as e:
         server_log(server, str(e))

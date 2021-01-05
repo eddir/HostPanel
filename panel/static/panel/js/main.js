@@ -14,12 +14,11 @@ var watchVM = new Vue({
         loaded: false,
         form: {
             name: "Server ###",
-            ip: "34.230.83.252",
-            user_root: "ubuntu",
-            password_root: "7#dJ^Y7Qe",
+            ip: "213.139.209.176",
+            user_root: "root",
+            password_root: "Ihor&Eddir1234",
             user_single: "msf",
-            password_single: "7#dJ^Y7Qe",
-            ssh_key: true,
+            ssh_key: false,
             m_package: null,
             sr_package: null,
         }

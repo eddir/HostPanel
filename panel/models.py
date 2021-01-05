@@ -10,14 +10,14 @@ from HostPanel.settings import MEDIA_ROOT
 class MPackage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
-    master = models.FileField(null=True)
+    master = models.FileField(null=True, upload_to='packages')
 
 
 class SRPackage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
-    spawner = models.FileField(null=True)
-    room = models.FileField(null=True)
+    spawner = models.FileField(null=True, upload_to='packages')
+    room = models.FileField(null=True, upload_to='packages')
 
 
 @receiver(models.signals.post_delete, sender=MPackage)

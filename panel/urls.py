@@ -18,8 +18,10 @@ urlpatterns = [
 urlpatterns += [
     path('server/<int:pk>/update/', ServerUpdate.as_view(), name='server.update'),
     path('server/<int:pk>/delete/', ServerDelete.as_view(), name='server.delete'),
-    path('m_package/<int:pk>/delete/', MPackageDelete.as_view(), name='package.delete'),
-    path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='package.delete'),
+    path('m_package/<int:pk>/delete/', MPackageDelete.as_view(), name='m_package.delete'),
+    path('m_package/<int:pk>/edit/', MPackageEdit.as_view(), name='m_package.edit'),
+    path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='sr_package.delete'),
+    path('sr_package/<int:pk>/edit/', SRPackageEdit.as_view(), name='sr_package.edit'),
 ]
 
 urlpatterns += [
