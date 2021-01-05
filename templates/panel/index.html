@@ -31,7 +31,12 @@
                                 <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
                                     colspan="1" aria-sort="ascending"
                                     aria-label="Name: activate to sort column descending"
-                                >название
+                                >Название
+                                </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
+                                    colspan="1" aria-sort="ascending"
+                                    aria-label="Name: activate to sort column descending"
+                                >Состояние
                                 </th>
                                 <th></th>
                                 <th></th>
@@ -41,9 +46,12 @@
                             <tbody>
 
                             <tr v-for="server in servers">
-                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.ip"></a></b>
-                                </td>
-                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.name"></a></b>
+                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.ip"></a></b></td>
+                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.name"></a></b></td>
+                                <td>
+                                    <p v-if="server.load"><span class="badge badge-warning">Запущен</span></p>
+                                    <p v-else-if="server.online"><span class="badge badge-success">Запущен</span></p>
+                                    <p v-else><span class="badge badge-danger">Остановлен</span></p>
                                 </td>
                                 <td style="width:1%">
                                     <a @click="notImplemented()" href="#" class="btn btn-success"><span

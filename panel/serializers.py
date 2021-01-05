@@ -1,18 +1,30 @@
+import datetime
 import os
 from abc import ABC
 from pprint import pprint
 
 from django.db.migrations import serializer
+from django.utils.timezone import now
 from rest_framework import serializers
 
 from panel.models import Server, ServerStatus, MPackage, SRPackage
 
 
 class ServerSerializer(serializers.ModelSerializer):
+    load = serializers.SerializerMethodField()
+    online = serializers.SerializerMethodField()
+
     class Meta:
         model = Server
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'm_package', 'sr_package')
+                  'm_package', 'sr_package', 'load', 'online')
+
+    def get_load(self, server):
+        status = ServerStatus.objects.filter(server=server).last()
+        return status and status.cpu_usage > 80
+
+    def get_online(self, server):
+        return ServerStatus.objects.filter(server=server, created_at__gte=(now()-datetime.timedelta(minutes=10))).exists()
 
 
 class MPackageSerializer(serializers.ModelSerializer):
