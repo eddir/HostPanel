@@ -161,7 +161,8 @@ def start_server(server, client=None, force=True):
         client = ssh_connect(server.ip, server.user_single, server.password_single)
 
     try:
-        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py start &")
+        package = "Master" if server.m_package else "SR"
+        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py start %s &" % package)
         server_log(server, "Сервер запущен.")
 
         force and client.close()
