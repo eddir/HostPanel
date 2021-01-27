@@ -17,7 +17,7 @@ class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'm_package', 'sr_package', 'load', 'online')
+                  'config', 'm_package', 'sr_package', 'load', 'online')
 
     def get_load(self, server):
         status = ServerStatus.objects.filter(server=server).last()

@@ -13,7 +13,7 @@ var watchVM = new Vue({
         sr_packages: {},
         loaded: false,
         form: {
-            name: "Server ###",
+            name: "Server " + Math.floor(Math.random() * 1000),
             ip: "213.139.209.176",
             user_root: "root",
             password_root: "Ihor&Eddir1234",
@@ -21,6 +21,7 @@ var watchVM = new Vue({
             ssh_key: false,
             m_package: null,
             sr_package: null,
+            config: "",
         }
     },
     mounted: function () {
@@ -34,7 +35,22 @@ var watchVM = new Vue({
     },
     methods: {
         changePackage: function (isMaster) {
-            isMaster ? this.form['sr_package'] = null : this.form['m_package'] = null;
+            if (isMaster) {
+                this.form['sr_package'] = null
+                this.form['config'] = "-mstStartMaster=true\n" +
+                    "-mstStartClientConnection=true\n" +
+                    "-mstMasterIp=127.0.0.1\n" +
+                    "-mstMasterPort=5000"
+            } else {
+                this.form['m_package'] = null
+                this.form['config'] = "-mstStartSpawner=true\n" +
+                    "-mstStartClientConnection=true\n" +
+                    "-mstMasterIp=213.139.209.176\n" +
+                    "-mstMasterPort=5000\n" +
+                    "-mstRoomIp=213.139.209.176\n" +
+                    "-mstMaxProcesses=1\n" +
+                    "-mstRoomExe=home\\ios4\\Pack\\Room\\Room.x86_64"
+            }
         },
         startServer: function () {
             axios.put('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)

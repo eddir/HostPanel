@@ -52,6 +52,7 @@ class Server(models.Model):
     log = models.TextField(null=True, blank=True, default=None)
     m_package = models.ForeignKey(MPackage, on_delete=PROTECT, null=True)
     sr_package = models.ForeignKey(SRPackage, on_delete=PROTECT, null=True)
+    config = models.TextField(null=True, blank=True, default=None)
 
     def __str__(self):
         return self.name

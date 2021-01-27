@@ -1,4 +1,5 @@
 import os
+import shlex
 import socket
 import time
 from datetime import datetime
@@ -104,6 +105,7 @@ def init_server(server_id):
         client.close()
 
         client = upload_package(server)
+        upload_config(client, server)
 
         print("Запуск клиента...")
         p_type = "Master" if server.m_package else "SR"
@@ -190,6 +192,12 @@ def stop_server(server, client=None, force=True):
     except Exception as e:
         server_log(server, str(e))
         return False
+
+
+def upload_config(client, server):
+    path = "~/Master/application.cfg" if server.m_package else "~/Pack/Spawner/application.cfg"
+    content = shlex.quote(server.config)
+    ssh_command(client, "echo \"%s\" > %s" % (content, path))
 
 
 def server_log(server, message):
