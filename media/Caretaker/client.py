@@ -53,7 +53,6 @@ def start(package):
         os.system('chmod +x ~/Pack/Spawner/Spawner.x86_64')
         subprocess.Popen("~/Pack/Spawner/Spawner.x86_64", shell=True, preexec_fn=os.setsid)
         os.system('chmod +x ~/Pack/Room/Room.x86_64')
-        #subprocess.Popen("~/Room/Room.x86_64", shell=True, preexec_fn=os.setsid)
     else:
         print("Invalid package " + str(package))
 

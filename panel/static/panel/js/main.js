@@ -82,6 +82,15 @@ var watchVM = new Vue({
                     watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
                 })
         },
+        updateConfig: function () {
+            axios.post('/api/server/' + this.server.server.id + "/config", {"config": this.server.server.config})
+                .then(function (response) {
+                    watchVM.alertSuccess("Конфиг обновлён");
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
+                })
+        },
         getServer: function () {
             axios.get('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/')
                 .then(function (response) {

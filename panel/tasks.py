@@ -113,8 +113,6 @@ def init_server(server_id):
                                             .format(server.id, server.user_single, p_type))
         print("python3 ~/Caretaker/client.py {0} {1} {2} &"
               .format(server.id, server.user_single, p_type))
-        print(stdout.readlines())
-        print(stderr.readlines())
 
         print("Клиент вероятно запущен....")
         server_log(server, "Инициализация сервера прошла успешно.")
@@ -148,6 +146,22 @@ def update_server(server_id):
         upload_package(server, client)
         start_server(server, client)
         server_log(server, "Сервер обновлён успешно.")
+
+    except Exception as e:
+        server_log(server, str(e))
+        return False
+
+
+def update_config(server_id):
+    server = Server.objects.get(id=server_id)
+    client = ssh_connect(server.ip, server.user_single, server.password_single)
+
+    try:
+        server_log(server, "Обновление конфига...")
+        stop_server(server, client, False)
+        upload_config(client, server)
+        start_server(server, client)
+        server_log(server, "Конфиг обновлён.")
 
     except Exception as e:
         server_log(server, str(e))

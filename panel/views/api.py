@@ -1,9 +1,12 @@
+import json
 import os
 from pprint import pprint
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -49,7 +52,7 @@ class ServerInstanceView(APIView):
             return Response({"server": Server.objects.filter(id=pk).values(
                 'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
                 'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
-                'sr_package__created_at')[0],
+                'sr_package__created_at', 'config')[0],
                              "status": ServerStatus.objects.filter(server=pk).values().last() or None})
         except IndexError:
             return Response({"server": None, "status": None})
@@ -140,3 +143,16 @@ class SRPackageView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})
+
+
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def update_config(request, pk):
+    server = Server.objects.filter(id=pk)
+    if server:
+        server[0].config = json.loads(request.body.decode('utf-8'))['config']
+        server[0].save()
+        tasks.update_config(pk)
+        return Response({"success": "Конфиг обновлён"})
+    else:
+        return Response({"error": "Сервер не найден"})

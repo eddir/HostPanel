@@ -28,6 +28,7 @@ urlpatterns += [
     path('api/servers/', ServerView.as_view()),
     path('api/servers/status/', ServerStatusView.as_view()),
     path('api/server/<int:pk>/', ServerInstanceView.as_view()),
+    path('api/server/<int:pk>/config', update_config),
     path('api/serverMPackageInstanceView/<int:pk>/online', ServerOnlineView.as_view()),
 
     path('api/m_package/', MPackageView.as_view()),
