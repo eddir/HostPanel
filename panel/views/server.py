@@ -1,6 +1,9 @@
+import datetime
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.timezone import now
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
 from panel.forms import ServerForm, ServerModelForm
@@ -15,11 +18,6 @@ class ServerListView(ListView):
 
 class ServerDetailView(DetailView):
     model = Server
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['status'] = ServerStatus.objects.filter(server=self.object).last()
-        return context
 
 
 class ServerUpdate(UpdateView):

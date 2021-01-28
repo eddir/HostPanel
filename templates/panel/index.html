@@ -49,7 +49,7 @@
                                 <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.ip"></a></b></td>
                                 <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.name"></a></b></td>
                                 <td>
-                                    <p v-if="server.load"><span class="badge badge-warning">Запущен</span></p>
+                                    <p v-if="server.online && server.load"><span class="badge badge-warning">Запущен</span></p>
                                     <p v-else-if="server.online"><span class="badge badge-success">Запущен</span></p>
                                     <p v-else><span class="badge badge-danger">Остановлен</span></p>
                                 </td>

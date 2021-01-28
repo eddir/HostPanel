@@ -1,6 +1,8 @@
+import datetime
 import json
 
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
@@ -49,11 +51,14 @@ class ServerInstanceView(APIView):
     @staticmethod
     def get(request, pk):
         try:
-            return Response({"server": Server.objects.filter(id=pk).values(
+            server = Server.objects.filter(id=pk)
+            return Response({"server": server.values(
                 'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
                 'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
                 'sr_package__created_at', 'config')[0],
-                             "status": ServerStatus.objects.filter(server=pk).values().last() or None})
+                             "status": ServerStatus.objects.filter(server=server.last(),
+                                                                   created_at__gte=(now() - datetime.timedelta(
+                                                                       minutes=10))).last() or None})
         except IndexError:
             return Response({"server": None, "status": None})
 
