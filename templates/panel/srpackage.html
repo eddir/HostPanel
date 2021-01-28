@@ -42,26 +42,26 @@
                             </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="package in packages">
-                                    <td><b><a href="#" v-text="package.name"></a></b></td>
-                                    <td><p v-text="package.created_at"></p></td>
-                                    <td><b v-text="package.spawner_size"></b></td>
-                                    <td><b v-text="package.room_size"></b></td>
-                                    <td style="width:1%">
-                                        <a v-bind:href="'/sr_package/' + package.id + '/edit/'" class="btn btn-warning">
+                            <tr v-for="package in packages">
+                                <td><b><a href="#" v-text="package.name"></a></b></td>
+                                <td><p v-text="package.created_at"></p></td>
+                                <td><b v-text="package.spawner_size"></b></td>
+                                <td><b v-text="package.room_size"></b></td>
+                                <td style="width:1%">
+                                    <a v-bind:href="'/sr_package/' + package.id + '/edit/'" class="btn btn-warning">
                                             <span class="icon text-black-50">
                                                 <i class="fas fa-edit"></i>
                                             </span>
-                                        </a>
-                                    </td>
-                                    <td style="width:1%">
-                                        <a v-bind:href="'/sr_package/' + package.id + '/delete/'" class="btn btn-danger">
+                                    </a>
+                                </td>
+                                <td style="width:1%">
+                                    <a v-bind:href="'/sr_package/' + package.id + '/delete/'" class="btn btn-danger">
                                             <span class="icon text-black-50">
                                                 <i class="fas fa-trash-alt"></i>
                                             </span>
-                                        </a>
-                                    </td>
-                                </tr>
+                                    </a>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -92,26 +92,24 @@
                         </label>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label>
-                            Spawner архив
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="spawner" accept=".zip"
-                                       ref="file" v-on:change="handleFileUpload($event)">
-                                <label v-if="form.spawner" v-text="form.spawner.name" class="custom-file-label" for="room"></label>
-                                <label v-else class="custom-file-label" for="room">Выберите файл</label>
-                            </div>
-                        </label>
+                        <label for="spawner">Spawner архив</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="spawner" accept=".zip"
+                                   ref="file" v-on:change="handleFileUpload($event)">
+                            <label v-if="form.spawner" v-text="form.spawner.name" class="custom-file-label"
+                                   for="room"></label>
+                            <label v-else class="custom-file-label" for="room">Выберите файл</label>
+                        </div>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label>
-                            Room архив
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="room" accept=".zip"
-                                       ref="file" v-on:change="handleFileUpload($event)">
-                                <label v-if="form.room" v-text="form.room.name" class="custom-file-label" for="room"></label>
-                                <label v-else class="custom-file-label" for="room">Выберите файл</label>
-                            </div>
-                        </label>
+                        <label for="room">Room архив</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="room" accept=".zip"
+                                   ref="file" v-on:change="handleFileUpload($event)">
+                            <label v-if="form.room" v-text="form.room.name" class="custom-file-label"
+                                   for="room"></label>
+                            <label v-else class="custom-file-label" for="room">Выберите файл</label>
+                        </div>
                     </div>
                     <div class="form-group col-sm-6">
                         <button @click.prevent="uploadPackage()" type="button" class="btn btn-success btn-icon-split">

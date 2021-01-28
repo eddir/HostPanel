@@ -2,7 +2,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 
 
-var watchVM = new Vue({
+let watchVM = new Vue({
     el: '#wrapper',
     data: {
         message: "",

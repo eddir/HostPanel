@@ -1,15 +1,14 @@
 import os
 import shlex
 import socket
+import tarfile
 import time
 from datetime import datetime
-from pprint import pprint
-import tarfile
-import socket
-from background_task import background
+
 import paramiko
-from paramiko.ssh_exception import AuthenticationException
+from background_task import background
 from django.contrib.auth.models import User
+from paramiko.ssh_exception import AuthenticationException
 
 from HostPanel import settings
 from panel.models import Server
@@ -109,8 +108,8 @@ def init_server(server_id):
 
         print("Запуск клиента...")
         p_type = "Master" if server.m_package else "SR"
-        stdin, stdout, stderr = ssh_command(client, "python3 ~/Caretaker/client.py {0} {1} {2} &"
-                                            .format(server.id, server.user_single, p_type))
+        ssh_command(client, "python3 ~/Caretaker/client.py {0} {1} {2} &"
+                    .format(server.id, server.user_single, p_type))
         print("python3 ~/Caretaker/client.py {0} {1} {2} &"
               .format(server.id, server.user_single, p_type))
 
@@ -251,10 +250,10 @@ def ssh_command(client, command):
 
 class SFTPClient(paramiko.SFTPClient):
     def put_dir(self, source, target):
-        ''' Uploads the contents of the source directory to the target path. The
+        """ Uploads the contents of the source directory to the target path. The
             target directory needs to exists. All subdirectories in source are
             created under target.
-        '''
+        """
         for item in os.listdir(source):
             if os.path.isfile(os.path.join(source, item)):
                 self.put(os.path.join(source, item), '%s/%s' % (target, item))
@@ -263,7 +262,7 @@ class SFTPClient(paramiko.SFTPClient):
                 self.put_dir(os.path.join(source, item), '%s/%s' % (target, item))
 
     def mkdir(self, path, mode=511, ignore_existing=False):
-        ''' Augments mkdir by adding an option to not fail if the folder exists  '''
+        """ Augments mkdir by adding an option to not fail if the folder exists  """
         try:
             super(SFTPClient, self).mkdir(path, mode)
         except IOError:
@@ -273,7 +272,7 @@ class SFTPClient(paramiko.SFTPClient):
                 raise
 
 
-def get_online(server):
+def get_online():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_socket.settimeout(1.0)
     message = b'test'

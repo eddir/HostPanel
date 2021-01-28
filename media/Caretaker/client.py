@@ -1,12 +1,11 @@
+import json
 import os
 import subprocess
 import sys
 import threading
-import psutil
-from pprint import pprint
 
+import psutil
 import requests
-import json
 
 url = 'http://5.180.138.187:8000/api/servers/status/'
 path = os.path.dirname(os.path.realpath(__file__))

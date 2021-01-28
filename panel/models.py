@@ -4,8 +4,6 @@ from django.db import models
 from django.db.models import PROTECT
 from django.dispatch import receiver
 
-from HostPanel.settings import MEDIA_ROOT
-
 
 class MPackage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

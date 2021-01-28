@@ -1,7 +1,7 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 
-var watchVM = new Vue({
+let watchVM = new Vue({
     el: '#wrapper',
     delimiters: ['${', '}'],
     data: {
@@ -25,7 +25,7 @@ var watchVM = new Vue({
         }
     },
     mounted: function () {
-        path = location.pathname.split("/")
+        let path = location.pathname.split("/")
 
         if (path[1] === "") {
             this.$nextTick(this.getServers);

@@ -201,3 +201,5 @@ media/
 # !**/migrations
 # !**/migrations/__init__.py
 .idea/misc.xml
+
+.idea/aws.xml

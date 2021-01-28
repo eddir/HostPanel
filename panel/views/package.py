@@ -1,7 +1,4 @@
-from pprint import pprint
-
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView
 
 from panel import tasks

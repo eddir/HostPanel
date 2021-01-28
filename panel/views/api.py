@@ -1,19 +1,16 @@
 import json
-import os
-from pprint import pprint
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from HostPanel.settings import MEDIA_ROOT
 from panel import tasks
 from panel.models import ServerStatus, Server, MPackage, SRPackage
-from panel.serializers import MPackageSerializer, ServerStatusSerializer, ServerSerializer, MPackageSerializer, \
+from panel.serializers import ServerStatusSerializer, ServerSerializer, MPackageSerializer, \
     SRPackageSerializer
 from panel.tasks import init_server
 
@@ -21,7 +18,8 @@ from panel.tasks import init_server
 class ServerView(APIView):
     # Инициализация и получение списка всех серверов
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         servers = ServerSerializer(Server.objects.all(), many=True)
         m_packages = MPackageSerializer(MPackage.objects.all(), many=True)
         sr_packages = SRPackageSerializer(SRPackage.objects.all(), many=True)
@@ -31,7 +29,8 @@ class ServerView(APIView):
             "sr_packages": sr_packages.data,
         })
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         server = request.data
         serializer = ServerSerializer(data=server)
         server_saved = None
@@ -47,7 +46,8 @@ class ServerView(APIView):
 class ServerInstanceView(APIView):
     # Запуск, остановка и получение данных о сервере
 
-    def get(self, request, pk):
+    @staticmethod
+    def get(request, pk):
         try:
             return Response({"server": Server.objects.filter(id=pk).values(
                 'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
@@ -57,11 +57,13 @@ class ServerInstanceView(APIView):
         except IndexError:
             return Response({"server": None, "status": None})
 
-    def put(self, request, pk):
+    @staticmethod
+    def put(request, pk):
         tasks.start_server(pk)
         return Response({"success": "Сервер запущен."})
 
-    def delete(self, request, pk):
+    @staticmethod
+    def delete(request, pk):
         tasks.stop_server(pk)
         return Response({"success": "Сервер остановлен."})
 
@@ -70,12 +72,14 @@ class ServerInstanceView(APIView):
 class ServerStatusView(APIView):
     # Состояния сервера в моменте времени и информация о нагрузке
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         stats = ServerStatus.objects.all()
         serializer = ServerSerializer(stats, many=True)
         return Response({"stats": serializer.data})
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         stats = request.data
         serializer = ServerStatusSerializer(data=stats)
         if serializer.is_valid(raise_exception=True):
@@ -87,20 +91,23 @@ class ServerStatusView(APIView):
 class ServerOnlineView(APIView):
     # Тестовый view для проверки связи с серевером
 
-    def get(self, request, pk):
-        return Response({"online": tasks.get_online(Server.objects.get(pk=pk))})
+    @staticmethod
+    def get(request, pk):
+        return Response({"online": tasks.get_online()})
 
 
 class MPackageView(APIView):
     # Загрузка сборки master
     parser_classes = (MultiPartParser,)
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         packages = MPackage.objects.all()
         serializer = MPackageSerializer(packages, many=True)
         return Response({"packages": serializer.data})
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         serializer = MPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -111,7 +118,8 @@ class MPackageView(APIView):
 class MPackageInstanceView(APIView):
     # Получение информации о сборке
 
-    def get(self, request, pk):
+    @staticmethod
+    def get(request, pk):
         try:
             return Response({
                 "code": True,
@@ -133,12 +141,14 @@ class SRPackageView(APIView):
     # Загрузка сборки spawner + room
     parser_classes = (MultiPartParser,)
 
-    def get(self, request):
+    @staticmethod
+    def get(request):
         packages = SRPackage.objects.all()
         serializer = SRPackageSerializer(packages, many=True)
         return Response({"packages": serializer.data})
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         serializer = SRPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()

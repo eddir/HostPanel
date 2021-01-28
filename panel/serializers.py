@@ -1,9 +1,6 @@
 import datetime
 import os
-from abc import ABC
-from pprint import pprint
 
-from django.db.migrations import serializer
 from django.utils.timezone import now
 from rest_framework import serializers
 
@@ -19,12 +16,15 @@ class ServerSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
                   'config', 'm_package', 'sr_package', 'load', 'online')
 
-    def get_load(self, server):
+    @staticmethod
+    def get_load(server):
         status = ServerStatus.objects.filter(server=server).last()
         return status and status.cpu_usage > 80
 
-    def get_online(self, server):
-        return ServerStatus.objects.filter(server=server, created_at__gte=(now()-datetime.timedelta(minutes=10))).exists()
+    @staticmethod
+    def get_online(server):
+        return ServerStatus.objects.filter(server=server, created_at__gte=(now()-datetime.timedelta(minutes=10)))\
+            .exists()
 
 
 class MPackageSerializer(serializers.ModelSerializer):
@@ -34,7 +34,8 @@ class MPackageSerializer(serializers.ModelSerializer):
         model = MPackage
         fields = ('id', 'name', 'created_at', 'master', 'master_size')
 
-    def get_master_size(self, package):
+    @staticmethod
+    def get_master_size(package):
         return os.path.getsize(package.master.path)
 
     def to_representation(self, instance):
@@ -51,10 +52,12 @@ class SRPackageSerializer(serializers.ModelSerializer):
         model = SRPackage
         fields = ('id', 'name', 'created_at', 'spawner', 'room', 'spawner_size', 'room_size')
 
-    def get_spawner_size(self, package):
+    @staticmethod
+    def get_spawner_size(package):
         return os.path.getsize(package.spawner.path)
 
-    def get_room_size(self, package):
+    @staticmethod
+    def get_room_size(package):
         return os.path.getsize(package.room.path)
 
     def to_representation(self, instance):
@@ -70,5 +73,6 @@ class ServerStatusSerializer(serializers.ModelSerializer):
         model = ServerStatus
         fields = ('server', 'cpu_usage', 'ram_usage', 'ram_available', 'hdd_usage', 'hdd_available')
 
-        def create(self, validated_data):
+        @staticmethod
+        def create(validated_data):
             return ServerStatus.objects.create(**validated_data)
