@@ -53,7 +53,7 @@ let watchVM = new Vue({
             }
         },
         startServer: function () {
-            axios.put('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)
+            axios.put('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер запущен");
                     watchVM.getServer();
@@ -63,7 +63,7 @@ let watchVM = new Vue({
                 })
         },
         stopServer: function () {
-            axios.delete('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/', this.form)
+            axios.delete('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер остановлен");
                     watchVM.getServer();
@@ -92,7 +92,7 @@ let watchVM = new Vue({
                 })
         },
         getServer: function () {
-            axios.get('/api/server/'+location.pathname.split("/").slice(-2)[0]+'/')
+            axios.get('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/')
                 .then(function (response) {
                     watchVM.loaded = true;
                     watchVM.server = response.data;

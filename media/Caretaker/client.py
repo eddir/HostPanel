@@ -53,7 +53,7 @@ def start(package):
         subprocess.Popen("~/Pack/Spawner/Spawner.x86_64", shell=True, preexec_fn=os.setsid)
         os.system('chmod +x ~/Pack/Room/Room.x86_64')
     else:
-        print("Invalid package " + str(package))
+        raise ValueError("Invalid package " + str(package))
 
     with open(config_path, 'w') as outfile:
         json.dump({
@@ -66,8 +66,13 @@ def start(package):
 
 
 def stop():
+    """
+    Убивает вотчер и подпроцессы вотчера, а именно запущенные игровые сервера
+    :return:
+    """
     with open(config_path) as json_file:
         data = json.load(json_file)
+
     if len(data) > 0 and data['pid']:
         parent = psutil.Process(data['pid'])
 
@@ -75,22 +80,34 @@ def stop():
             child.kill()
         parent.kill()
 
-        return True
+    else:
+        raise ConfigError("Config is damaged")
 
-    return False
+
+class ConfigError(Exception):
+    pass
 
 
 if __name__ == '__main__':
 
-    if len(sys.argv) == 4:
-        print("Started")
-        watch(start(sys.argv[3]))
+    try:
+        # Установка
+        if len(sys.argv) == 4:
+            print("Started")
+            watch(start(sys.argv[3]))
 
-    elif len(sys.argv) == 3 and sys.argv[1] == 'start':
-        print("Success") if send_status(start(sys.argv[2])) else print("Config is damaged")
+        # Запуск
+        elif sys.argv[1] == "start" and len(sys.argv) == 3:
+            send_status(start(sys.argv[2]))
+            print("Success")
 
-    elif len(sys.argv) == 2 and sys.argv[1] == 'stop':
-        print("Success") if stop() else print("Config is damaged")
+        # Остановка
+        elif sys.argv[1] == "stop" and len(sys.argv) == 2:
+            stop()
+            print("Success")
 
-    else:
-        print("Syntax error")
+        else:
+            raise ValueError("Syntax error")
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)

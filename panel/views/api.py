@@ -50,14 +50,18 @@ class ServerInstanceView(APIView):
     def get(request, pk):
         try:
             server = Server.objects.filter(id=pk)
+
+            try:
+                status = ServerStatus.objects.filter(server=server.last(), created_at__gte=(
+                        now() - datetime.timedelta(minutes=10))).values()[0]
+            except IndexError:
+                status = None
+
             return Response({"server": server.values(
                 'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
                 'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
                 'sr_package__created_at', 'config')[0],
-                             "status": ServerStatus.objects.filter(server=server.last(),
-                                                                   created_at__gte=(
-                                                                        now() - datetime.timedelta(minutes=10))
-                                                                   ).values()[0] or None})
+                             "status": status})
         except IndexError:
             return Response({"server": None, "status": None})
 

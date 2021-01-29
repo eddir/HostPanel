@@ -76,7 +76,7 @@ class ServerUnit:
 
     def start(self):
         package = "Master" if self.model.m_package else "SR"
-        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start %s &" % package)
+        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start %s" % package)
         self.log("Сервер запущен.")
         return stdin, stdout, stderr
 
