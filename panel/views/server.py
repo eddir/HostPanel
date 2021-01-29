@@ -6,9 +6,9 @@ from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
+from panel import tasks
 from panel.forms import ServerForm, ServerModelForm
 from panel.models import ServerStatus, Server
-from panel.tasks import init_server
 
 
 class ServerListView(ListView):
@@ -42,7 +42,7 @@ def create_server(request):
                             user_single=form.cleaned_data['user_single'],
                             password_root=form.cleaned_data['password_root'])
             server.save()
-            init_server(server.id)
+            tasks.server_task(server.id, "init")
 
             return HttpResponseRedirect('/')
     else:

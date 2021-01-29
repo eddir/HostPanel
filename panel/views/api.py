@@ -12,9 +12,7 @@ from rest_framework.views import APIView
 
 from panel import tasks
 from panel.models import ServerStatus, Server, MPackage, SRPackage
-from panel.serializers import ServerStatusSerializer, ServerSerializer, MPackageSerializer, \
-    SRPackageSerializer
-from panel.tasks import init_server
+from panel.serializers import ServerStatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer
 
 
 class ServerView(APIView):
@@ -39,7 +37,7 @@ class ServerView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             server_saved = serializer.save()
-            init_server(server_saved.id)
+            tasks.server_task(server_saved.id, "init")
 
         return Response({"success": "Сервер '{}' добавлен.".format(server_saved.name)})
 
@@ -57,19 +55,20 @@ class ServerInstanceView(APIView):
                 'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
                 'sr_package__created_at', 'config')[0],
                              "status": ServerStatus.objects.filter(server=server.last(),
-                                                                   created_at__gte=(now() - datetime.timedelta(
-                                                                       minutes=10))).last() or None})
+                                                                   created_at__gte=(
+                                                                        now() - datetime.timedelta(minutes=10))
+                                                                   ).values()[0] or None})
         except IndexError:
             return Response({"server": None, "status": None})
 
     @staticmethod
     def put(request, pk):
-        tasks.start_server(pk)
+        tasks.server_task(pk, "start")
         return Response({"success": "Сервер запущен."})
 
     @staticmethod
     def delete(request, pk):
-        tasks.stop_server(pk)
+        tasks.server_task(pk, "stop")
         return Response({"success": "Сервер остановлен."})
 
 
@@ -165,9 +164,9 @@ class SRPackageView(APIView):
 def update_config(request, pk):
     server = Server.objects.filter(id=pk)
     if server:
-        server[0].config = json.loads(request.body.decode('utf-8'))['config']
+        server[0].config = request.data['config']
         server[0].save()
-        tasks.update_config(pk)
+        tasks.server_task(pk, "update_config")
         return Response({"success": "Конфиг обновлён"})
     else:
         return Response({"error": "Сервер не найден"})

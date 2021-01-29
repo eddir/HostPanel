@@ -49,7 +49,7 @@ let watchVM = new Vue({
                     "-mstMasterPort=5000\n" +
                     "-mstRoomIp=213.139.209.176\n" +
                     "-mstMaxProcesses=1\n" +
-                    "-mstRoomExe=home\\ios4\\Pack\\Room\\Room.x86_64"
+                    "-mstRoomExe=~\\Pack\\Room\\Room.x86_64"
             }
         },
         startServer: function () {

@@ -27,7 +27,7 @@ class MPackageEdit(UpdateView):
         package.save()
 
         for server in Server.objects.filter(m_package=package):
-            tasks.update_server(server.id)
+            tasks.server_task(server.id, "update")
 
         return redirect_url
 
@@ -44,7 +44,7 @@ class SRPackageEdit(UpdateView):
         package.save()
 
         for server in Server.objects.filter(sr_package=package):
-            tasks.update_server(server.id)
+            tasks.server_task(server.id, "update")
 
         return redirect_url
 
