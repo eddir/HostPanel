@@ -42,8 +42,11 @@ def start(package):
         server_id = data["server_id"]
         user = data["user"]
     else:
-        server_id = sys.argv[1]
-        user = sys.argv[2]
+        if len(sys.argv) > 2:
+            server_id = sys.argv[1]
+            user = sys.argv[2]
+        else:
+            raise ValueError("server_id and user doesn't presented")
 
     if package == "Master":
         os.system('chmod +x ~/Master/Master.x86_64')
@@ -98,7 +101,7 @@ if __name__ == '__main__':
 
         # Запуск
         elif sys.argv[1] == "start" and len(sys.argv) == 3:
-            send_status(start(sys.argv[2]))
+            watch(start(sys.argv[2]))
             print("Success")
 
         # Остановка
