@@ -203,3 +203,5 @@ media/
 .idea/misc.xml
 
 .idea/aws.xml
+
+.idea/HostPanel.iml
