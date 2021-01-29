@@ -62,12 +62,7 @@ class ServerUnit:
         self.upload_config()
 
         print("Запуск клиента...")
-
-        p_type = "Master" if self.model.m_package else "SR"
-        cmd = "python3 ~/Caretaker/client.py {0} {1} {2} &".format(self.model.id, self.model.user_single, p_type)
-
-        self.command(cmd, root=False)
-        print(cmd)
+        self.start()
 
         print("Клиент вероятно запущен....")
         self.log("Инициализация сервера прошла успешно.")
@@ -76,7 +71,8 @@ class ServerUnit:
 
     def start(self):
         package = "Master" if self.model.m_package else "SR"
-        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start %s" % package)
+        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start {0} {1} {2} &".format(
+            package, self.model.id, self.model.user_single))
         self.log("Сервер запущен.")
         return stdin, stdout, stderr
 

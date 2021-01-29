@@ -34,19 +34,16 @@ def send_status(server_id):
     return True
 
 
-def start(package):
-    with open(config_path) as json_file:
-        data = json.load(json_file)
+def start(package, server_id=None, user=None):
+    if server_id is None or user is None:
+        try:
+            with open(config_path) as json_file:
+                data = json.load(json_file)
 
-    if len(data) > 0:
-        server_id = data["server_id"]
-        user = data["user"]
-    else:
-        if len(sys.argv) > 2:
-            server_id = sys.argv[1]
-            user = sys.argv[2]
-        else:
-            raise ValueError("server_id and user doesn't presented")
+            server_id = data["server_id"]
+            user = data["user"]
+        except Exception:
+            raise ConfigError("Config is damaged")
 
     if package == "Master":
         os.system('chmod +x ~/Master/Master.x86_64')
@@ -94,14 +91,13 @@ class ConfigError(Exception):
 if __name__ == '__main__':
 
     try:
-        # Установка
-        if len(sys.argv) == 4:
-            print("Started")
-            watch(start(sys.argv[3]))
-
         # Запуск
-        elif sys.argv[1] == "start" and len(sys.argv) == 3:
-            watch(start(sys.argv[2]))
+        if sys.argv[1] == "start":
+            if len(sys.argv) == 5:
+                watch(start(package=sys.argv[2], server_id=sys.argv[3], user=sys.argv[4]))
+            else:
+                watch(start(package=sys.argv[2]))
+
             print("Success")
 
         # Остановка
