@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from panel import tasks
-from panel.models import ServerStatus, Server, MPackage, SRPackage
+from panel.models import ServerStatus, Server, MPackage, SRPackage, SubServerStatus
 from panel.serializers import ServerStatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer
 
 
@@ -53,18 +53,26 @@ class ServerInstanceView(APIView):
     def get(request, pk):
         try:
             server = Server.objects.filter(id=pk)
+            status_objs = rooms = None
 
             try:
-                status = ServerStatus.objects.filter(server=server.last(), created_at__gte=(
-                        now() - datetime.timedelta(minutes=10))).values().last()
+                status_objs = ServerStatus.objects.filter(server=server.last(), created_at__gte=(
+                        now() - datetime.timedelta(minutes=10)))
+                status = status_objs.values().last()
             except IndexError:
                 status = None
 
-            return Response({"server": server.values(
-                'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
-                'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
-                'sr_package__created_at', 'config')[0],
-                             "status": status})
+            if status:
+                rooms = status_objs.last().subserverstatus_set.all().values()
+
+            return Response({
+                "server": server.values(
+                    'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
+                    'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
+                    'sr_package__created_at', 'config')[0],
+                "status": status,
+                "rooms": rooms
+            })
         except IndexError:
             return Response({"server": None, "status": None})
 
@@ -100,12 +108,18 @@ class ServerStatusView(APIView):
             'hdd_available': request.data['hdd_available'],
             'online': request.data['online']['AllPlayers']
         }
-        pprint(stat)
         serializer = ServerStatusSerializer(data=stat)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-        return Response({"success": "Статус сервера обновлён."})
+            status = serializer.save()
 
+            for ip, spawner in request.data['online']['OnlineInRooms'].items():
+                for room in spawner:
+                    pprint(room)
+                    room = SubServerStatus(server_status=status, port=int(room['port']),
+                                           online=int(room['onlineCount']), max_online=int(room['maxOnline']))
+                    room.save()
+
+        return Response({"success": "Статус сервера обновлён."})
 
 
 @method_decorator(csrf_exempt, name='dispatch')

@@ -13,26 +13,38 @@
             </h1>
         </div>
         <div class="card-body" v-if="server.server">
-            <p>IP: <span v-text="server.server.ip"></span></p>
-            <p>Root: <span v-text="server.server.user_root"></span></p>
-            <p>Root пароль: <span v-text="server.server.password_root"></span></p>
-            <p>User: <span v-text="server.server.user_single"></span></p>
-            <p>User пароль: <span v-text="server.server.password_single"></span></p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>IP: <span v-text="server.server.ip"></span></p>
+                    <p>Root: <span v-text="server.server.user_root"></span></p>
+                    <p>Root пароль: <span v-text="server.server.password_root"></span></p>
+                    <p>User: <span v-text="server.server.user_single"></span></p>
+                    <p>User пароль: <span v-text="server.server.password_single"></span></p>
 
-            <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
+                    <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
 
-            <p>M сборка: <span
-                    v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span></p>
-            <p>SR сборка: <span
-                    v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span></p>
+                    <p>M сборка: <span
+                            v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span>
+                    </p>
+                    <p>SR сборка: <span
+                            v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span>
+                    </p>
 
-            <template v-if="server.status">
-                <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
-                <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
-                <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
-                <p>Online: <span v-text="server.status.online"></span></p>
-            </template>
+                    <template v-if="server.status">
+                        <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
+                        <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
+                        <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+                        <p>Online: <span v-text="server.status.online"></span></p>
+                    </template>
 
+
+                </div>
+                <div class="col-md-6">
+                    <template v-for="room in server.rooms">
+                        <p>Room.x86_64:&nbsp;&nbsp;&nbsp;<span v-text="room.online + '/' + room.max_online"></span></p>
+                    </template>
+                </div>
+            </div>
 
             <div class="highlight">
                 <pre class="pre-scrollable" v-html="server.server.log"></pre>
@@ -48,7 +60,8 @@
                 <textarea class="form-control" v-model="server.server.config" id="config" rows="9"
                           style="min-width: 100%"></textarea>
             </div>
-            <button type="button" class="btn btn-outline-success" @click.prevent="updateConfig()">Сохранить</button>
+            <button type="button" class="btn btn-outline-success" @click.prevent="updateConfig()">Сохранить
+            </button>
         </div>
         <div class="card-body" v-else-if="loaded">
             <p>Сервер пока не создан. Это могло произойти по двум причинам:</p>

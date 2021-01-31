@@ -5,7 +5,7 @@ from pprint import pprint
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from panel.models import Server, ServerStatus, MPackage, SRPackage
+from panel.models import Server, ServerStatus, MPackage, SRPackage, SubServerStatus
 
 
 class ServerSerializer(serializers.ModelSerializer):
@@ -73,3 +73,11 @@ class ServerStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServerStatus
         fields = ('server', 'cpu_usage', 'ram_usage', 'ram_available', 'hdd_usage', 'hdd_available', 'online')
+
+
+class SubServerStatusSerializer(serializers.ModelSerializer):
+    server_status = serializers.PrimaryKeyRelatedField(queryset=ServerStatus.objects.all())
+
+    class Meta:
+        model = SubServerStatus
+        fields = ('server_status', 'port', 'online', 'max_online')

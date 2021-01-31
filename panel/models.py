@@ -69,3 +69,9 @@ class ServerStatus(models.Model):
     class Meta:
         verbose_name_plural = "Server status"
 
+
+class SubServerStatus(models.Model):
+    server_status = models.ForeignKey(ServerStatus, on_delete=models.CASCADE)
+    port = models.SmallIntegerField()
+    online = models.SmallIntegerField()
+    max_online = models.SmallIntegerField()

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Server, ServerStatus, MPackage, SRPackage
+from .models import Server, ServerStatus, MPackage, SRPackage, SubServerStatus
 
 admin.site.register(Server)
 
@@ -8,6 +8,11 @@ admin.site.register(Server)
 @admin.register(ServerStatus)
 class ServerStatusAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at',)
+
+
+@admin.register(SubServerStatus)
+class SubServerStatusAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(MPackage)
