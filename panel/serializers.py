@@ -1,5 +1,6 @@
 import datetime
 import os
+from pprint import pprint
 
 from django.utils.timezone import now
 from rest_framework import serializers
@@ -23,7 +24,7 @@ class ServerSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_online(server):
-        return ServerStatus.objects.filter(server=server, created_at__gte=(now()-datetime.timedelta(minutes=10)))\
+        return ServerStatus.objects.filter(server=server, created_at__gte=(now() - datetime.timedelta(minutes=10))) \
             .exists()
 
 
@@ -71,8 +72,4 @@ class ServerStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServerStatus
-        fields = ('server', 'cpu_usage', 'ram_usage', 'ram_available', 'hdd_usage', 'hdd_available')
-
-        @staticmethod
-        def create(validated_data):
-            return ServerStatus.objects.create(**validated_data)
+        fields = ('server', 'cpu_usage', 'ram_usage', 'ram_available', 'hdd_usage', 'hdd_available', 'online')

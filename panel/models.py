@@ -64,6 +64,7 @@ class ServerStatus(models.Model):
     ram_available = models.IntegerField()
     hdd_usage = models.IntegerField()
     hdd_available = models.IntegerField()
+    online = models.IntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "Server status"

@@ -30,7 +30,10 @@
                 <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
                 <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
                 <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
+                <p>Online: <span v-text="server.status.online"></span></p>
             </template>
+
+
             <div class="highlight">
                 <pre class="pre-scrollable" v-html="server.server.log"></pre>
             </div>

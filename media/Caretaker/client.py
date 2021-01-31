@@ -12,23 +12,32 @@ path = os.path.dirname(os.path.realpath(__file__))
 config_path = path + '/config.txt'
 
 
-def watch(server_id):
-    threading.Timer(60.0 * 5, watch, [server_id]).start()
-    send_status(server_id)
+def watch(server):
+    threading.Timer(60.0 * 5, watch, [server["id"]]).start()
+    send_status(server["id"], server["package"])
 
 
-def send_status(server_id):
+def send_status(server_id, package):
+    if package == "Master":
+        try:
+            with open(os.path.expanduser("~/Master/online.txt"), "r") as json_file:
+                online = json.load(json_file)
+        except IOError:
+            online = None
+    else:
+        online = None
+
     status = {
         'server': server_id,
         'cpu_usage': int(psutil.cpu_percent()),
         'ram_usage': psutil.virtual_memory().used,
         'ram_available': psutil.virtual_memory().total,
         'hdd_usage': psutil.disk_usage('/').used,
-        'hdd_available': psutil.disk_usage('/').total
+        'hdd_available': psutil.disk_usage('/').total,
+        'online': online
     }
 
-    x = requests.post(url, data=status)
-
+    x = requests.post(url, json=status)
     print(x.text)
 
     return True
@@ -62,7 +71,10 @@ def start(package, server_id=None, user=None):
             'pid': os.getpid()
         }, outfile)
 
-    return server_id
+    return {
+        "id": server_id,
+        "package": package
+    }
 
 
 def stop():

@@ -1,9 +1,12 @@
 import datetime
 import json
+from pprint import pprint
 
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
 from rest_framework.renderers import JSONRenderer
@@ -53,7 +56,7 @@ class ServerInstanceView(APIView):
 
             try:
                 status = ServerStatus.objects.filter(server=server.last(), created_at__gte=(
-                        now() - datetime.timedelta(minutes=10))).values()[0]
+                        now() - datetime.timedelta(minutes=10))).values().last()
             except IndexError:
                 status = None
 
@@ -88,11 +91,21 @@ class ServerStatusView(APIView):
 
     @staticmethod
     def post(request):
-        stats = request.data
-        serializer = ServerStatusSerializer(data=stats)
+        stat = {
+            'server': request.data['server'],
+            'cpu_usage': request.data['cpu_usage'],
+            'ram_usage': request.data['ram_usage'],
+            'ram_available': request.data['ram_available'],
+            'hdd_usage': request.data['hdd_usage'],
+            'hdd_available': request.data['hdd_available'],
+            'online': request.data['online']['AllPlayers']
+        }
+        pprint(stat)
+        serializer = ServerStatusSerializer(data=stat)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Статус сервера обновлён."})
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')
