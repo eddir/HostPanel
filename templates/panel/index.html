@@ -10,69 +10,111 @@
         </div>
     </div>
 
-    <div class="card shadow my-4">
-        <div class="card-header py-3">
-            <h1 class="p-0 font-weight-bold text-primary">Apps</h1>
-        </div>
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <div class="row">
-                    <div class="col-sm-12">
-                        <table class="table table-bordered dataTable" role="grid">
-                            <thead>
-                            <tr role="row">
-                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
-                                    colspan="1" aria-sort="ascending"
-                                    aria-label="Name: activate to sort column descending"
-                                >IP адрес
-                                </th>
-                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
-                                    colspan="1" aria-sort="ascending"
-                                    aria-label="Name: activate to sort column descending"
-                                >Название
-                                </th>
-                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1"
-                                    colspan="1" aria-sort="ascending"
-                                    aria-label="Name: activate to sort column descending"
-                                >Состояние
-                                </th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            <tr v-for="server in servers">
-                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.ip"></a></b></td>
-                                <td><b><a v-bind:href="'/server/' + server.id + '/'" v-text="server.name"></a></b></td>
-                                <td>
-                                    <p v-if="server.online && server.load"><span class="badge badge-warning">Запущен</span></p>
-                                    <p v-else-if="server.online"><span class="badge badge-success">Запущен</span></p>
-                                    <p v-else><span class="badge badge-danger">Остановлен</span></p>
-                                </td>
-                                <td style="width:1%">
-                                    <a @click="notImplemented()" href="#" class="btn btn-success"><span
-                                            class="icon text-black-50"><i
-                                            class="fas fa-pause-circle"></i></span></a>
-                                </td>
-                                <td style="width:1%">
-                                    <a @click="notImplemented()" href="#" class="btn btn-warning"><span
-                                            class="icon text-black-50"><i
-                                            class="fas fa-sync-alt"></i></span></a>
-                                </td>
-                                <td style="width:1%">
-                                    <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn btn-danger"><span
-                                            class="icon text-black-50"><i
-                                            class="fas fa-trash-alt"></i></span></a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+    <div v-for="server in servers" class="card shadow my-4">
+        <div class="card-header">
+            <div class="container">
+                <div class="row control">
+                    <div class="col-md-5">
+                        <h2 @click="$('#master_'+server.id).collapse('toggle')" v-text="server.name + ':'"
+                            class="title-vps text-primary"></h2>
                     </div>
+                    <div class="col">
+                        <p class="m-0">Spawn - 10</p>
+                        <p class="m-0">Players - 900</p>
+                    </div>
+                    <div class="col border-right d-flex align-items-center justify-content-center">
+
+                        <span v-if="server.online && server.load" class="icon fa-stack">
+                            <i class="fas fa-circle text-success indicator"></i>
+                        </span>
+                        <span v-else-if="server.online" class="icon fa-stack">
+                            <i class="fas fa-circle text-warning indicator"></i>
+                        </span>
+                        <span v-else class="icon fa-stack">
+                            <i class="fas fa-circle text-danger indicator"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                        <template v-if="server.online">
+                            <a @click="notImplemented()" href="#" class="btn">
+                                <span class="icon text-danger"><i class="fas fa-stop"></i></span>
+                            </a>
+                            <a @click="notImplemented()" href="#" class="btn">
+                                <span class="icon text-warning"><i class="fas fa-redo"></i></span>
+                            </a>
+                        </template>
+                        <template v-else>
+                            <a @click="notImplemented()" href="#" class="btn">
+                                <span class="icon text-success"><i class="fas fa-play"></i></span>
+                            </a>
+                        </template>
+                        <a v-bind:href="'/server/' + server.id" class="btn">
+                            <span class="icon text-info"><i class="fas fa-info"></i></span>
+                        </a>
+                        <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn">
+                            <span class="icon text-danger"><i class="fas fa-trash"></i></span>
+                        </a>
+                    </div>
+
                 </div>
+            </div>
+        </div>
+
+
+        <div class="card-body collapse" v-bind:id="'master_'+server.id">
+
+            <div v-for="server in servers" class="card my-2">
+                <div class="card-header">
+
+                    <div class="container">
+                        <div class="row control">
+                            <div class="col-md-5">
+                                <h2 class="title-vps">
+                                    <a v-text="server.name + ':'" v-bind:href="'/server/' + server.id"></a>
+                                </h2>
+                            </div>
+                            <div class="col">
+                                <p class="m-0">Rooms - 5</p>
+                                <p class="m-0">Online - 220/1000</p>
+                            </div>
+                            <div class="col border-right d-flex align-items-center justify-content-center">
+                                <span v-if="server.online && server.load" class="icon fa-stack">
+                                    <i class="fas fa-circle text-success indicator"></i>
+                                </span>
+                                        <span v-else-if="server.online" class="icon fa-stack">
+                                    <i class="fas fa-circle text-warning indicator"></i>
+                                </span>
+                                        <span v-else class="icon fa-stack">
+                                    <i class="fas fa-circle text-danger indicator"></i>
+                                </span>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                <template v-if="server.online">
+                                    <a @click="notImplemented()" href="#" class="btn">
+                                        <span class="icon text-danger"><i class="fas fa-stop"></i></span>
+                                    </a>
+                                </template>
+                                <template v-else>
+                                    <a @click="notImplemented()" href="#" class="btn">
+                                        <span class="icon text-success"><i class="fas fa-play"></i></span>
+                                    </a>
+                                </template>
+                                <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn">
+                                    <span class="icon text-danger"><i class="fas fa-trash"></i></span>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a @click="notImplemented()" href="#" class="btn btn-primary text-white px-5">
+                    <span class="icon"><i class="fas fa-plus"></i></span><br>
+                    <span>Создать</span>
+                </a>
             </div>
         </div>
     </div>
@@ -80,7 +122,7 @@
 
     <div class="card shadow my-4">
         <div class="card-header py-3">
-            <h2 class="p-0 font-weight-bold text-primary">Добавить сервер</h2>
+            <h2 class="p-0 font-weight-bold text-primary">Master</h2>
         </div>
         <div class="card-body">
 
@@ -128,16 +170,9 @@
                         </label>
                     </div>
                     <div class="form-group col-sm-6">
-                        <div class="form-check">
-                            <input id="ssh_key" class="form-check-input" type="checkbox" value=""
-                                   v-model="form['ssh_key']" true-value="true" false-value="false">
-                            <label for="ssh_key">SSH ключ</label>
-                        </div>
-                    </div>
-                    <div class="form-group col-sm-6">
                         <label>
-                            Сборка Master
-                            <select v-model="form.m_package" @change="changePackage(true)" id="m_package"
+                            Сборка
+                            <select v-model="form.package" @change="changePackage(true)" id="package"
                                     class="form-control">
                                 <option disabled selected value :value="null"> -- выберите сборку --</option>
                                 <option v-for="package in m_packages" v-text="package.name + ' ' + package.created_at"
@@ -146,15 +181,11 @@
                         </label>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label>
-                            Сборка SR
-                            <select v-model="form.sr_package" @change="changePackage(false)" id="sr_package"
-                                    class="form-control">
-                                <option disabled selected value :value="null"> -- выберите сборку --</option>
-                                <option v-for="package in sr_packages" v-text="package.name + ' ' + package.created_at"
-                                        v-bind:value="package.id"></option>
-                            </select>
-                        </label>
+                        <div class="form-check">
+                            <input id="ssh_key" class="form-check-input" type="checkbox" value=""
+                                   v-model="form['ssh_key']" true-value="true" false-value="false">
+                            <label for="ssh_key">SSH ключ</label>
+                        </div>
                     </div>
                     <div class="form-group col-sm-12">
                         <label for="config">application.cfg</label>
@@ -162,7 +193,7 @@
                                   style="min-width: 100%"></textarea>
                     </div>
                     <div class="form-group col-sm-6">
-                        <button @click.prevent="createServer()" type="button" class="btn btn-success btn-icon-split">
+                        <button @click.prevent="createServer('master')" type="button" class="btn btn-success btn-icon-split">
                                 <span class="icon text-white-50">
                                   <i class="fas fa-check"></i>
                                 </span>

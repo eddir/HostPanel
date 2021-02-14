@@ -19,8 +19,8 @@ let watchVM = new Vue({
             password_root: "Ihor&Eddir1234",
             user_single: "msf",
             ssh_key: false,
-            m_package: null,
-            sr_package: null,
+            package: null,
+            type: "master",
             config: "",
         }
     },
@@ -36,13 +36,11 @@ let watchVM = new Vue({
     methods: {
         changePackage: function (isMaster) {
             if (isMaster) {
-                this.form['sr_package'] = null
                 this.form['config'] = "-mstStartMaster=true\n" +
                     "-mstStartClientConnection=true\n" +
                     "-mstMasterIp=127.0.0.1\n" +
                     "-mstMasterPort=5000"
             } else {
-                this.form['m_package'] = null
                 this.form['config'] = "-mstStartSpawner=true\n" +
                     "-mstStartClientConnection=true\n" +
                     "-mstMasterIp=213.139.209.176\n" +
@@ -72,7 +70,8 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data);
                 })
         },
-        createServer: function () {
+        createServer: function (type) {
+            this.form.type = type;
             axios.post('/api/servers/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер добавлен");

@@ -1,17 +1,23 @@
 import os
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import PROTECT
 from django.dispatch import receiver
 
 
-class MPackage(models.Model):
+class Package(models.Model):
+    pass
+
+
+class MPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
     master = models.FileField(null=True, upload_to='packages')
 
 
-class SRPackage(models.Model):
+class SRPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
     spawner = models.FileField(null=True, upload_to='packages')
@@ -40,20 +46,18 @@ def auto_delete_file_on_delete_package(sender, instance, **kwargs):
 
 
 class Server(models.Model):
+    parent = models.ForeignKey('Server', on_delete=models.CASCADE, null=True, blank=True)
+
     name = models.CharField('Server name', max_length=32)
     ip = models.GenericIPAddressField('Ip address')
-    user_root = models.CharField('Name of root user', max_length=32)
-    user_single = models.CharField('Name of working user', max_length=32)
+    user_root = models.CharField('Name of root user', max_length=32, null=True)
+    user_single = models.CharField('Name of working user', max_length=32, null=True)
     password_root = models.CharField(max_length=32)
     password_single = models.CharField(max_length=32, blank=True)
     ssh_key = models.BooleanField('Connect via ssh key')
     log = models.TextField(null=True, blank=True, default=None)
-    m_package = models.ForeignKey(MPackage, on_delete=PROTECT, null=True)
-    sr_package = models.ForeignKey(SRPackage, on_delete=PROTECT, null=True)
     config = models.TextField(null=True, blank=True, default=None)
-
-    def __str__(self):
-        return self.name
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
 
 
 class ServerStatus(models.Model):

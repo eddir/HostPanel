@@ -8,3 +8,31 @@
     z-index: 10;
     right: 0;
 }
+
+.title-vps {
+    font-size: 38px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.indicator {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    filter: drop-shadow(0 0 4px #000);
+}
+
+.control i {
+    font-size: 28px;
+}
+
+.control .btn:hover {
+    box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.7);
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+@media (max-width: 400px) {
+    .container {
+      padding: 0;
+    }
+}

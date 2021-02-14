@@ -34,8 +34,7 @@ class ServerView(APIView):
 
     @staticmethod
     def post(request):
-        server = request.data
-        serializer = ServerSerializer(data=server)
+        serializer = ServerSerializer(data=request.data)
         server_saved = None
 
         if serializer.is_valid(raise_exception=True):
@@ -65,11 +64,18 @@ class ServerInstanceView(APIView):
             if status:
                 rooms = status_objs.last().subserverstatus_set.all().values()
 
+            server_data = server.values(
+                'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root', 'user_single',
+                'package__mpackage__name', 'package__srpackage__name', 'package__mpackage__created_at',
+                'package__srpackage__created_at', 'config')[0]
+
+            server_data['package'] = {
+                'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
+                'created_at': server_data['package__mpackage__created_at'] or server_data['package__srpackage__created_at'],
+            }
+
             return Response({
-                "server": server.values(
-                    'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root',
-                    'user_single', 'm_package__name', 'sr_package__name', 'm_package__created_at',
-                    'sr_package__created_at', 'config')[0],
+                "server": server_data,
                 "status": status,
                 "rooms": rooms
             })

@@ -205,3 +205,6 @@ media/
 .idea/aws.xml
 
 .idea/HostPanel.iml
+
+HostPanel/settings.py
+front

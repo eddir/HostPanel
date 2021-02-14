@@ -1,5 +1,6 @@
 import datetime
 import os
+from abc import ABC
 from pprint import pprint
 
 from django.utils.timezone import now
@@ -15,7 +16,7 @@ class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'config', 'm_package', 'sr_package', 'load', 'online')
+                  'config', 'load', 'online', 'package')
 
     @staticmethod
     def get_load(server):

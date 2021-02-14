@@ -23,11 +23,8 @@
 
                     <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
 
-                    <p>M сборка: <span
-                            v-text="server.server.m_package__name + ' ' + server.server.m_package__created_at"></span>
-                    </p>
-                    <p>SR сборка: <span
-                            v-text="server.server.sr_package__name + ' ' + server.server.sr_package__created_at"></span>
+                    <p>Сборка: <span
+                            v-text="server.server.package.name + ' ' + server.server.package.created_at"></span>
                     </p>
 
                     <template v-if="server.status">
@@ -64,9 +61,10 @@
             </button>
         </div>
         <div class="card-body" v-else-if="loaded">
-            <p>Сервер пока не создан. Это могло произойти по двум причинам:</p>
+            <p>Сервер пока не создан. Это могло произойти по следующим причинам:</p>
             <ol>
                 <li>Сервер прямо сейчас создаётся и в скором времени информация о нём появится в панели.</li>
+                <li>Процесс выполнения задач не запущен.</li>
                 <li>Произошла непревиденная ошибка в процессе его создания.</li>
             </ol>
         </div>
