@@ -15,7 +15,7 @@
             <div class="container">
                 <div class="row control">
                     <div class="col-md-5">
-                        <h2 @click="$('#master_'+server.id).collapse('toggle')" v-text="server.name + ':'"
+                        <h2 @click="$('#master_'+server.id).collapse('toggle')" v-text="server.name"
                             class="title-vps text-primary"></h2>
                     </div>
                     <div class="col">
@@ -63,14 +63,14 @@
 
         <div class="card-body collapse" v-bind:id="'master_'+server.id">
 
-            <div v-for="server in servers" class="card my-2">
+            <div v-for="spawner in servers" v-if="spawner.parent == server.id" class="card my-2">
                 <div class="card-header">
 
                     <div class="container">
                         <div class="row control">
                             <div class="col-md-5">
                                 <h2 class="title-vps">
-                                    <a v-text="server.name + ':'" v-bind:href="'/server/' + server.id"></a>
+                                    <a v-text="spawner.name" v-bind:href="'/server/' + spawner.id"></a>
                                 </h2>
                             </div>
                             <div class="col">
@@ -81,10 +81,10 @@
                                 <span v-if="server.online && server.load" class="icon fa-stack">
                                     <i class="fas fa-circle text-success indicator"></i>
                                 </span>
-                                        <span v-else-if="server.online" class="icon fa-stack">
+                                <span v-else-if="server.online" class="icon fa-stack">
                                     <i class="fas fa-circle text-warning indicator"></i>
                                 </span>
-                                        <span v-else class="icon fa-stack">
+                                <span v-else class="icon fa-stack">
                                     <i class="fas fa-circle text-danger indicator"></i>
                                 </span>
                             </div>
@@ -99,7 +99,7 @@
                                         <span class="icon text-success"><i class="fas fa-play"></i></span>
                                     </a>
                                 </template>
-                                <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn">
+                                <a v-bind:href="'/server/' + spawner.id + '/delete/'" class="btn">
                                     <span class="icon text-danger"><i class="fas fa-trash"></i></span>
                                 </a>
                             </div>
@@ -111,7 +111,7 @@
             </div>
 
             <div class="text-center">
-                <a @click="notImplemented()" href="#" class="btn btn-primary text-white px-5">
+                <a @click="prepareCreateForm(server)" href="#" class="btn btn-primary text-white px-5">
                     <span class="icon"><i class="fas fa-plus"></i></span><br>
                     <span>Создать</span>
                 </a>
@@ -120,7 +120,104 @@
     </div>
 
 
-    <div class="card shadow my-4">
+    <div class="card shadow my-4 collapse" id="create_spawner">
+        <div class="card-header py-3">
+            <h2 class="p-0 font-weight-bold text-primary" v-text="'Spawner для ' + server.name"></h2>
+        </div>
+        <div class="card-body">
+
+            <form action="{% url 'panel:server.add' %}" method="post">
+                {% csrf_token %}
+
+                <table>
+                    {{ form }}
+                </table>
+
+                <div class="row">
+
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Название
+                            <input v-model="form['name']" type="text" value="Server ###"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            IP адрес
+                            <input v-model="form['ip']" type="text" name="ip" class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рут пользователь
+                            <input v-model="form['user_root']" type="text" name="user_root"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рут пароль
+                            <input v-model="form['password_root']" type="text" placeholder="" name="password_root"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рабочий пользователь
+                            <input v-model="form['user_single']" type="text" name="user_single"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Сборка
+                            <select v-model="form.package" @change="changePackage(true)" id="package"
+                                    class="form-control">
+                                <option disabled selected value :value="null"> -- выберите сборку --</option>
+                                <option v-for="package in sr_packages" v-text="package.name + ' ' + package.created_at"
+                                        v-bind:value="package.id"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="form-check">
+                            <input id="ssh_key" class="form-check-input" type="checkbox" value=""
+                                   v-model="form['ssh_key']" true-value="true" false-value="false">
+                            <label for="ssh_key">SSH ключ</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-12">
+                        <label for="config">application.cfg</label>
+                        <textarea class="form-control" v-model="form.config" id="config" rows="9"
+                                  style="min-width: 100%"></textarea>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <button @click.prevent="createServer('spawner')" type="button"
+                                class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                            <span class="text">Добавить и запустить</span>
+                        </button>
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a @click="prepareCreateMasterForm" href="#" class="btn btn-primary text-white px-5">
+            <span class="icon"><i class="fas fa-plus"></i></span><br>
+            <span>Создать мастер</span>
+        </a>
+    </div>
+
+
+    <div class="card shadow my-4 collapse" id="create_master">
         <div class="card-header py-3">
             <h2 class="p-0 font-weight-bold text-primary">Master</h2>
         </div>
@@ -193,7 +290,8 @@
                                   style="min-width: 100%"></textarea>
                     </div>
                     <div class="form-group col-sm-6">
-                        <button @click.prevent="createServer('master')" type="button" class="btn btn-success btn-icon-split">
+                        <button @click.prevent="createServer('master')" type="button"
+                                class="btn btn-success btn-icon-split">
                                 <span class="icon text-white-50">
                                   <i class="fas fa-check"></i>
                                 </span>

@@ -13,6 +13,7 @@ let watchVM = new Vue({
         sr_packages: {},
         loaded: false,
         form: {
+            parent: null,
             name: "Server " + Math.floor(Math.random() * 1000),
             ip: "213.139.209.176",
             user_root: "root",
@@ -34,6 +35,21 @@ let watchVM = new Vue({
         }
     },
     methods: {
+        prepareCreateForm: function (server) {
+            this.server = server;
+            let spawner = $('#create_spawner');
+            spawner.collapse('toggle');
+            spawner.on('shown.bs.collapse', function () {
+                this.scrollIntoView();
+            });
+        },
+        prepareCreateMasterForm: function (server) {
+            let master = $('#create_master');
+            master.collapse('toggle');
+            master.on('shown.bs.collapse', function () {
+                this.scrollIntoView();
+            });
+        },
         changePackage: function (isMaster) {
             if (isMaster) {
                 this.form['config'] = "-mstStartMaster=true\n" +
@@ -71,7 +87,9 @@ let watchVM = new Vue({
                 })
         },
         createServer: function (type) {
-            this.form.type = type;
+            if (type === "spawner") {
+                this.form.parent = this.server.id;
+            }
             axios.post('/api/servers/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер добавлен");
