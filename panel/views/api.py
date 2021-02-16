@@ -3,6 +3,7 @@ import json
 from pprint import pprint
 
 from django.http import JsonResponse
+from django.template.defaultfilters import filesizeformat
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
@@ -63,6 +64,9 @@ class ServerInstanceView(APIView):
 
             if status:
                 rooms = status_objs.last().subserverstatus_set.all().values()
+
+                for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
+                    status[key] = filesizeformat(status[key])
 
             server_data = server.values(
                 'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root', 'user_single',
