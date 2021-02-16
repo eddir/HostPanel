@@ -36,3 +36,14 @@
       padding: 0;
     }
 }
+
+.collapsing {
+    -webkit-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+}
+
+.pre-scrollable {
+    background-color: #000;
+    color: #fff;
+}
