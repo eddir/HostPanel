@@ -32,7 +32,6 @@ let watchVM = new Vue({
             formData.append('name', this.form.name);
             formData.append('type', this.form.type);
             formData.append('master', this.form.master);
-            console.log("начинается");
             axios.post('/api/m_package/',
                 formData,
                 {

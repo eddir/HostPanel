@@ -3,6 +3,7 @@ import os
 from abc import ABC
 from pprint import pprint
 
+from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework import serializers
 
@@ -38,7 +39,7 @@ class MPackageSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_master_size(package):
-        return os.path.getsize(package.master.path)
+        return filesizeformat(os.path.getsize(package.master.path))
 
     def to_representation(self, instance):
         representation = super(MPackageSerializer, self).to_representation(instance)
@@ -56,11 +57,11 @@ class SRPackageSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_spawner_size(package):
-        return os.path.getsize(package.spawner.path)
+        return filesizeformat(os.path.getsize(package.spawner.path))
 
     @staticmethod
     def get_room_size(package):
-        return os.path.getsize(package.room.path)
+        return filesizeformat(os.path.getsize(package.room.path))
 
     def to_representation(self, instance):
         representation = super(SRPackageSerializer, self).to_representation(instance)
