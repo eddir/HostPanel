@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from paramiko import AuthenticationException
 
 from HostPanel import settings
-from panel.models import Server
+from panel.models import Server, MPackage, SRPackage
 
 
 class ServerUnit:
@@ -36,6 +36,7 @@ class ServerUnit:
         Загрузка сборки
         Запуск скрипта
         """
+        self.log("Начинается инициализация сервера.")
         self.model.password_single = User.objects.make_random_password()
         self.model.save()
 
@@ -70,9 +71,10 @@ class ServerUnit:
         print("Завершено для " + self.model.name)
 
     def start(self):
-        package = "Master" if self.model.m_package else "SR"
+        package = "SR" if self.model.parent else "Master"
         stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start {0} {1} {2} &".format(
-            package, self.model.id, self.model.user_single))
+            package, self.model.id, self.model.user_single)
+        )
         self.log("Сервер запущен.")
         return stdin, stdout, stderr
 
@@ -84,10 +86,10 @@ class ServerUnit:
     def update(self):
         self.stop()
 
-        if self.model.m_package:
-            self.command("rm -rf /home/{0}/Master /home/{0}/Caretaker/".format(self.model.user_single))
-        elif self.model.sr_package:
+        if self.model.parent:
             self.command("rm -rf /home/{0}/Caretaker /home/{0}/Spawner/ /home/{0}/Room/".format(self.model.user_single))
+        else:
+            self.command("rm -rf /home/{0}/Master /home/{0}/Caretaker/".format(self.model.user_single))
 
         self.upload_package()
         self.start()
@@ -111,24 +113,20 @@ class ServerUnit:
         print("package.tar.gz")
         client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % self.model.user_single)
 
-        if self.model.m_package:
+        if self.model.parent:
+            print("spawner")
+            client.put(self.model.package.srpackage.spawner.path, '/home/%s/spawner_package.zip' % self.model.user_single)
+            print("room")
+            client.put(self.model.package.srpackage.room.path, '/home/%s/room_package.zip' % self.model.user_single)
+            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && "
+            rm = "spawner_package.zip room_package.zip"
+
+        else:
             print("master")
-            client.put(self.model.m_package.master.path, '/home/%s/master_package.zip' % self.model.user_single)
+            client.put(self.model.package.mpackage.master.path, '/home/%s/master_package.zip' % self.model.user_single)
 
             unzip = "unzip master_package.zip -d /home/{0}/ && "
             rm = "master_package.zip"
-
-        elif self.model.sr_package:
-            print("spawner")
-            client.put(self.model.sr_package.spawner.path, '/home/%s/spawner_package.zip' % self.model.user_single)
-            print("room")
-            client.put(self.model.sr_package.room.path, '/home/%s/room_package.zip' % self.model.user_single)
-
-            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && "
-            rm = "spawner_package.zip room_package.zip"
-        else:
-            client.close()
-            raise Exception("Не найдена ни одна сборка для сервера #" + str(self.model.id))
 
         client.close()
         os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
@@ -146,7 +144,7 @@ class ServerUnit:
         self.log("Конфиг обновлён.")
 
     def upload_config(self):
-        path = "~/Master/application.cfg" if self.model.m_package else "~/Pack/Spawner/application.cfg"
+        path = "~/Pack/Spawner/application.cfg" if self.model.parent else "~/Master/application.cfg"
         content = shlex.quote(self.model.config)
         self.command("echo \"%s\" > %s" % (content, path))
 

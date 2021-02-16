@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div v-for="server in servers" class="card shadow my-4">
+    <div v-for="server in servers" v-if="!server.parent" class="card shadow my-4">
         <div class="card-header">
             <div class="container">
                 <div class="row control">
@@ -61,60 +61,64 @@
         </div>
 
 
-        <div class="card-body collapse" v-bind:id="'master_'+server.id">
+        <div class="collapse" v-bind:id="'master_'+server.id">
+            <div class="card">
+                <div class="card-body">
 
-            <div v-for="spawner in servers" v-if="spawner.parent == server.id" class="card my-2">
-                <div class="card-header">
+                    <div v-for="spawner in servers" v-if="spawner.parent == server.id" class="card my-2">
+                        <div class="card-header">
 
-                    <div class="container">
-                        <div class="row control">
-                            <div class="col-md-5">
-                                <h2 class="title-vps">
-                                    <a v-text="spawner.name" v-bind:href="'/server/' + spawner.id"></a>
-                                </h2>
-                            </div>
-                            <div class="col">
-                                <p class="m-0">Rooms - 5</p>
-                                <p class="m-0">Online - 220/1000</p>
-                            </div>
-                            <div class="col border-right d-flex align-items-center justify-content-center">
-                                <span v-if="server.online && server.load" class="icon fa-stack">
-                                    <i class="fas fa-circle text-success indicator"></i>
-                                </span>
-                                <span v-else-if="server.online" class="icon fa-stack">
-                                    <i class="fas fa-circle text-warning indicator"></i>
-                                </span>
-                                <span v-else class="icon fa-stack">
-                                    <i class="fas fa-circle text-danger indicator"></i>
-                                </span>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-center justify-content-center">
-                                <template v-if="server.online">
-                                    <a @click="notImplemented()" href="#" class="btn">
-                                        <span class="icon text-danger"><i class="fas fa-stop"></i></span>
-                                    </a>
-                                </template>
-                                <template v-else>
-                                    <a @click="notImplemented()" href="#" class="btn">
-                                        <span class="icon text-success"><i class="fas fa-play"></i></span>
-                                    </a>
-                                </template>
-                                <a v-bind:href="'/server/' + spawner.id + '/delete/'" class="btn">
-                                    <span class="icon text-danger"><i class="fas fa-trash"></i></span>
-                                </a>
+                            <div class="container">
+                                <div class="row control">
+                                    <div class="col-md-5">
+                                        <h2 class="title-vps">
+                                            <a v-text="spawner.name" v-bind:href="'/server/' + spawner.id"></a>
+                                        </h2>
+                                    </div>
+                                    <div class="col">
+                                        <p class="m-0">Rooms - 5</p>
+                                        <p class="m-0">Online - 220/1000</p>
+                                    </div>
+                                    <div class="col border-right d-flex align-items-center justify-content-center">
+                                    <span v-if="server.online && server.load" class="icon fa-stack">
+                                        <i class="fas fa-circle text-success indicator"></i>
+                                    </span>
+                                        <span v-else-if="server.online" class="icon fa-stack">
+                                        <i class="fas fa-circle text-warning indicator"></i>
+                                    </span>
+                                        <span v-else class="icon fa-stack">
+                                        <i class="fas fa-circle text-danger indicator"></i>
+                                    </span>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                        <template v-if="server.online">
+                                            <a @click="notImplemented()" href="#" class="btn">
+                                                <span class="icon text-danger"><i class="fas fa-stop"></i></span>
+                                            </a>
+                                        </template>
+                                        <template v-else>
+                                            <a @click="notImplemented()" href="#" class="btn">
+                                                <span class="icon text-success"><i class="fas fa-play"></i></span>
+                                            </a>
+                                        </template>
+                                        <a v-bind:href="'/server/' + spawner.id + '/delete/'" class="btn">
+                                            <span class="icon text-danger"><i class="fas fa-trash"></i></span>
+                                        </a>
+                                    </div>
+
+                                </div>
                             </div>
 
                         </div>
                     </div>
 
+                    <div class="text-center">
+                        <a @click="prepareCreateForm(server)" href="#" class="btn btn-primary text-white px-5">
+                            <span class="icon"><i class="fas fa-plus"></i></span><br>
+                            <span>Создать</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="text-center">
-                <a @click="prepareCreateForm(server)" href="#" class="btn btn-primary text-white px-5">
-                    <span class="icon"><i class="fas fa-plus"></i></span><br>
-                    <span>Создать</span>
-                </a>
             </div>
         </div>
     </div>
