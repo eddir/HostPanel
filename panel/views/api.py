@@ -116,17 +116,18 @@ class ServerStatusView(APIView):
             'ram_available': request.data['ram_available'],
             'hdd_usage': request.data['hdd_usage'],
             'hdd_available': request.data['hdd_available'],
-            'online': request.data['online']['AllPlayers']
+            'online': 0 if request.data['online'] is None else request.data['online']['AllPlayers']
         }
         serializer = ServerStatusSerializer(data=stat)
         if serializer.is_valid(raise_exception=True):
             status = serializer.save()
 
-            for ip, spawner in request.data['online']['OnlineInRooms'].items():
-                for room in spawner:
-                    room = SubServerStatus(server_status=status, port=int(room['port']),
-                                           online=int(room['onlineCount']), max_online=int(room['maxOnline']))
-                    room.save()
+            if request.data['online'] is not None:
+                for ip, spawner in request.data['online']['OnlineInRooms'].items():
+                    for room in spawner:
+                        room = SubServerStatus(server_status=status, port=int(room['port']),
+                                               online=int(room['onlineCount']), max_online=int(room['maxOnline']))
+                        room.save()
 
         return Response({"success": "Статус сервера обновлён."})
 

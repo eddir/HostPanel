@@ -115,26 +115,31 @@ class ServerUnit:
 
         if self.model.parent:
             print("spawner")
-            client.put(self.model.package.srpackage.spawner.path, '/home/%s/spawner_package.zip' % self.model.user_single)
+            client.put(self.model.package.srpackage.spawner.path,
+                       '/home/%s/spawner_package.zip' % self.model.user_single)
             print("room")
             client.put(self.model.package.srpackage.room.path, '/home/%s/room_package.zip' % self.model.user_single)
-            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/ && "
+            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/".format(
+                self.model.user_single
+            )
             rm = "spawner_package.zip room_package.zip"
 
         else:
             print("master")
             client.put(self.model.package.mpackage.master.path, '/home/%s/master_package.zip' % self.model.user_single)
 
-            unzip = "unzip master_package.zip -d /home/{0}/ && "
+            unzip = "unzip master_package.zip -d /home/{0}/".format(self.model.user_single)
             rm = "master_package.zip"
 
         client.close()
         os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
 
         # Анбоксиснг
-        print("Распаковка")
-        self.command(("mkdir -p /home/{0}/Caretaker && tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && "
-                      + unzip + "rm Caretaker.tar.gz " + rm).format(self.model.user_single), root=False)
+        print("Распаковка...")
+        cmd = """mkdir -p /home/{0}/Caretaker && tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && {1} && \
+              rm Caretaker.tar.gz {2}""".format(self.model.user_single, unzip, rm)
+        self.command(cmd, root=False)
+        print("Распаковано")
 
     def update_config(self):
         self.log("Обновление конфига...")
@@ -217,6 +222,13 @@ def server_task(server_id, operation):
             server.start()
         elif operation == "stop":
             server.stop()
+
+            if server.model.parent is None:
+                spawners = Server.objects.filter(parent=server.model.id)
+                for spawner in spawners:
+                    spawner_unit = ServerUnit(spawner)
+                    spawner_unit.stop()
+
         elif operation == "update":
             server.update()
         elif operation == "update_config":

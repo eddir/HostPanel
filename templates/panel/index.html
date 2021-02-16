@@ -80,7 +80,7 @@
                                         <p class="m-0">Online - 220/1000</p>
                                     </div>
                                     <div class="col border-right d-flex align-items-center justify-content-center">
-                                    <span v-if="server.online && server.load" class="icon fa-stack">
+                                    <span v-if="server.online && !server.load" class="icon fa-stack">
                                         <i class="fas fa-circle text-success indicator"></i>
                                     </span>
                                         <span v-else-if="server.online" class="icon fa-stack">
