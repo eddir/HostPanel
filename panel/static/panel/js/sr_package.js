@@ -60,7 +60,7 @@ let watchVM = new Vue({
             toasts.toast('show');
         },
         alertFailure: function (message) {
-            this.error = message;
+            this.error = message.data.message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');
