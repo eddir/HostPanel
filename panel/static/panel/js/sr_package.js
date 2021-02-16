@@ -25,7 +25,7 @@ let watchVM = new Vue({
                     watchVM.packages = response.data.packages;
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error)
+                    watchVM.alertFailure(error.data.message)
                 })
         },
         uploadPackage() {

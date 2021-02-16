@@ -24,7 +24,7 @@
                     </div>
                     <div class="col border-right d-flex align-items-center justify-content-center">
 
-                        <span v-if="server.online && server.load" class="icon fa-stack">
+                        <span v-if="server.online && !server.load" class="icon fa-stack">
                             <i class="fas fa-circle text-success indicator"></i>
                         </span>
                         <span v-else-if="server.online" class="icon fa-stack">
@@ -34,7 +34,7 @@
                             <i class="fas fa-circle text-danger indicator"></i>
                         </span>
                     </div>
-                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <div class="col-md-3 d-flex align-items-center justify-content-center">
                         <template v-if="server.online">
                             <a @click="notImplemented()" href="#" class="btn">
                                 <span class="icon text-danger"><i class="fas fa-stop"></i></span>

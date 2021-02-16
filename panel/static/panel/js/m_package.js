@@ -24,7 +24,7 @@ let watchVM = new Vue({
                     watchVM.packages = response.data.packages;
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error)
+                    watchVM.alertFailure(error.data.message)
                 })
         },
         uploadPackage() {
@@ -60,7 +60,7 @@ let watchVM = new Vue({
             toasts.toast('show');
         },
         alertFailure: function (message) {
-            this.error = message.data.message;
+            this.error = message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');

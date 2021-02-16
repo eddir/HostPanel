@@ -73,7 +73,7 @@ let watchVM = new Vue({
                     watchVM.getServer();
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error.data);
+                    watchVM.alertFailure(error.data.message);
                 })
         },
         stopServer: function () {
@@ -83,7 +83,7 @@ let watchVM = new Vue({
                     watchVM.getServer();
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error.data);
+                    watchVM.alertFailure(error.data.message);
                 })
         },
         createServer: function (type) {
@@ -96,7 +96,7 @@ let watchVM = new Vue({
                     watchVM.getServers();
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
+                    watchVM.alertFailure(error.data.message);
                 })
         },
         updateConfig: function () {
@@ -105,7 +105,7 @@ let watchVM = new Vue({
                     watchVM.alertSuccess("Конфиг обновлён");
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(Object.entries(error.data).map(entry => entry[1]).join("\n"));
+                    watchVM.alertFailure(error.data.message);
                 })
         },
         getServer: function () {
@@ -116,7 +116,7 @@ let watchVM = new Vue({
                 })
                 .catch(function (error) {
                     watchVM.loaded = true;
-                    watchVM.alertFailure(error)
+                    watchVM.alertFailure(error.data.message)
                 })
         },
         getServers: function () {
@@ -127,7 +127,7 @@ let watchVM = new Vue({
                     watchVM.sr_packages = response.data.sr_packages;
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error)
+                    watchVM.alertFailure(error.data.message)
                 })
         },
         alertSuccess: function (message) {
@@ -137,7 +137,7 @@ let watchVM = new Vue({
             toasts.toast('show');
         },
         alertFailure: function (message) {
-            this.error = message.data.message;
+            this.error = message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');
