@@ -120,7 +120,6 @@ class ServerStatusView(APIView):
 
             for ip, spawner in request.data['online']['OnlineInRooms'].items():
                 for room in spawner:
-                    pprint(room)
                     room = SubServerStatus(server_status=status, port=int(room['port']),
                                            online=int(room['onlineCount']), max_online=int(room['maxOnline']))
                     room.save()
