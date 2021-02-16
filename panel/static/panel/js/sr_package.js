@@ -7,6 +7,7 @@ let watchVM = new Vue({
     data: {
         message: "",
         error: "",
+        uploadPercentage: -1,
         packages: {},
         form: {
             name: "Сборка ###",
@@ -37,9 +38,13 @@ let watchVM = new Vue({
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    }
+                    },
+                    progress: function (progressEvent) {
+                        this.uploadPercentage = Math.round((progressEvent.loaded / progressEvent.total) * 1000) / 10;
+                    }.bind(this)
                 }
             ).then(function () {
+                watchVM.uploadPercentage = -1;
                 watchVM.alertSuccess("Сборка загружена.");
                 watchVM.getPackages();
             }).catch(function (e) {

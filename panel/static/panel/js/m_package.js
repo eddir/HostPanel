@@ -7,6 +7,7 @@ let watchVM = new Vue({
     data: {
         message: "",
         error: "",
+        uploadPercentage: -1,
         packages: {},
         form: {
             name: "Сборка ###",
@@ -31,14 +32,19 @@ let watchVM = new Vue({
             formData.append('name', this.form.name);
             formData.append('type', this.form.type);
             formData.append('master', this.form.master);
+            console.log("начинается");
             axios.post('/api/m_package/',
                 formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    }
+                    },
+                    progress: function (progressEvent) {
+                        this.uploadPercentage = Math.round((progressEvent.loaded / progressEvent.total) * 1000) / 10;
+                    }.bind(this)
                 }
             ).then(function () {
+                watchVM.uploadPercentage = -1;
                 watchVM.alertSuccess("Сборка загружена.");
                 watchVM.getPackages();
             }).catch(function (e) {

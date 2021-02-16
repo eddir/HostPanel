@@ -96,6 +96,13 @@
                             <label v-else class="custom-file-label" for="room">Выберите файл</label>
                         </div>
                     </div>
+                    <div v-if="uploadPercentage !== -1" class="form-group col-sm-12">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar"
+                                 v-bind:aria-valuenow="uploadPercentage" aria-valuemin="0" aria-valuemax="100"
+                                 v-bind:style="'width: ' + uploadPercentage + '%'"></div>
+                        </div>
+                    </div>
                     <div class="form-group col-sm-6">
                         <button @click.prevent="uploadPackage()" type="button" class="btn btn-success btn-icon-split">
                                 <span class="icon text-white-50">
