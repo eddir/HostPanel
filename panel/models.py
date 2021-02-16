@@ -64,10 +64,10 @@ class ServerStatus(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     server = models.ForeignKey(Server, on_delete=models.CASCADE)
     cpu_usage = models.SmallIntegerField()
-    ram_usage = models.IntegerField()
-    ram_available = models.IntegerField()
-    hdd_usage = models.IntegerField()
-    hdd_available = models.IntegerField()
+    ram_usage = models.BigIntegerField()
+    ram_available = models.BigIntegerField()
+    hdd_usage = models.BigIntegerField()
+    hdd_available = models.BigIntegerField()
     online = models.IntegerField(default=0)
 
     class Meta:
