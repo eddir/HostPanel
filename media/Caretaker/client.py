@@ -7,7 +7,7 @@ import threading
 import psutil
 import requests
 
-url = 'http://5.180.138.187:8000/api/servers/status/'
+url = 'http://5.180.138.187:8000/api/servers/'
 path = os.path.dirname(os.path.realpath(__file__))
 config_path = path + '/config.txt'
 
@@ -21,25 +21,22 @@ def send_status(server_id, package):
     if package == "Master":
         try:
             with open(os.path.expanduser("~/Master/online.txt"), "r") as json_file:
-                online = json.load(json_file)
+                online = {"online": json.load(json_file),"server": server_id}
+
+            requests.post(url + "online/", json=online)
         except IOError:
             online = None
     else:
         online = None
 
-    status = {
+    requests.post(url + "status/", json={
         'server': server_id,
         'cpu_usage': int(psutil.cpu_percent()),
         'ram_usage': psutil.virtual_memory().used,
         'ram_available': psutil.virtual_memory().total,
         'hdd_usage': psutil.disk_usage('/').used,
-        'hdd_available': psutil.disk_usage('/').total,
-        'online': online
-    }
-
-    x = requests.post(url, json=status)
-    print(x.text)
-
+        'hdd_available': psutil.disk_usage('/').total
+    })
     return True
 
 

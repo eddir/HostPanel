@@ -1,33 +1,61 @@
 import datetime
 import os
-from abc import ABC
 from pprint import pprint
 
 from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from panel.models import Server, ServerStatus, MPackage, SRPackage, SubServerStatus
+from panel.models import Server, Status, MPackage, SRPackage, Online
 
 
 class ServerSerializer(serializers.ModelSerializer):
     load = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
     online = serializers.SerializerMethodField()
+    rooms = serializers.SerializerMethodField()
 
     class Meta:
         model = Server
         fields = ('id', 'parent', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single',
-                  'ssh_key', 'config', 'load', 'online', 'package')
+                  'ssh_key', 'config', 'load', 'status', 'package', 'online', 'rooms')
 
     @staticmethod
     def get_load(server):
-        status = ServerStatus.objects.filter(server=server).last()
+        status = Status.objects.filter(server=server).last()
         return status and status.cpu_usage > 80
 
     @staticmethod
+    def get_status(server):
+        status = Status.objects.filter(
+            server=server, created_at__gte=(now() - datetime.timedelta(minutes=10))
+        ).first()
+        if status:
+            return StatusSerializer(status).data
+        else:
+            return False
+
+    @staticmethod
     def get_online(server):
-        return ServerStatus.objects.filter(server=server, created_at__gte=(now() - datetime.timedelta(minutes=10))) \
-            .exists()
+        online = Online.objects.filter(
+            server=server.id,
+            created_at__gte=(now() - datetime.timedelta(minutes=10))
+        ).first()
+        if online:
+            return online.online
+        else:
+            return False
+
+    @staticmethod
+    def get_rooms(server):
+        online = Online.objects.filter(
+            server__in=list(Server.objects.filter(parent=server.id).values_list('id', flat=True)),
+            created_at__gte=(now() - datetime.timedelta(minutes=10))
+        )
+        if online:
+            return OnlineSerializer(online, many=True).data
+        else:
+            return False
 
 
 class MPackageSerializer(serializers.ModelSerializer):
@@ -69,17 +97,16 @@ class SRPackageSerializer(serializers.ModelSerializer):
         return representation
 
 
-class ServerStatusSerializer(serializers.ModelSerializer):
+class StatusSerializer(serializers.ModelSerializer):
     server = serializers.PrimaryKeyRelatedField(queryset=Server.objects.all())
 
     class Meta:
-        model = ServerStatus
-        fields = ('server', 'cpu_usage', 'ram_usage', 'ram_available', 'hdd_usage', 'hdd_available', 'online')
+        model = Status
+        fields = '__all__'
 
 
-class SubServerStatusSerializer(serializers.ModelSerializer):
-    server_status = serializers.PrimaryKeyRelatedField(queryset=ServerStatus.objects.all())
+class OnlineSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = SubServerStatus
-        fields = ('server_status', 'port', 'online', 'max_online')
+        model = Online
+        fields = '__all__'

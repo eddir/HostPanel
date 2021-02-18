@@ -19,15 +19,15 @@
                             class="title-vps text-primary"></h2>
                     </div>
                     <div class="col">
-                        <p class="m-0">Spawn - 10</p>
-                        <p class="m-0">Players - 900</p>
+                        <p class="m-0" v-text="'Spawners - ' + server.spawners"></p>
+                        <p class="m-0" v-text="'Players - ' + server.online"></p>
                     </div>
                     <div class="col border-right d-flex align-items-center justify-content-center">
 
-                        <span v-if="server.online && !server.load" class="icon fa-stack">
+                        <span v-if="server.status && !server.load" class="icon fa-stack">
                             <i class="fas fa-circle text-success indicator"></i>
                         </span>
-                        <span v-else-if="server.online" class="icon fa-stack">
+                        <span v-else-if="server.status" class="icon fa-stack">
                             <i class="fas fa-circle text-warning indicator"></i>
                         </span>
                         <span v-else class="icon fa-stack">
@@ -35,7 +35,7 @@
                         </span>
                     </div>
                     <div class="col-md-3 d-flex align-items-center justify-content-center">
-                        <template v-if="server.online">
+                        <template v-if="server.status">
                             <a @click="notImplemented()" href="#" class="btn">
                                 <span class="icon text-danger"><i class="fas fa-stop"></i></span>
                             </a>
@@ -76,8 +76,10 @@
                                         </h2>
                                     </div>
                                     <div class="col">
-                                        <p class="m-0">Rooms - 5</p>
-                                        <p class="m-0">Online - 220/1000</p>
+                                        <p class="m-0" v-if="server.rooms"
+                                           v-text="'Rooms - ' + server.rooms[spawner.id].length"></p>
+                                        <p class="m-0"
+                                           v-text="'Online - ' + server.online + '/' + server.max_online"></p>
                                     </div>
                                     <div class="col border-right d-flex align-items-center justify-content-center">
                                     <span v-if="server.online && !server.load" class="icon fa-stack">

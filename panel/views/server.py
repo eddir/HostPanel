@@ -8,7 +8,7 @@ from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
 from panel import tasks
 from panel.forms import ServerForm, ServerModelForm
-from panel.models import ServerStatus, Server
+from panel.models import Status, Server
 
 
 class ServerListView(ListView):

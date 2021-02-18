@@ -122,12 +122,40 @@ let watchVM = new Vue({
         getServers: function () {
             axios.get('/api/servers/')
                 .then(function (response) {
-                    watchVM.servers = response.data.servers;
+                    let servers = response.data.servers;
                     watchVM.m_packages = response.data.m_packages;
                     watchVM.sr_packages = response.data.sr_packages;
+
+                    servers.forEach(function(server, server_id) {
+                        let rooms = {};
+                        let rooms_count = 0;
+
+                        if (server['rooms']) {
+                            let online = 0;
+                            let max_online = 0;
+                            server['rooms'].forEach(function (room, room_id) {
+                                if (!rooms[room['server']]) {
+                                    rooms[room['server']] = [];
+                                    rooms_count++;
+                                }
+                                rooms[room['server']].push(room);
+                                online += room['online'];
+                                max_online += room['max_online'];
+                            });
+                            servers[server_id]['rooms'] = rooms;
+                            servers[server_id]['online'] = online;
+                            servers[server_id]['max_online'] = max_online;
+                            servers[server_id]['spawners'] = rooms_count;
+                        }
+                    });
+
+
+                    console.log(servers);
+                    watchVM.servers = servers;
                 })
                 .catch(function (error) {
-                    watchVM.alertFailure(error.data.message)
+                    console.log(error)
+                    watchVM.alertFailure(error)
                 })
         },
         alertSuccess: function (message) {

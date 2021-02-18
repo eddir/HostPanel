@@ -60,7 +60,7 @@ class Server(models.Model):
     package = models.ForeignKey(Package, on_delete=models.PROTECT)
 
 
-class ServerStatus(models.Model):
+class Status(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     server = models.ForeignKey(Server, on_delete=models.CASCADE)
     cpu_usage = models.SmallIntegerField()
@@ -68,14 +68,14 @@ class ServerStatus(models.Model):
     ram_available = models.BigIntegerField()
     hdd_usage = models.BigIntegerField()
     hdd_available = models.BigIntegerField()
-    online = models.IntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "Server status"
 
 
-class SubServerStatus(models.Model):
-    server_status = models.ForeignKey(ServerStatus, on_delete=models.CASCADE)
-    port = models.SmallIntegerField()
+class Online(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    server = models.ForeignKey(Server, on_delete=models.CASCADE)
+    port = models.SmallIntegerField(null=True, default=None)
     online = models.SmallIntegerField()
-    max_online = models.SmallIntegerField()
+    max_online = models.SmallIntegerField(null=True, default=None)
