@@ -122,10 +122,22 @@ let watchVM = new Vue({
                 .then(function (response) {
                     watchVM.loaded = true;
                     watchVM.server = response.data;
+
+                    let data = [];
+                    response.data['history']['status'].forEach(function (status) {
+                        data.push({
+                            'x': status['created_at'],
+                            'y': status['cpu_usage']
+                        });
+                    });
+
+                    console.log(data);
+
+                    draw_charts(data);
                 })
                 .catch(function (error) {
                     watchVM.loaded = true;
-                    watchVM.alertFailure(error.data.message)
+                    watchVM.alertFailure(error)
                 })
         },
         getServers: function () {

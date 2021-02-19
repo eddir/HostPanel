@@ -13,61 +13,68 @@
                 <span v-else class="badge badge-warning">Устанавливается</span>
             </h1>
         </div>
-        <div class="card-body" v-if="server.server">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>IP: <span v-text="server.server.ip"></span></p>
-                    <p>Root: <span v-text="server.server.user_root"></span></p>
-                    <p>Root пароль: <span v-text="server.server.password_root"></span></p>
-                    <p>User: <span v-text="server.server.user_single"></span></p>
-                    <p>User пароль: <span v-text="server.server.password_single"></span></p>
+        <div class="card-body">
+            <template v-if="server.server">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>IP: <span v-text="server.server.ip"></span></p>
+                        <p>Root: <span v-text="server.server.user_root"></span></p>
+                        <p>Root пароль: <span v-text="server.server.password_root"></span></p>
+                        <p>User: <span v-text="server.server.user_single"></span></p>
+                        <p>User пароль: <span v-text="server.server.password_single"></span></p>
 
-                    <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
+                        <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
 
-                    <p>Сборка: <span
-                            v-text="server.server.package.name + ' ' + server.server.package.created_at"></span>
-                    </p>
+                        <p>Сборка: <span
+                                v-text="server.server.package.name + ' ' + server.server.package.created_at"></span>
+                        </p>
 
-                    <template v-if="server.status">
-                        <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
-                        <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span></p>
-                        <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span></p>
-                        <p>Online: <span v-text="server.server.online"></span></p>
-                    </template>
+                        <template v-if="server.status">
+                            <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
+                            <p>RAM: <span v-text="server.status.ram_usage + ' / ' + server.status.ram_available"></span>
+                            </p>
+                            <p>HDD: <span v-text="server.status.hdd_usage + ' / ' + server.status.hdd_available"></span>
+                            </p>
+                            <p>Online: <span v-text="server.server.online"></span></p>
+                        </template>
 
 
+                    </div>
+                    <div class="col-md-6">
+                        <template v-for="room in server.rooms">
+                            <p>Room.x86_64:&nbsp;&nbsp;&nbsp;<span v-text="room.online + '/' + room.max_online"></span>
+                            </p>
+                        </template>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <template v-for="room in server.rooms">
-                        <p>Room.x86_64:&nbsp;&nbsp;&nbsp;<span v-text="room.online + '/' + room.max_online"></span></p>
-                    </template>
+
+                <div class="highlight">
+                    <pre class="pre-scrollable" v-html="server.server.log"></pre>
                 </div>
-            </div>
+                <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
+                <a href="#" @click.prevent="startServer()" class="btn btn-success">Старт</a>
+                <a href="#" @click.prevent="stopServer()" class="btn btn-danger">Стоп</a>
 
-            <div class="highlight">
-                <pre class="pre-scrollable" v-html="server.server.log"></pre>
-            </div>
-            <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
-            <a href="#" @click.prevent="startServer()" class="btn btn-success">Старт</a>
-            <a href="#" @click.prevent="stopServer()" class="btn btn-danger">Стоп</a>
+                <hr>
 
-            <hr>
+                <div class="form-group col-sm-12">
+                    <label for="config">application.cfg</label>
+                    <textarea class="form-control" v-model="server.server.config" id="config" rows="9"
+                              style="min-width: 100%"></textarea>
+                </div>
+                <button type="button" class="btn btn-outline-success" @click.prevent="updateConfig()">Сохранить</button>
+                <br>
+            </template>
+            <template v-else-if="loaded">
 
-            <div class="form-group col-sm-12">
-                <label for="config">application.cfg</label>
-                <textarea class="form-control" v-model="server.server.config" id="config" rows="9"
-                          style="min-width: 100%"></textarea>
-            </div>
-            <button type="button" class="btn btn-outline-success" @click.prevent="updateConfig()">Сохранить
-            </button>
-        </div>
-        <div class="card-body" v-else-if="loaded">
-            <p>Сервер пока не создан. Это могло произойти по следующим причинам:</p>
-            <ol>
-                <li>Сервер прямо сейчас создаётся и в скором времени информация о нём появится в панели.</li>
-                <li>Процесс выполнения задач не запущен.</li>
-                <li>Произошла непревиденная ошибка в процессе его создания.</li>
-            </ol>
+                <p>Сервер пока не создан. Это могло произойти по следующим причинам:</p>
+                <ol>
+                    <li>Сервер прямо сейчас создаётся и в скором времени информация о нём появится в панели.</li>
+                    <li>Процесс выполнения задач не запущен.</li>
+                    <li>Произошла непревиденная ошибка в процессе его создания.</li>
+                </ol>
+            </template>
+            <canvas id="chart1" width="400" height="400"></canvas>
         </div>
     </div>
 
@@ -75,5 +82,7 @@
 
 {% block js %}
     {% load static %}
+    <script src="{% static "panel/js/statistics.js" %}"></script>
     <script src="{% static "panel/js/main.js" %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
 {% endblock %}

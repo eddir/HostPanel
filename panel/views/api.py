@@ -104,7 +104,14 @@ class ServerInstanceView(APIView):
             return Response({
                 "server": server_data,
                 "status": status,
-                "rooms": rooms
+                "rooms": rooms,
+                "history": {
+                    "status": StatusSerializer(
+                        Status.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))),
+                        many=True
+                    ).data,
+                    "online": Online.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))).values(),
+                }
             })
         except IndexError:
             return Response({"server": None, "status": None})
@@ -116,7 +123,6 @@ class ServerInstanceView(APIView):
 
     @staticmethod
     def patch(request, pk):
-        print("ребут?")
         tasks.server_task(pk, "reboot")
         return Response({"Success": "Ребут начат"})
 
