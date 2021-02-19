@@ -55,7 +55,7 @@
                             <span class="icon text-info"><i class="fas fa-info"></i></span>
                         </a>
                         <a @click="reboot(server.id)" href="#" class="btn">
-                            <span class="icon text-warning"><i class="fas fa-redo"></i></span>
+                            <span class="icon text-secondary"><i class="fas fa-retweet"></i></span>
                         </a>
                         <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn">
                             <span class="icon text-danger"><i class="fas fa-trash"></i></span>
@@ -113,7 +113,7 @@
                                             </a>
                                         </template>
                                         <a @click="reboot(server.id)" href="#" class="btn">
-                                            <span class="icon text-warning"><i class="fas fa-redo"></i></span>
+                                            <span class="icon text-secondary"><i class="fas fa-retweet"></i></span>
                                         </a>
                                         <a v-bind:href="'/server/' + spawner.id + '/delete/'" class="btn">
                                             <span class="icon text-danger"><i class="fas fa-trash"></i></span>

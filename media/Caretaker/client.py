@@ -21,7 +21,7 @@ def send_status(server_id, package):
     if package == "Master":
         try:
             with open(os.path.expanduser("~/Master/online.txt"), "r") as json_file:
-                online = {"online": json.load(json_file),"server": server_id}
+                online = {"online": json.load(json_file), "server": server_id}
 
             requests.post(url + "online/", json=online)
         except IOError:

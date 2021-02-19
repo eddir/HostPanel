@@ -187,11 +187,11 @@ class ServerUnit:
             if self.model.ssh_key:
                 key_filename = settings.MEDIA_ROOT + 'hostpanel.pem'
                 password = None
+                client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
+                               key_filename=key_filename)
             else:
-                key_filename = None
-
-            client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
-                           key_filename=key_filename)
+                client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
+                               allow_agent=False, look_for_keys=False)
 
         except AuthenticationException as e:
             raise Exception("Ошибка авторизации: %s" % str(e))
