@@ -85,15 +85,18 @@
                                            v-text="'Online - ' + server.online + '/' + server.max_online"></p>
                                     </div>
                                     <div class="col border-right d-flex align-items-center justify-content-center">
-                                    <span v-if="server.status && !server.load" class="icon fa-stack">
-                                        <i class="fas fa-circle text-success indicator"></i>
-                                    </span>
+                                        <span v-if="!server.installed" class="icon fa-stack">
+                                            <i class="fas fa-circle text-warning indicator blink"></i>
+                                        </span>
+                                        <span v-else-if="server.status && !server.load" class="icon fa-stack">
+                                            <i class="fas fa-circle text-success indicator"></i>
+                                        </span>
                                         <span v-else-if="server.status" class="icon fa-stack">
-                                        <i class="fas fa-circle text-warning indicator"></i>
-                                    </span>
+                                            <i class="fas fa-circle text-warning indicator"></i>
+                                        </span>
                                         <span v-else class="icon fa-stack">
-                                        <i class="fas fa-circle text-danger indicator"></i>
-                                    </span>
+                                            <i class="fas fa-circle text-danger indicator"></i>
+                                        </span>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-center justify-content-center">
                                         <template v-if="server.online">

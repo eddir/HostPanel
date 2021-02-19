@@ -37,6 +37,11 @@ class ServerView(APIView):
         server_saved = None
 
         if serializer.is_valid(raise_exception=True):
+            if request.data['parent'] is None and Server.objects.filter(ip=request.data['ip'], parent=None).exists():
+                raise ValueError("Нельзя запускать 2 мастера на 1 ip")
+            elif Server.objects.filter(ip=request.data['ip']).exclude(parent=None).exists():
+                raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
+            
             server_saved = serializer.save()
             tasks.server_task(server_saved.id, "init")
 
