@@ -14,11 +14,12 @@ class ServerSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     online = serializers.SerializerMethodField()
     rooms = serializers.SerializerMethodField()
+    installed = serializers.SerializerMethodField()
 
     class Meta:
         model = Server
         fields = ('id', 'parent', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single',
-                  'ssh_key', 'config', 'load', 'status', 'package', 'online', 'rooms')
+                  'ssh_key', 'config', 'load', 'status', 'package', 'online', 'rooms', 'installed')
 
     @staticmethod
     def get_load(server):
@@ -56,6 +57,10 @@ class ServerSerializer(serializers.ModelSerializer):
             return OnlineSerializer(online, many=True).data
         else:
             return False
+
+    @staticmethod
+    def get_installed(server):
+        return Status.objects.filter(server=server).exists()
 
 
 class MPackageSerializer(serializers.ModelSerializer):

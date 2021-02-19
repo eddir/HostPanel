@@ -88,6 +88,8 @@ class ServerInstanceView(APIView):
             else:
                 server_data['online'] = 0
 
+            server_data['installed'] = Status.objects.filter(server=server_obj).exists()
+
             server_data['package'] = {
                 'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
                 'created_at': server_data['package__mpackage__created_at'] or server_data[

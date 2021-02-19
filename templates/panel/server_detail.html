@@ -9,7 +9,8 @@
                     <span v-if="server.status.cpu_usage > 80" class="badge badge-warning">Запущен</span>
                     <span v-else class="badge badge-success">Запущен</span>
                 </template>
-                <span v-else class="badge badge-danger">Остановлен</span>
+                <span v-else-if="server.installed" class="badge badge-danger">Остановлен</span>
+                <span v-else class="badge badge-warning">Устанавливается</span>
             </h1>
         </div>
         <div class="card-body" v-if="server.server">

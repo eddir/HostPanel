@@ -24,7 +24,10 @@
                     </div>
                     <div class="col border-right d-flex align-items-center justify-content-center">
 
-                        <span v-if="server.status && !server.load" class="icon fa-stack">
+                        <span v-if="!server.installed" class="icon fa-stack">
+                            <i class="fas fa-circle text-warning indicator blink"></i>
+                        </span>
+                        <span v-else-if="server.status && !server.load" class="icon fa-stack">
                             <i class="fas fa-circle text-success indicator"></i>
                         </span>
                         <span v-else-if="server.status" class="icon fa-stack">
@@ -44,7 +47,7 @@
                             </a>
                         </template>
                         <template v-else>
-                            <a @click="notImplemented()" href="#" class="btn">
+                            <a @click="notImplemented()" v-if="server.installed" href="#" class="btn">
                                 <span class="icon text-success"><i class="fas fa-play"></i></span>
                             </a>
                         </template>
