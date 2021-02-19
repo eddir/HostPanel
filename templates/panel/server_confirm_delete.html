@@ -8,12 +8,17 @@
         </div>
         <div class="card-body">
 
-            <p>Удаляем сервер {{ server.name }}?</p>
+            {% if children %}
+                <p>Невозможно удалить сервер: найдены спавнеры. Вернитесь и удалите сперва спавнеры.</p>
+                <a class="btn btn-primary" href="{% url 'panel:index' %}">Назад</a>
+            {% else %}
+                <p>Удаляем сервер {{ server.name }}?</p>
 
-            <form action="{% url 'panel:server.delete.confirm' server.id %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" value="Да, конечно."/>
-            </form>
+                <form action="{% url 'panel:server.delete.confirm' server.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Да, конечно."/>
+                </form>
+            {% endif %}
         </div>
     </div>
 

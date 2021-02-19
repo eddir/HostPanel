@@ -245,12 +245,6 @@ def server_task(server_id, operation):
 
         elif operation == "delete":
             server.stop()
-
-            if server.model.parent is None:
-                spawners = Server.objects.filter(parent=server.model.id)
-                for spawner in spawners:
-                    ServerUnit(spawner).delete()
-
             server.delete()
 
     except Exception as e:

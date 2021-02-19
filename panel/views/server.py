@@ -1,6 +1,7 @@
 import datetime
+from pprint import pprint
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
@@ -29,6 +30,12 @@ class ServerUpdate(UpdateView):
 class ServerDelete(DeleteView):
     model = Server
     success_url = reverse_lazy('panel:index')
+
+    def get_context_data(self, **kwargs):
+        context = super(ServerDelete, self).get_context_data(**kwargs)
+        context['children'] = context['server'].parent is None and Server.objects.filter(parent=context['server'].id).exists()
+
+        return context
 
 
 def delete_server(request, pk):
