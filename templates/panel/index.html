@@ -54,6 +54,9 @@
                         <a v-bind:href="'/server/' + server.id" class="btn">
                             <span class="icon text-info"><i class="fas fa-info"></i></span>
                         </a>
+                        <a @click="reboot(server.id)" href="#" class="btn">
+                            <span class="icon text-warning"><i class="fas fa-redo"></i></span>
+                        </a>
                         <a v-bind:href="'/server/' + server.id + '/delete/'" class="btn">
                             <span class="icon text-danger"><i class="fas fa-trash"></i></span>
                         </a>
@@ -109,6 +112,9 @@
                                                 <span class="icon text-success"><i class="fas fa-play"></i></span>
                                             </a>
                                         </template>
+                                        <a @click="reboot(server.id)" href="#" class="btn">
+                                            <span class="icon text-warning"><i class="fas fa-redo"></i></span>
+                                        </a>
                                         <a v-bind:href="'/server/' + spawner.id + '/delete/'" class="btn">
                                             <span class="icon text-danger"><i class="fas fa-trash"></i></span>
                                         </a>

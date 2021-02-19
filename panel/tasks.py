@@ -83,6 +83,10 @@ class ServerUnit:
         self.log("Сервер остановлен.")
         return stdin, stdout, stderr
 
+    def reboot(self):
+        self.log("Reboot")
+        self.command("reboot", root=True)
+
     def delete(self):
         print("Удаление сервера %d" % self.model.id)
         self.command("pkill -u {0}; deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
@@ -233,6 +237,8 @@ def server_task(server_id, operation):
             server.start()
         elif operation == "update":
             server.update()
+        elif operation == "reboot":
+            server.reboot()
         elif operation == "update_config":
             server.update_config()
         elif operation == "stop":

@@ -99,6 +99,15 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data.message);
                 })
         },
+        reboot: function (server_id) {
+            axios.patch('/api/server/' + server_id + '/')
+                .then(function (response) {
+                    watchVM.alertSuccess("Ребут запущен");
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error.data.message);
+                })
+        },
         updateConfig: function () {
             axios.post('/api/server/' + this.server.server.id + "/config", {"config": this.server.server.config})
                 .then(function (response) {

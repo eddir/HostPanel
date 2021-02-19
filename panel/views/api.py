@@ -41,7 +41,7 @@ class ServerView(APIView):
                 raise ValueError("Нельзя запускать 2 мастера на 1 ip")
             elif Server.objects.filter(ip=request.data['ip']).exclude(parent=None).exists():
                 raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
-            
+
             server_saved = serializer.save()
             tasks.server_task(server_saved.id, "init")
 
@@ -50,7 +50,7 @@ class ServerView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ServerInstanceView(APIView):
-    # Запуск, остановка и получение данных о сервере
+    # Запуск, остановка, старт ребут и получение данных о сервере
 
     @staticmethod
     def get(request, pk):
@@ -113,6 +113,12 @@ class ServerInstanceView(APIView):
     def put(request, pk):
         tasks.server_task(pk, "start")
         return Response({"success": "Сервер запущен."})
+
+    @staticmethod
+    def patch(request, pk):
+        print("ребут?")
+        tasks.server_task(pk, "reboot")
+        return Response({"Success": "Ребут начат"})
 
     @staticmethod
     def delete(request, pk):
