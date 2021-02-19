@@ -1,7 +1,7 @@
 import datetime
 
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
@@ -29,6 +29,11 @@ class ServerUpdate(UpdateView):
 class ServerDelete(DeleteView):
     model = Server
     success_url = reverse_lazy('panel:index')
+
+
+def delete_server(request, pk):
+    tasks.server_task(pk, "delete")
+    return redirect('panel:index')
 
 
 def create_server(request):

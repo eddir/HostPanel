@@ -10,7 +10,7 @@
 
             <p>Удаляем сервер {{ server.name }}?</p>
 
-            <form action="" method="POST">
+            <form action="{% url 'panel:server.delete.confirm' server.id %}" method="POST">
                 {% csrf_token %}
                 <input type="submit" value="Да, конечно."/>
             </form>

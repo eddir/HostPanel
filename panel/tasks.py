@@ -83,6 +83,11 @@ class ServerUnit:
         self.log("Сервер остановлен.")
         return stdin, stdout, stderr
 
+    def delete(self):
+        print("Удаление сервера %d" % self.model.id)
+        self.command("pkill -u {0}; deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
+        self.model.delete()
+
     def update(self):
         self.stop()
 
@@ -226,19 +231,27 @@ def server_task(server_id, operation):
             server.init()
         elif operation == "start":
             server.start()
+        elif operation == "update":
+            server.update()
+        elif operation == "update_config":
+            server.update_config()
         elif operation == "stop":
             server.stop()
 
             if server.model.parent is None:
                 spawners = Server.objects.filter(parent=server.model.id)
                 for spawner in spawners:
-                    spawner_unit = ServerUnit(spawner)
-                    spawner_unit.stop()
+                    ServerUnit(spawner).stop()
 
-        elif operation == "update":
-            server.update()
-        elif operation == "update_config":
-            server.update_config()
+        elif operation == "delete":
+            server.stop()
+
+            if server.model.parent is None:
+                spawners = Server.objects.filter(parent=server.model.id)
+                for spawner in spawners:
+                    ServerUnit(spawner).delete()
+
+            server.delete()
 
     except Exception as e:
         print(str(e))
