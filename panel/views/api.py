@@ -1,13 +1,9 @@
 import datetime
-import json
-from pprint import pprint
 
-from django.http import JsonResponse
 from django.template.defaultfilters import filesizeformat
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
 from rest_framework.renderers import JSONRenderer
@@ -83,8 +79,8 @@ class ServerInstanceView(APIView):
                 'package__srpackage__created_at', 'config')[0]
 
             online = Online.objects.filter(
-                        server=pk,
-                        created_at__gte=(now() - datetime.timedelta(minutes=10))
+                server=pk,
+                created_at__gte=(now() - datetime.timedelta(minutes=10))
             ).first()
 
             if online:
@@ -94,7 +90,8 @@ class ServerInstanceView(APIView):
 
             server_data['package'] = {
                 'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
-                'created_at': server_data['package__mpackage__created_at'] or server_data['package__srpackage__created_at'],
+                'created_at': server_data['package__mpackage__created_at'] or server_data[
+                    'package__srpackage__created_at'],
             }
 
             return Response({
@@ -209,6 +206,23 @@ class MPackageInstanceView(APIView):
                     "message": "Undefined value"
                 }
             })
+
+    # Установка сборки во все сервера
+
+    @staticmethod
+    def post(request, pk):
+        tasks.package_task(pk, "install_package", "master")
+        return Response({"success": "Сборка установлена"})
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SRPackageInstanceView(APIView):
+    # Установка сборки во все сервера
+
+    @staticmethod
+    def post(request, pk):
+        tasks.package_task(pk, "install_package", "spawner")
+        return Response({"success": "Сборка установлена"})
 
 
 class SRPackageView(APIView):

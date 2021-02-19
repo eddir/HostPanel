@@ -18,7 +18,7 @@
                         <h2 @click="$('#master_'+server.id).collapse('toggle')" v-text="server.name"
                             class="title-vps text-primary"></h2>
                     </div>
-                    <div class="col">
+                    <div class="col" v-if="server.rooms">
                         <p class="m-0" v-text="'Spawners - ' + server.spawners"></p>
                         <p class="m-0" v-text="'Players - ' + server.online"></p>
                     </div>
@@ -75,17 +75,17 @@
                                             <a v-text="spawner.name" v-bind:href="'/server/' + spawner.id"></a>
                                         </h2>
                                     </div>
-                                    <div class="col">
-                                        <p class="m-0" v-if="server.rooms"
+                                    <div class="col" v-if="server.rooms">
+                                        <p class="m-0"
                                            v-text="'Rooms - ' + server.rooms[spawner.id].length"></p>
                                         <p class="m-0"
                                            v-text="'Online - ' + server.online + '/' + server.max_online"></p>
                                     </div>
                                     <div class="col border-right d-flex align-items-center justify-content-center">
-                                    <span v-if="server.online && !server.load" class="icon fa-stack">
+                                    <span v-if="server.status && !server.load" class="icon fa-stack">
                                         <i class="fas fa-circle text-success indicator"></i>
                                     </span>
-                                        <span v-else-if="server.online" class="icon fa-stack">
+                                        <span v-else-if="server.status" class="icon fa-stack">
                                         <i class="fas fa-circle text-warning indicator"></i>
                                     </span>
                                         <span v-else class="icon fa-stack">

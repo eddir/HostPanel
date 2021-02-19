@@ -114,6 +114,9 @@ class ServerUnit:
         client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % self.model.user_single)
 
         if self.model.parent:
+            # Зачистка
+            self.command("rm -rf /home/{0}/Pack/ && rm -rf /home/{0}/Caretaker/".format(self.model.user_single))
+
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
                        '/home/%s/spawner_package.zip' % self.model.user_single)
@@ -125,6 +128,9 @@ class ServerUnit:
             rm = "spawner_package.zip room_package.zip"
 
         else:
+            # Зачистка
+            self.command("rm -rf /home/{0}/Master/ && rm -rf /home/{0}/Caretaker/".format(self.model.user_single))
+
             print("master")
             client.put(self.model.package.mpackage.master.path, '/home/%s/master_package.zip' % self.model.user_single)
 
@@ -239,6 +245,30 @@ def server_task(server_id, operation):
         server.log(str(e))
 
     del server
+
+
+@background
+def package_task(package_id, operation, package_type):
+    try:
+        if operation == "install_package":
+
+            if package_type == "master":
+                servers = Server.objects.filter(parent=None)
+            else:
+                servers = Server.objects.exclude(parent=None)
+
+            for server in servers:
+                server.package_id = package_id
+                server.save()
+                server_unit = ServerUnit(server)
+                server_unit.log("Обновление сборки (package_id=%d)..." % package_id)
+                server_unit.stop()
+                server_unit.upload_package()
+                server_unit.start()
+                server_unit.log("Сборка обновлена.")
+
+    except Exception as e:
+        print(str(e))
 
 
 def get_online():

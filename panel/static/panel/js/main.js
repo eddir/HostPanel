@@ -149,8 +149,6 @@ let watchVM = new Vue({
                         }
                     });
 
-
-                    console.log(servers);
                     watchVM.servers = servers;
                 })
                 .catch(function (error) {

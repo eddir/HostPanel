@@ -51,6 +51,13 @@ let watchVM = new Vue({
                 watchVM.alertFailure("Ошибка. " + e.response);
             });
         },
+        installPackage(pid) {
+            axios.post('/api/sr_package/' + pid + '/install/').then(function () {
+                watchVM.alertSuccess("Сборка установлена.");
+            }).catch(function (e) {
+                watchVM.alertFailure("Ошибка. " + e.response);
+            });
+        },
         handleFileUpload: function (event) {
             if (event.target.id === "spawner") {
                 this.form.spawner = event.target.files[0];
