@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="3b6259df-8608-4678-be56-1060fa48e3b6" name="hostpanel.linksss.ru" url="http://linksss.ru:8000">
-        <fileTransfer rootFolder="/home/msf/hostpanel" accessType="SFTP" host="linksss.ru" port="22" sshConfigId="9588cdc4-15a0-4058-84cb-b27fa9875a4e" sshConfig="hostpanel.linksss.ru">
+        <fileTransfer rootFolder="/home/hostpanel/hostpanel" accessType="SFTP" host="45.80.71.86" port="22" sshConfigId="cd66b2a6-1f62-44a6-b420-7dd6549192f1" sshConfig="hostpanel@45.80.71.86:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

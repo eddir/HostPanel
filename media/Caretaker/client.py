@@ -7,7 +7,7 @@ import threading
 import psutil
 import requests
 
-url = 'http://45.80.71.86/:8000/api/servers/'
+url = 'http://45.80.71.86:8000/api/servers/'
 path = os.path.dirname(os.path.realpath(__file__))
 config_path = path + '/config.txt'
 
@@ -29,7 +29,7 @@ def send_status(server_id, package):
     else:
         online = None
 
-    requests.post(url + "status/", json={
+    r = requests.post(url + "status/", json={
         'server': server_id,
         'cpu_usage': int(psutil.cpu_percent()),
         'ram_usage': psutil.virtual_memory().used,
@@ -37,6 +37,8 @@ def send_status(server_id, package):
         'hdd_usage': psutil.disk_usage('/').used,
         'hdd_available': psutil.disk_usage('/').total
     })
+
+    print(r.text)
     return True
 
 
@@ -53,10 +55,10 @@ def start(package, server_id=None, user=None):
 
     if package == "Master":
         os.system('chmod +x ~/Master/Master.x86_64')
-        subprocess.Popen("~/Master/Master.x86_64", shell=True, preexec_fn=os.setsid)
+        subprocess.Popen("~/Master/Master.x86_64 >> ~/Master.log", shell=True, preexec_fn=os.setsid)
     elif package == "SR":
         os.system('chmod +x ~/Pack/Spawner/Spawner.x86_64')
-        subprocess.Popen("~/Pack/Spawner/Spawner.x86_64", shell=True, preexec_fn=os.setsid)
+        subprocess.Popen("~/Pack/Spawner/Spawner.x86_64 >> ~/Spawner.log", shell=True, preexec_fn=os.setsid)
         os.system('chmod +x ~/Pack/Room/Room.x86_64')
     else:
         raise ValueError("Invalid package " + str(package))
