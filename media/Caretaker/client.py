@@ -7,7 +7,7 @@ import threading
 import psutil
 import requests
 
-url = 'http://5.180.138.187:8000/api/servers/'
+url = 'http://45.80.71.86/:8000/api/servers/'
 path = os.path.dirname(os.path.realpath(__file__))
 config_path = path + '/config.txt'
 
