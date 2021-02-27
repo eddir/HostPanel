@@ -15,10 +15,10 @@ let watchVM = new Vue({
         form: {
             parent: null,
             name: "Server " + Math.floor(Math.random() * 1000),
-            ip: "213.139.209.176",
+            ip: "5.180.138.187",
             user_root: "root",
-            password_root: "Ihor&Eddir1234",
-            user_single: "msf",
+            password_root: "CHBE644Q7x82",
+            user_single: "msf2",
             ssh_key: false,
             package: null,
             type: "master",

@@ -104,7 +104,7 @@ class SRPackageSerializer(serializers.ModelSerializer):
 
 class StatusSerializer(serializers.ModelSerializer):
     server = serializers.PrimaryKeyRelatedField(queryset=Server.objects.all())
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, allow_null=True, default=None)
 
     class Meta:
         model = Status
