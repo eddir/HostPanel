@@ -195,8 +195,8 @@ class ServerUnit:
 
         except AuthenticationException as e:
             raise Exception("Ошибка авторизации: %s" % str(e))
-        except socket.error:
-            raise Exception("Сервер не отвечает")
+        except socket.error as e:
+            raise Exception("Сервер не отвечает: %s" % str(e))
 
         if root:
             self.root_client = client
@@ -250,7 +250,10 @@ def server_task(server_id, operation):
                     ServerUnit(spawner).stop()
 
         elif operation == "delete":
-            server.stop()
+            try:
+                server.stop()
+            except:
+                pass
             server.delete()
 
     except Exception as e:
