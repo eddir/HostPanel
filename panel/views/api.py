@@ -42,6 +42,9 @@ class ServerView(APIView):
             elif Server.objects.filter(ip=request.data['ip']).exclude(parent=None).exists():
                 raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
 
+            if Server.objects.filter(ip=request.data['ip'], user_single=request.data['user_single']).exists():
+                raise ValueError("Не стоит запускать 2 сервера на одном IP и юзвере")
+
             server_saved = serializer.save()
             tasks.server_task(server_saved.id, "init")
 
