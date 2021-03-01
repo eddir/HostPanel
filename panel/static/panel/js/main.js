@@ -123,6 +123,21 @@ let watchVM = new Vue({
                     watchVM.loaded = true;
                     watchVM.server = response.data;
 
+                    if (watchVM.server.status) {
+                        let conditions = {
+                            'IN': {'code': 'IN', 'message': 'Устаналивается', 'badge': 'badge badge-warning'},
+                            'ST': {'code': 'ST', 'message': 'Запускается', 'badge': 'badge badge-warning'},
+                            'RN': {'code': 'RN', 'message': 'Запущен', 'badge': 'badge badge-success'},
+                            'PS': {'code': 'PS', 'message': 'Останавливается', 'badge': 'badge badge-warning'},
+                            'SP': {'code': 'SP', 'message': 'Остановлен', 'badge': 'badge badge-danger'},
+                            'TR': {'code': 'TR', 'message': 'Удаляется', 'badge': 'badge badge-warning'},
+                            'DL': {'code': 'DL', 'message': 'Удалён', 'badge': 'badge badge-danger'},
+                            'RB': {'code': 'RB', 'message': 'Ребут', 'badge': 'badge badge-warning'},
+                        }
+
+                        watchVM.server.status['condition'] = conditions[watchVM.server.status['condition']];
+                    }
+
                     let data = [];
                     response.data['history']['status'].forEach(function (status) {
                         data.push({
@@ -130,8 +145,6 @@ let watchVM = new Vue({
                             'y': status['cpu_usage']
                         });
                     });
-
-                    console.log(data);
 
                     draw_charts(data);
                 })
@@ -147,7 +160,7 @@ let watchVM = new Vue({
                     watchVM.m_packages = response.data.m_packages;
                     watchVM.sr_packages = response.data.sr_packages;
 
-                    servers.forEach(function(server, server_id) {
+                    servers.forEach(function (server, server_id) {
                         let rooms = {};
                         let rooms_count = 0;
 

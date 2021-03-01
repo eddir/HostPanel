@@ -61,13 +61,29 @@ class Server(models.Model):
 
 
 class Status(models.Model):
+
+    class Condition(models.TextChoices):
+        INSTALLED = 'IN', 'Устаналивается'
+        STARTS = 'ST', 'Запускается'
+        RUNNING = 'RN', 'Запущен'
+        PAUSED = 'PS', 'Останавливается'
+        STOPPED = 'SP', 'Остановлен'
+        TERMINATED = 'TR', 'Удаляется'
+        DELETED = 'DL', 'Удалён'
+        REBOOT = 'RB', 'Ребут'
+
     created_at = models.DateTimeField(auto_now_add=True)
     server = models.ForeignKey(Server, on_delete=models.CASCADE)
-    cpu_usage = models.SmallIntegerField()
-    ram_usage = models.BigIntegerField()
-    ram_available = models.BigIntegerField()
-    hdd_usage = models.BigIntegerField()
-    hdd_available = models.BigIntegerField()
+    condition = models.CharField(
+        max_length=2,
+        choices=Condition.choices,
+        default=Condition.RUNNING,
+    )
+    cpu_usage = models.SmallIntegerField(null=True)
+    ram_usage = models.BigIntegerField(null=True)
+    ram_available = models.BigIntegerField(null=True)
+    hdd_usage = models.BigIntegerField(null=True)
+    hdd_available = models.BigIntegerField(null=True)
 
     class Meta:
         verbose_name_plural = "Server status"

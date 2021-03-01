@@ -47,6 +47,7 @@ class ServerView(APIView):
 
             server_saved = serializer.save()
             tasks.server_task(server_saved.id, "init")
+            Status(server=server_saved, condition=Status.Condition.INSTALLED).save()
 
         return Response({"success": "Сервер '{}' добавлен.".format(server_saved.name)})
 
@@ -63,19 +64,14 @@ class ServerInstanceView(APIView):
             rooms = None
 
             try:
-                status_objs = Status.objects.filter(
-                    server=server_obj,
-                    created_at__gte=(now() - datetime.timedelta(minutes=10))
-                )
-                status = status_objs.values().last()
+                status = Status.objects.filter(server=server_obj).values().last()
             except IndexError:
                 status = None
 
-            if status:
+            if status and status["condition"] is Status.Condition.RUNNING:
                 if server_obj.parent is None:
                     rooms = Online.objects.filter(
-                        server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True)),
-                        created_at__gte=(now() - datetime.timedelta(minutes=10))
+                        server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
                     ).values()
 
                 for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
@@ -96,8 +92,6 @@ class ServerInstanceView(APIView):
             else:
                 server_data['online'] = 0
 
-            server_data['installed'] = Status.objects.filter(server=server_obj).exists()
-
             server_data['package'] = {
                 'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
                 'created_at': server_data['package__mpackage__created_at'] or server_data[
@@ -110,9 +104,11 @@ class ServerInstanceView(APIView):
                 "rooms": rooms,
                 "history": {
                     "status": StatusSerializer(
-                        Status.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))),
-                        many=True
-                    ).data,
+                        Status.objects.filter(
+                            server=pk,
+                            condition=Status.Condition.RUNNING,
+                            created_at__gte=(now() - datetime.timedelta(days=1))
+                        ), many=True).data,
                     "online": Online.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))).values(),
                 }
             })
@@ -122,6 +118,7 @@ class ServerInstanceView(APIView):
     @staticmethod
     def put(request, pk):
         tasks.server_task(pk, "start")
+        Status(server=Server.objects.get(id=pk), condition=Status.Condition.STARTS).save()
         return Response({"success": "Сервер запущен."})
 
     @staticmethod
@@ -132,6 +129,7 @@ class ServerInstanceView(APIView):
     @staticmethod
     def delete(request, pk):
         tasks.server_task(pk, "stop")
+        Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
         return Response({"success": "Сервер остановлен."})
 
 

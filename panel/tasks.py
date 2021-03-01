@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from paramiko import AuthenticationException
 
 from HostPanel import settings
-from panel.models import Server, MPackage, SRPackage
+from panel.models import Server, MPackage, SRPackage, Status
 
 
 class ServerUnit:
@@ -37,6 +37,7 @@ class ServerUnit:
         Запуск скрипта
         """
         self.log("Начинается инициализация сервера.")
+
         self.model.password_single = User.objects.make_random_password()
         self.model.save()
 
@@ -80,15 +81,22 @@ class ServerUnit:
 
     def stop(self):
         stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py stop")
+
         self.log("Сервер остановлен.")
+        Status(server=self.model, condition=Status.Condition.STOPPED).save()
+
         return stdin, stdout, stderr
 
     def reboot(self):
         self.log("Reboot")
+        Status(server=self.model, condition=Status.Condition.REBOOT).save()
+
         self.command("reboot", root=True)
 
     def delete(self):
         print("Удаление сервера %d" % self.model.id)
+        Status(server=self.model, condition=Status.Condition.DELETED).save()
+
         self.command("pkill -u {0}; deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
         self.model.delete()
 
