@@ -72,7 +72,7 @@ class ServerUnit:
 
     def start(self):
         package = "SR" if self.model.parent else "Master"
-        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start {0} {1} {2} &".format(
+        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start {0} {1} {2} >> Caretaker.log &".format(
             package, self.model.id, self.model.user_single)
         )
         self.log("Сервер запущен.")
@@ -175,6 +175,7 @@ class ServerUnit:
     def connect(self, root=False):
         client = paramiko.SSHClient()
         try:
+            client.load_system_host_keys()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
             if root:
@@ -257,7 +258,7 @@ def server_task(server_id, operation):
             server.delete()
 
     except Exception as e:
-        print(str(e))
+        print("Для сервера {0}: {1}".format(server_id, str(e)))
         server.log(str(e))
 
     del server

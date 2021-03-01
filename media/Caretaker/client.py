@@ -1,8 +1,10 @@
 import json
 import os
+import sched
 import subprocess
 import sys
 import threading
+import time
 
 import psutil
 import requests
@@ -13,8 +15,8 @@ config_path = path + '/config.txt'
 
 
 def watch(server):
-    threading.Timer(60.0 * 5, watch, [server["id"]]).start()
     send_status(server["id"], server["package"])
+    threading.Timer(60*5, watch, [server]).start()
 
 
 def send_status(server_id, package):
