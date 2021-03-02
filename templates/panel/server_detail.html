@@ -51,7 +51,7 @@
                 <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
                 <a v-if="server.status && server.status.condition.code=='SP'" href="#" @click.prevent="startServer()"
                    class="btn btn-success">Старт</a>
-                <a v-if="server.status && server.status.condition.code=='IN'" href="#" @click.prevent="stopServer()"
+                <a v-if="server.status && server.status.condition.code=='RN'" href="#" @click.prevent="stopServer()"
                    class="btn btn-danger">Стоп</a>
 
                 <hr>
