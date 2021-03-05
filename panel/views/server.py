@@ -33,7 +33,8 @@ class ServerDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(ServerDelete, self).get_context_data(**kwargs)
-        context['children'] = context['server'].parent is None and Server.objects.filter(parent=context['server'].id).exists()
+        context['children'] = context['server'].parent is None and Server.objects.filter(
+            parent=context['server'].id).exists()
 
         return context
 
@@ -61,3 +62,8 @@ def create_server(request):
         form = ServerForm()
 
     return render(request, 'panel/index.html', {'form': form})
+
+
+class DedicatedView(ListView):
+    model = Server
+    template_name = "panel/dedicated.html"

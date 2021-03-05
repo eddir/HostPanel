@@ -24,7 +24,7 @@ class ServerSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_load(server):
         status = Status.objects.filter(server=server).last()
-        return status and status.cpu_usage > 80
+        return status is not None
 
     @staticmethod
     def get_status(server):

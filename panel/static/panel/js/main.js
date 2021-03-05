@@ -125,10 +125,10 @@ let watchVM = new Vue({
 
                     if (watchVM.server.status) {
                         let conditions = {
-                            'IN': {'code': 'IN', 'message': 'Устаналивается', 'badge': 'badge badge-warning'},
-                            'ST': {'code': 'ST', 'message': 'Запускается', 'badge': 'badge badge-warning'},
+                            'IN': {'code': 'IN', 'message': 'Устаналивается', 'badge': 'badge badge-primary'},
+                            'ST': {'code': 'ST', 'message': 'Запускается', 'badge': 'badge badge-info'},
                             'RN': {'code': 'RN', 'message': 'Запущен', 'badge': 'badge badge-success'},
-                            'PS': {'code': 'PS', 'message': 'Останавливается', 'badge': 'badge badge-warning'},
+                            'PS': {'code': 'PS', 'message': 'Останавливается', 'badge': 'badge badge-info'},
                             'SP': {'code': 'SP', 'message': 'Остановлен', 'badge': 'badge badge-danger'},
                             'TR': {'code': 'TR', 'message': 'Удаляется', 'badge': 'badge badge-warning'},
                             'DL': {'code': 'DL', 'message': 'Удалён', 'badge': 'badge badge-danger'},
