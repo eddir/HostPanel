@@ -23,7 +23,7 @@ class Client:
     def __init__(self, model):
         self.client = None
         self.root_client = None
-        self.model = model
+        self.dedic = model
 
     def __del__(self):
         self.disconnect(root=True)
@@ -36,17 +36,17 @@ class Client:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
             if root:
-                username = self.model.user_root
-                password = self.model.password_root
+                username = self.dedic.user_root
+                password = self.dedic.password_root
             else:
-                username = self.model.user_single
-                password = self.model.password_single
+                username = self.dedic.user_single
+                password = self.dedic.password_single
 
-            if self.model.ssh_key:
+            if self.dedic.ssh_key:
                 key_filename = settings.MEDIA_ROOT + 'hostpanel.pem'
-                client.connect(hostname=self.model.ip, username=username, port=22, timeout=3, key_filename=key_filename)
+                client.connect(hostname=self.dedic.ip, username=username, port=22, timeout=3, key_filename=key_filename)
             else:
-                client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
+                client.connect(hostname=self.dedic.ip, username=username, password=password, port=22, timeout=3,
                                allow_agent=False, look_for_keys=False)
 
         except AuthenticationException as e:
@@ -216,18 +216,19 @@ class ServerUnit(Client):
 
         # Погрузка архивов M и SR
         print("Загрузка файлов")
-        transport = paramiko.Transport((self.dedic.model.ip, 22))
+        transport = paramiko.Transport((self.model.dedic.ip, 22))
         transport.connect(username=self.model.dedic.user_single, password=self.model.dedic.password_single)
         client = paramiko.SFTPClient.from_transport(transport)
 
         print("package.tar.gz")
-        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz',
-                   '/home/%s/HostPanel/Caretaker.tar.gz' % self.model.dedic.user_single)
-
-        # Зачистка
-        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))
+        self.command("mkdir -p /home/{0}/HostPanel/Caretaker".format(self.model.dedic.user_single))
+        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/HostPanel/Caretaker.tar.gz'
+                   % self.model.dedic.user_single)
 
         if self.model.parent:
+            # Зачистка
+            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/".format(
+                                                                                    self.model.dedic.user_single))
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
                        '/home/%s/HostPanel/spawner_package.zip' % self.model.dedic.user_single)
@@ -236,10 +237,13 @@ class ServerUnit(Client):
                        self.model.dedic.user_single)
             unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
                     "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/".format(
-                self.model.dedic.user_single)
+                                                                                        self.model.dedic.user_single)
             rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
 
         else:
+            # Зачистка
+            self.command("rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Caretaker/".format(
+                                                                                        self.model.dedic.user_single))
             print("master")
             client.put(self.model.package.mpackage.master.path, '/home/%s/HostPanel/master_package.zip'
                        % self.model.dedic.user_single)
@@ -253,8 +257,8 @@ class ServerUnit(Client):
         # Анбоксиснг
         print("Распаковка...")
         cmd = """mkdir -p /home/{0}/HostPanel/Caretaker && \
-            tar -xzvf ~/HostPanel/Caretaker.tar.gz --directory /home/{0}/HostPanel/Caretaker && {1} && \
-            rm ~/HostPanel/Caretaker.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
+            tar -xzvf ~/HostPanel/Caretaker.tar.gz --directory /home/{0}/HostPanel/Caretaker && \
+            {1} && rm ~/HostPanel/Caretaker.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
         self.command(cmd, root=False)
         print("Распаковано")
 
@@ -326,7 +330,8 @@ def server_task(server_id, operation):
                     ServerUnit(spawner).stop()
 
         elif operation == "delete":
-            server.stop()
+            with suppress(Exception):
+                server.stop()
             server.delete()
 
     except Exception as e:

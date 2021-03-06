@@ -47,11 +47,13 @@ class ServerView(APIView):
         servers = ServerSerializer(Server.objects.all(), many=True)
         m_packages = MPackageSerializer(MPackage.objects.all(), many=True)
         sr_packages = SRPackageSerializer(SRPackage.objects.all(), many=True)
+        dedics = DedicSerializer(Dedic.objects.all(), many=True)
 
         return Response({
             "servers": servers.data,
             "m_packages": m_packages.data,
             "sr_packages": sr_packages.data,
+            "dedics": dedics.data
         })
 
     @staticmethod
@@ -60,12 +62,14 @@ class ServerView(APIView):
         server_saved = None
 
         if serializer.is_valid(raise_exception=True):
-            if request.data['parent'] is None and Server.objects.filter(ip=request.data['ip'], parent=None).exists():
+            dedic = Dedic.objects.get(id=request.data['dedic'])
+            # TODO: проверочка в соотвествии с изменениями в дедиках
+            if request.data['parent'] is None and Server.objects.filter(dedic__ip=dedic.ip, parent=None).exists():
                 raise ValueError("Нельзя запускать 2 мастера на 1 ip")
-            elif Server.objects.filter(ip=request.data['ip']).exclude(parent=None).exists():
+            elif Server.objects.filter(dedic__ip=dedic.ip).exclude(parent=None).exists():
                 raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
 
-            if Server.objects.filter(ip=request.data['ip'], user_single=request.data['user_single']).exists():
+            if Server.objects.filter(dedic__ip=dedic.ip, dedic__user_single=dedic.user_single).exists():
                 raise ValueError("Не стоит запускать 2 сервера на одном IP и юзвере")
 
             server_saved = serializer.save()
@@ -101,9 +105,9 @@ class ServerInstanceView(APIView):
                     status[key] = filesizeformat(status[key])
 
             server_data = server.values(
-                'id', 'ip', 'log', 'name', 'password_root', 'password_single', 'ssh_key', 'user_root', 'user_single',
-                'package__mpackage__name', 'package__srpackage__name', 'package__mpackage__created_at',
-                'package__srpackage__created_at', 'config')[0]
+                'id', 'dedic__ip', 'log', 'name', 'dedic__password_root', 'dedic__password_single', 'dedic__ssh_key',
+                'dedic__user_root', 'dedic__user_single', 'package__mpackage__name', 'package__srpackage__name',
+                'package__mpackage__created_at', 'package__srpackage__created_at', 'config')[0]
 
             online = Online.objects.filter(
                 server=pk,

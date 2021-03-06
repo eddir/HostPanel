@@ -13,7 +13,7 @@
             <div class="container">
                 <div class="row control">
                     <div class="col-md-11">
-                        <h2 v-text="server.name" class="title-vps text-primary"></h2>
+                        <h2 v-text="server.name + ' (' + server.user_single + ')'" class="title-vps text-primary"></h2>
                         <span class="p-2" v-text="server.ip"></span>
                     </div>
                     <div class="col d-flex align-items-center justify-content-center">

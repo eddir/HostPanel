@@ -11,16 +11,18 @@ let watchVM = new Vue({
         server: {},
         m_packages: {},
         sr_packages: {},
+        dedics: {},
         loaded: false,
         form: {
             parent: null,
-            name: "Server " + Math.floor(Math.random() * 1000),
+            name: "Unit " + Math.floor(Math.random() * 1000),
             ip: "5.180.138.187",
             user_root: "root",
             password_root: "CHBE644Q7x82",
             user_single: "msf2",
             ssh_key: false,
             package: null,
+            dedic: null,
             type: "master",
             config: "",
         }
@@ -181,6 +183,7 @@ let watchVM = new Vue({
                     let servers = response.data.servers;
                     watchVM.m_packages = response.data.m_packages;
                     watchVM.sr_packages = response.data.sr_packages;
+                    watchVM.dedics = response.data.dedics;
 
                     servers.forEach(function (server, server_id) {
                         let rooms = {};

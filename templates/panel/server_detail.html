@@ -16,11 +16,11 @@
             <template v-if="server.server">
                 <div class="row">
                     <div class="col-md-6">
-                        <p>IP: <span v-text="server.server.ip"></span></p>
-                        <p>Root: <span v-text="server.server.user_root"></span></p>
-                        <p>Root пароль: <span v-text="server.server.password_root"></span></p>
-                        <p>User: <span v-text="server.server.user_single"></span></p>
-                        <p>User пароль: <span v-text="server.server.password_single"></span></p>
+                        <p>IP: <span v-text="server.server.dedic__ip"></span></p>
+                        <p>Root: <span v-text="server.server.dedic__user_root"></span></p>
+                        <p>Root пароль: <span v-text="server.server.dedic__password_root"></span></p>
+                        <p>User: <span v-text="server.server.dedic__user_single"></span></p>
+                        <p>User пароль: <span v-text="server.server.dedic__password_single"></span></p>
 
                         <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
 

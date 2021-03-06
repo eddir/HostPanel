@@ -24,8 +24,8 @@ class ServerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Server
-        fields = ('id', 'parent', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single',
-                  'ssh_key', 'config', 'load', 'status', 'package', 'online', 'rooms', 'installed')
+        fields = ('id', 'parent', 'name', 'dedic', 'config', 'load', 'status', 'package', 'online', 'rooms',
+                  'installed')
 
     @staticmethod
     def get_load(server):
