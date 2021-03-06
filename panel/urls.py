@@ -23,6 +23,7 @@ urlpatterns += [
     path('server/<int:pk>/delete/confirm/', delete_server, name='server.delete.confirm'),
     path('dedic/<int:pk>/delete/', DedicDelete.as_view(), name='dedic.delete'),
     path('dedic/<int:pk>/delete/confirm/', delete_dedic, name='dedic.delete.confirm'),
+    path('dedic/<int:pk>/edit/', DedicEdit.as_view(), name='dedic.edit'),
     path('m_package/<int:pk>/delete/', MPackageDelete.as_view(), name='m_package.delete'),
     path('m_package/<int:pk>/edit/', MPackageEdit.as_view(), name='m_package.edit'),
     path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='sr_package.delete'),

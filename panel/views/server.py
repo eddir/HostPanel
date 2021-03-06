@@ -101,3 +101,16 @@ def create_dedic(request):
 class DedicatedView(ListView):
     model = Dedic
     template_name = "panel/dedicated.html"
+
+
+class DedicEdit(UpdateView):
+    model = Dedic
+    fields = ['name']
+    template_name_suffix = '_update_form'
+    success_url = reverse_lazy('panel:dedicated')
+
+    def form_valid(self, form):
+        redirect_url = super(DedicEdit, self).form_valid(form)
+        package = Dedic.objects.get(pk=self.kwargs['pk'])
+        package.save()
+        return redirect_url

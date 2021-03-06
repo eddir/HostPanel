@@ -8,18 +8,58 @@
         </div>
     </div>
 
-    <div v-for="server in servers" class="card shadow my-4">
+    <div class="card shadow my-4">
         <div class="card-header">
-            <div class="container">
-                <div class="row control">
-                    <div class="col-md-11">
-                        <h2 v-text="server.name + ' (' + server.user_single + ')'" class="title-vps text-primary"></h2>
-                        <span class="p-2" v-text="server.ip"></span>
-                    </div>
-                    <div class="col d-flex align-items-center justify-content-center">
-                        <a v-bind:href="'/dedic/' + server.id + '/delete/'" class="btn">
-                            <span class="icon text-danger"><i class="fas fa-trash"></i></span>
-                        </a>
+             <h1 class="p-0 font-weight-bold text-primary">Дедики</h1>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered dataTable" role="grid">
+                            <thead>
+                            <tr role="row">
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >Название
+                                </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >Root
+                                </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >Пользователь
+                                </th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="server in servers">
+                                <td><b><a href="#" v-text="server.name"></a></b></td>
+                                <td><p v-text="server.user_root"></p></td>
+                                <td><p v-text="server.user_single"></p></td>
+                                <td style="width:1%">
+                                    <a v-bind:href="'/dedic/' + server.id + '/edit/'" class="btn btn-warning">
+                                            <span class="icon text-black-50">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                    </a>
+                                </td>
+                                <td style="width:1%">
+                                    <a v-bind:href="'/dedic/' + server.id + '/delete/'" class="btn btn-danger">
+                                            <span class="icon text-black-50">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
