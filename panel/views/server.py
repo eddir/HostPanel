@@ -8,8 +8,8 @@ from django.utils.timezone import now
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
 from panel import tasks
-from panel.forms import ServerForm, ServerModelForm
-from panel.models import Status, Server
+from panel.forms import ServerForm, ServerModelForm, DedicModelForm, DedicForm
+from panel.models import Status, Server, Dedic
 
 
 class ServerListView(ListView):
@@ -44,6 +44,20 @@ def delete_server(request, pk):
     return redirect('panel:index')
 
 
+class DedicDelete(DeleteView):
+    model = Dedic
+    success_url = reverse_lazy('panel:index')
+
+    def get_context_data(self, **kwargs):
+        context = super(DedicDelete, self).get_context_data(**kwargs)
+        return context
+
+
+def delete_dedic(request, pk):
+    tasks.dedic_task(pk, "delete")
+    return redirect('panel:dedicated')
+
+
 def create_server(request):
     if request.method == 'POST':
         form = ServerModelForm(request.POST)
@@ -64,6 +78,26 @@ def create_server(request):
     return render(request, 'panel/index.html', {'form': form})
 
 
+def create_dedic(request):
+    if request.method == 'POST':
+        form = DedicModelForm(request.POST)
+
+        if form.is_valid():
+            dedic = Dedic(name=form.cleaned_data['name'],
+                          ip=form.cleaned_data['ip'],
+                          user_root=form.cleaned_data['user_root'],
+                          user_single=form.cleaned_data['user_single'],
+                          password_root=form.cleaned_data['password_root'])
+            dedic.save()
+            # tasks.server_task(dedic.id, "init")
+
+            return HttpResponseRedirect('/')
+    else:
+        form = DedicForm()
+
+    return render(request, 'panel/index.html', {'form': form})
+
+
 class DedicatedView(ListView):
-    model = Server
+    model = Dedic
     template_name = "panel/dedicated.html"

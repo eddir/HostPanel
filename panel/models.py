@@ -45,16 +45,21 @@ def auto_delete_file_on_delete_package(sender, instance, **kwargs):
             os.remove(archive.path)
 
 
-class Server(models.Model):
-    parent = models.ForeignKey('Server', on_delete=models.CASCADE, null=True, blank=True)
-
-    name = models.CharField('Server name', max_length=32)
+class Dedic(models.Model):
+    name = models.CharField('Dedic name', max_length=32, null=True)
     ip = models.GenericIPAddressField('Ip address')
     user_root = models.CharField('Name of root user', max_length=32, null=True)
     user_single = models.CharField('Name of working user', max_length=32, null=True)
     password_root = models.CharField(max_length=32)
     password_single = models.CharField(max_length=32, blank=True)
     ssh_key = models.BooleanField('Connect via ssh key')
+    log = models.TextField(null=True, blank=True, default=None)
+
+
+class Server(models.Model):
+    parent = models.ForeignKey('Server', on_delete=models.CASCADE, null=True, blank=True)
+    dedic = models.ForeignKey('Dedic', on_delete=models.RESTRICT)
+    name = models.CharField('Server name', max_length=32)
     log = models.TextField(null=True, blank=True, default=None)
     config = models.TextField(null=True, blank=True, default=None)
     package = models.ForeignKey(Package, on_delete=models.PROTECT)

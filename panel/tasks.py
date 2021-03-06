@@ -2,6 +2,7 @@ import os
 import shlex
 import socket
 import tarfile
+from contextlib import suppress
 from datetime import datetime
 
 import paramiko
@@ -10,175 +11,23 @@ from django.contrib.auth.models import User
 from paramiko import AuthenticationException
 
 from HostPanel import settings
-from panel.models import Server, MPackage, SRPackage, Status
+from panel.models import Server, Status, Dedic
 
 
-class ServerUnit:
+class AuthFailedException(Exception):
+    pass
 
-    def __init__(self, server):
-        self.model = server
 
-        if not self.model.log:
-            self.model.log = ""
+class Client:
 
+    def __init__(self, model):
         self.client = None
         self.root_client = None
+        self.model = model
 
     def __del__(self):
         self.disconnect(root=True)
         self.disconnect(root=False)
-
-    def init(self):
-        """
-        Подключение к user_root@ip
-        Генерация password_single
-        Создание user_single
-        Загрузка сборки
-        Запуск скрипта
-        """
-        self.log("Начинается инициализация сервера.")
-
-        self.model.password_single = User.objects.make_random_password()
-        self.model.save()
-
-        print("Подключение...")
-        self.connect(root=True)
-
-        # Команды для установки необходимых компонентов и создания пользователя
-        print("Настройка VPS")
-        self.command(  # Создание пользователя
-            'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && '
-            # Разрешение на вход в ssh по паролю
-            'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" '
-            '/etc/ssh/sshd_config && '
-            "sudo service sshd restart && "
-            # Установка пароля
-            'echo "{0}:{1}" | sudo chpasswd && '
-            # Установка зависимостей
-            "sudo apt install -y python3-psutil unzip".format(self.model.user_single, self.model.password_single),
-            root=True)
-
-        self.disconnect(root=True)
-
-        self.upload_package()
-        self.upload_config()
-
-        print("Запуск клиента...")
-        self.start()
-
-        print("Клиент вероятно запущен....")
-        self.log("Инициализация сервера прошла успешно.")
-
-        print("Завершено для " + self.model.name)
-
-    def start(self):
-        package = "SR" if self.model.parent else "Master"
-        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py start {0} {1} {2} >> Caretaker.log &".format(
-            package, self.model.id, self.model.user_single)
-        )
-        self.log("Сервер запущен.")
-        return stdin, stdout, stderr
-
-    def stop(self):
-        stdin, stdout, stderr = self.command("python3 ~/Caretaker/client.py stop")
-
-        self.log("Сервер остановлен.")
-        Status(server=self.model, condition=Status.Condition.STOPPED).save()
-
-        return stdin, stdout, stderr
-
-    def reboot(self):
-        self.log("Reboot")
-        Status(server=self.model, condition=Status.Condition.REBOOT).save()
-
-        self.command("reboot", root=True)
-
-    def delete(self):
-        print("Удаление сервера %d" % self.model.id)
-        Status(server=self.model, condition=Status.Condition.DELETED).save()
-
-        self.command("pkill -u {0}; deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
-        self.model.delete()
-
-    def update(self):
-        self.stop()
-
-        if self.model.parent:
-            self.command("rm -rf /home/{0}/Caretaker /home/{0}/Spawner/ /home/{0}/Room/".format(self.model.user_single))
-        else:
-            self.command("rm -rf /home/{0}/Master /home/{0}/Caretaker/".format(self.model.user_single))
-
-        self.upload_package()
-        self.start()
-        self.log("Сервер обновлён успешно.")
-
-    def upload_package(self):
-        # Упаковка файлов
-        tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
-        os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
-
-        for name in os.listdir("."):
-            tar.add(name)
-        tar.close()
-
-        # Погрузка архивов M и SR
-        print("Загрузка файлов")
-        transport = paramiko.Transport((self.model.ip, 22))
-        transport.connect(username=self.model.user_single, password=self.model.password_single)
-        client = paramiko.SFTPClient.from_transport(transport)
-
-        print("package.tar.gz")
-        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/Caretaker.tar.gz' % self.model.user_single)
-
-        if self.model.parent:
-            # Зачистка
-            self.command("rm -rf /home/{0}/Pack/ && rm -rf /home/{0}/Caretaker/".format(self.model.user_single))
-
-            print("spawner")
-            client.put(self.model.package.srpackage.spawner.path,
-                       '/home/%s/spawner_package.zip' % self.model.user_single)
-            print("room")
-            client.put(self.model.package.srpackage.room.path, '/home/%s/room_package.zip' % self.model.user_single)
-            unzip = "unzip spawner_package.zip -d /home/{0}/Pack/ && unzip room_package.zip -d /home/{0}/Pack/".format(
-                self.model.user_single
-            )
-            rm = "spawner_package.zip room_package.zip"
-
-        else:
-            # Зачистка
-            self.command("rm -rf /home/{0}/Master/ && rm -rf /home/{0}/Caretaker/".format(self.model.user_single))
-
-            print("master")
-            client.put(self.model.package.mpackage.master.path, '/home/%s/master_package.zip' % self.model.user_single)
-
-            unzip = "unzip master_package.zip -d /home/{0}/".format(self.model.user_single)
-            rm = "master_package.zip"
-
-        client.close()
-        os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
-
-        # Анбоксиснг
-        print("Распаковка...")
-        cmd = """mkdir -p /home/{0}/Caretaker && tar -xzvf Caretaker.tar.gz --directory /home/{0}/Caretaker && {1} && \
-              rm Caretaker.tar.gz {2}""".format(self.model.user_single, unzip, rm)
-        self.command(cmd, root=False)
-        print("Распаковано")
-
-    def update_config(self):
-        self.log("Обновление конфига...")
-        self.stop()
-        self.upload_config()
-        self.start()
-        self.log("Конфиг обновлён.")
-
-    def upload_config(self):
-        path = "~/Pack/Spawner/application.cfg" if self.model.parent else "~/Master/application.cfg"
-        content = shlex.quote(self.model.config)
-        self.command("echo \"%s\" > %s" % (content, path))
-
-    def log(self, message):
-        self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
-        self.model.save()
 
     def connect(self, root=False):
         client = paramiko.SSHClient()
@@ -195,15 +44,13 @@ class ServerUnit:
 
             if self.model.ssh_key:
                 key_filename = settings.MEDIA_ROOT + 'hostpanel.pem'
-                password = None
-                client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
-                               key_filename=key_filename)
+                client.connect(hostname=self.model.ip, username=username, port=22, timeout=3, key_filename=key_filename)
             else:
                 client.connect(hostname=self.model.ip, username=username, password=password, port=22, timeout=3,
                                allow_agent=False, look_for_keys=False)
 
         except AuthenticationException as e:
-            raise Exception("Ошибка авторизации: %s" % str(e))
+            raise AuthFailedException("Ошибка авторизации: %s" % str(e))
         except socket.error as e:
             raise Exception("Сервер не отвечает: %s" % str(e))
 
@@ -235,8 +82,228 @@ class ServerUnit:
         return stdin, stdout, stderr
 
 
+class DedicUnit(Client):
+
+    def __init__(self, model):
+        super().__init__(model)
+        self.model = model
+        if not self.model.log:
+            self.model.log = ""
+
+    def init(self):
+        try:
+            self.connect()
+        except AuthFailedException:
+            try:
+                self.log("Начинается инициализация пользователя.")
+
+                self.model.password_single = User.objects.make_random_password()
+                self.model.save()
+
+                print("Подключение...")
+                self.connect(root=True)
+
+                # Команды для установки необходимых компонентов и создания пользователя
+                print("Настройка VPS")
+                self.command(  # Создание пользователя
+                    'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && '
+                    # Разрешение на вход в ssh по паролю
+                    'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" '
+                    '/etc/ssh/sshd_config && '
+                    'sudo service sshd restart && '
+                    # Установка пароля
+                    'echo "{0}:{1}" | sudo chpasswd && '
+                    # Установка зависимостей
+                    'sudo apt install -y python3-psutil unzip && '
+                    'ufw allow 5000; ufw allow 1500:1600/udp'.format(self.model.user_single,
+                                                                     self.model.password_single), root=True)
+
+                self.disconnect(root=True)
+                print("Готово")
+            except AuthenticationException as e:
+                self.log("Ошибка авторизации через root пользователя: " + str(e))
+            except Exception as e:
+                self.log(str(e))
+        except Exception as e:
+            self.log(str(e))
+
+    def log(self, message):
+        print(message)
+        self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
+        self.model.save()
+
+    def delete(self):
+        print("Удаление dedic %d" % self.model.id)
+
+        with suppress(Exception):
+            self.command("deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
+
+        self.model.delete()
+
+
+class ServerUnit(Client):
+
+    def __init__(self, server):
+        super().__init__(server.dedic)
+        self.model = server
+
+        if not self.model.log:
+            self.model.log = ""
+
+    def init(self):
+        """
+        Загрузка сборки
+        Запуск скрипта
+        """
+        self.log("Начинается инициализация сервера.")
+
+        self.upload_package()
+        self.upload_config()
+
+        print("Запуск клиента...")
+        self.start()
+
+        print("Клиент вероятно запущен....")
+        self.log("Инициализация сервера прошла успешно.")
+
+        print("Завершено для " + self.model.name)
+
+    def start(self):
+        package = "SR" if self.model.parent else "Master"
+        stdin, stdout, stderr = self.command(
+            "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> Caretaker.log &".format(
+                package, self.model.id, self.model.dedic.user_single))
+        self.log("Сервер запущен.")
+        return stdin, stdout, stderr
+
+    def stop(self):
+        stdin, stdout, stderr = self.command("python3 ~/HostPanel/Caretaker/client.py stop")
+
+        self.log("Сервер остановлен.")
+        Status(server=self.model, condition=Status.Condition.STOPPED).save()
+
+        return stdin, stdout, stderr
+
+    def reboot(self):
+        self.log("Reboot")
+        Status(server=self.model, condition=Status.Condition.REBOOT).save()
+
+        self.command("reboot", root=True)
+
+    def delete(self):
+        print("Удаление сервера %d" % self.model.id)
+        Status(server=self.model, condition=Status.Condition.DELETED).save()
+
+        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single), root=True)
+        self.model.delete()
+
+    def update(self):
+        self.stop()
+        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))
+
+        self.upload_package()
+        self.start()
+        self.log("Сервер обновлён успешно.")
+
+    def upload_package(self):
+        # Упаковка файлов
+        tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
+        os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
+
+        for name in os.listdir("."):
+            tar.add(name)
+        tar.close()
+
+        # Погрузка архивов M и SR
+        print("Загрузка файлов")
+        transport = paramiko.Transport((self.dedic.model.ip, 22))
+        transport.connect(username=self.model.dedic.user_single, password=self.model.dedic.password_single)
+        client = paramiko.SFTPClient.from_transport(transport)
+
+        print("package.tar.gz")
+        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz',
+                   '/home/%s/HostPanel/Caretaker.tar.gz' % self.model.dedic.user_single)
+
+        # Зачистка
+        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))
+
+        if self.model.parent:
+            print("spawner")
+            client.put(self.model.package.srpackage.spawner.path,
+                       '/home/%s/HostPanel/spawner_package.zip' % self.model.dedic.user_single)
+            print("room")
+            client.put(self.model.package.srpackage.room.path, '/home/%s/HostPanel/room_package.zip' %
+                       self.model.dedic.user_single)
+            unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
+                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/".format(
+                self.model.dedic.user_single)
+            rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
+
+        else:
+            print("master")
+            client.put(self.model.package.mpackage.master.path, '/home/%s/HostPanel/master_package.zip'
+                       % self.model.dedic.user_single)
+
+            unzip = "unzip ~/HostPanel/master_package.zip -d /home/{0}/HostPanel/".format(self.model.dedic.user_single)
+            rm = "~/HostPanel/master_package.zip"
+
+        client.close()
+        os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
+
+        # Анбоксиснг
+        print("Распаковка...")
+        cmd = """mkdir -p /home/{0}/HostPanel/Caretaker && \
+            tar -xzvf ~/HostPanel/Caretaker.tar.gz --directory /home/{0}/HostPanel/Caretaker && {1} && \
+            rm ~/HostPanel/Caretaker.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
+        self.command(cmd, root=False)
+        print("Распаковано")
+
+    def update_config(self):
+        self.log("Обновление конфига...")
+        self.stop()
+        self.upload_config()
+        self.start()
+        self.log("Конфиг обновлён.")
+
+    def upload_config(self):
+        path = "~/HostPanel/Pack/Spawner/application.cfg" if self.model.parent else "~/HostPanel/Master/application.cfg"
+        content = shlex.quote(self.model.config)
+        self.command("echo \"%s\" > %s" % (content, path))
+
+    def log(self, message):
+        self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
+        self.model.save()
+
+
+@background
+def dedic_task(dedic_id, operation):
+    """
+    Создаёт пользователя в указанной вдс
+
+    :param dedic_id:
+    :param operation:
+    :return:
+    """
+    dedic = DedicUnit(Dedic.objects.get(id=dedic_id))
+
+    try:
+        if operation == "init":
+            dedic.init()
+        if operation == "delete":
+            dedic.delete()
+    except Exception as e:
+        dedic.log(str(e))
+
+
 @background
 def server_task(server_id, operation):
+    """
+    Управляет сервером
+
+    :param server_id:
+    :param operation:
+    :return:
+    """
     server = ServerUnit(Server.objects.get(id=server_id))
 
     try:
@@ -259,10 +326,7 @@ def server_task(server_id, operation):
                     ServerUnit(spawner).stop()
 
         elif operation == "delete":
-            try:
-                server.stop()
-            except:
-                pass
+            server.stop()
             server.delete()
 
     except Exception as e:

@@ -32,6 +32,8 @@ let watchVM = new Vue({
             this.$nextTick(this.getServers);
         } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
+        } else if (path[1] === "dedicated") {
+            this.$nextTick(this.getDedics);
         }
     },
     methods: {
@@ -99,6 +101,16 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data.message);
                 })
         },
+        createDedic: function (type) {
+            axios.post('/api/dedics/', this.form)
+                .then(function (response) {
+                    watchVM.alertSuccess("Сервер добавлен");
+                    watchVM.getDedics();
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error.data.message);
+                })
+        },
         reboot: function (server_id) {
             axios.patch('/api/server/' + server_id + '/')
                 .then(function (response) {
@@ -151,6 +163,16 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.loaded = true;
                     watchVM.alertFailure(error)
+                })
+        },
+        getDedics: function () {
+            axios.get('/api/dedics')
+                .then(function (response) {
+                    watchVM.servers = response.data.dedics;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    watchVM.alertFailure(error);
                 })
         },
         getServers: function () {

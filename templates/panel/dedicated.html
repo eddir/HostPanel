@@ -1,0 +1,106 @@
+{% extends "layouts.html" %}
+
+{% block content %}
+
+    <div class="card shadow my-4">
+        <div class="card-body">
+            <a class="btn btn-primary" href="{% url 'panel:index' %}">Главная</a>
+        </div>
+    </div>
+
+    <div v-for="server in servers" class="card shadow my-4">
+        <div class="card-header">
+            <div class="container">
+                <div class="row control">
+                    <div class="col-md-11">
+                        <h2 v-text="server.name" class="title-vps text-primary"></h2>
+                        <span class="p-2" v-text="server.ip"></span>
+                    </div>
+                    <div class="col d-flex align-items-center justify-content-center">
+                        <a v-bind:href="'/dedic/' + server.id + '/delete/'" class="btn">
+                            <span class="icon text-danger"><i class="fas fa-trash"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow my-4" id="create_dedic">
+        <div class="card-header py-3">
+            <h2 class="p-0 font-weight-bold text-primary">Dedic</h2>
+        </div>
+        <div class="card-body">
+
+            <form action="{% url 'panel:dedic.add' %}" method="post">
+                {% csrf_token %}
+
+                <table>
+                    {{ form }}
+                </table>
+
+                <div class="row">
+
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Название
+                            <input v-model="form['name']" type="text" value="Dedic ###"
+                                   class="form-control form-control-sm" required="false">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            IP адрес
+                            <input v-model="form['ip']" type="text" name="ip" class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рут пользователь
+                            <input v-model="form['user_root']" type="text" name="user_root"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рут пароль
+                            <input v-model="form['password_root']" type="text" placeholder="" name="password_root"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label>
+                            Рабочий пользователь
+                            <input v-model="form['user_single']" type="text" name="user_single"
+                                   class="form-control form-control-sm">
+                        </label>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="form-check">
+                            <input id="ssh_key" class="form-check-input" type="checkbox" value=""
+                                   v-model="form['ssh_key']" true-value="true" false-value="false">
+                            <label for="ssh_key">SSH ключ</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <button @click.prevent="createDedic('master')" type="button"
+                                class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                  <i class="fas fa-check"></i>
+                                </span>
+                            <span class="text">Добавить вдс</span>
+                        </button>
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static "panel/js/main.js" %}"></script>
+{% endblock %}

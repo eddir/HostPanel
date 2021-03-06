@@ -11,14 +11,18 @@ urlpatterns = [
     path('', ServerListView.as_view(), name='index'),
     path('server/<int:pk>/', ServerDetailView.as_view(), name="server.view"),
     path('server/add/', create_server, name="server.add"),
+    path('dedic/add/', create_dedic, name="dedic.add"),
     path('m_packages/', MPackageListView.as_view(), name='m_packages'),
     path('sr_packages/', SRPackageListView.as_view(), name='sr_packages'),
+    path('dedicated/', DedicatedView.as_view(), name='dedicated'),
 ]
 
 urlpatterns += [
     path('server/<int:pk>/update/', ServerUpdate.as_view(), name='server.update'),
     path('server/<int:pk>/delete/', ServerDelete.as_view(), name='server.delete'),
     path('server/<int:pk>/delete/confirm/', delete_server, name='server.delete.confirm'),
+    path('dedic/<int:pk>/delete/', DedicDelete.as_view(), name='dedic.delete'),
+    path('dedic/<int:pk>/delete/confirm/', delete_dedic, name='dedic.delete.confirm'),
     path('m_package/<int:pk>/delete/', MPackageDelete.as_view(), name='m_package.delete'),
     path('m_package/<int:pk>/edit/', MPackageEdit.as_view(), name='m_package.edit'),
     path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='sr_package.delete'),
@@ -27,6 +31,7 @@ urlpatterns += [
 
 urlpatterns += [
     path('api/servers/', ServerView.as_view()),
+    path('api/dedics/', DedicView.as_view()),
     path('api/servers/status/', StatusView.as_view()),
     path('api/servers/online/', OnlineView.as_view()),
     path('api/server/<int:pk>/', ServerInstanceView.as_view()),

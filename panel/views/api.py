@@ -11,9 +11,32 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from panel import tasks
-from panel.models import Status, Server, MPackage, SRPackage, Online
+from panel.models import Status, Server, MPackage, SRPackage, Online, Dedic
 from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer, \
-    OnlineSerializer
+    OnlineSerializer, DedicSerializer
+
+
+class DedicView(APIView):
+    # Инициализация и получение списка всех вдс
+
+    @staticmethod
+    def get(request):
+        dedics = DedicSerializer(Dedic.objects.all(), many=True)
+
+        return Response({
+            'dedics': dedics.data
+        })
+
+    @staticmethod
+    def post(request):
+        serializer = DedicSerializer(data=request.data)
+        dedic_saved = None
+
+        if serializer.is_valid(raise_exception=True):
+            dedic_saved = serializer.save()
+            tasks.dedic_task(dedic_saved.id, "init")
+
+        return Response({"success": "Вдс '{}' добавлен.".format(dedic_saved.name)})
 
 
 class ServerView(APIView):

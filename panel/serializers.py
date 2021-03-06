@@ -6,7 +6,13 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from panel.models import Server, Status, MPackage, SRPackage, Online
+from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic
+
+
+class DedicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dedic
+        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key')
 
 
 class ServerSerializer(serializers.ModelSerializer):

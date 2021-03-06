@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import Server, Status, MPackage, SRPackage, Online
+from .models import Server, Status, MPackage, SRPackage, Online, Dedic
 
+admin.site.register(Dedic)
 admin.site.register(Server)
 
 
