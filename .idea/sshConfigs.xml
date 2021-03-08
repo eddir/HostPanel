@@ -5,7 +5,7 @@
       <sshConfig authType="PASSWORD" host="linksss.ru" id="9588cdc4-15a0-4058-84cb-b27fa9875a4e" port="22" customName="hostpanel.linksss.ru" nameFormat="CUSTOM" username="msf">
         <option name="customName" value="hostpanel.linksss.ru" />
       </sshConfig>
-      <sshConfig authType="PASSWORD" host="45.80.71.86" id="cd66b2a6-1f62-44a6-b420-7dd6549192f1" port="22" nameFormat="DESCRIPTIVE" username="hostpanel" />
+      <sshConfig authType="PASSWORD" host="rostkov.pro" id="cd66b2a6-1f62-44a6-b420-7dd6549192f1" port="22" nameFormat="DESCRIPTIVE" username="eddir" />
     </configs>
   </component>
 </project>

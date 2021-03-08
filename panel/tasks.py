@@ -1,6 +1,7 @@
 import os
 import shlex
 import socket
+import sys
 import tarfile
 from contextlib import suppress
 from datetime import datetime
@@ -171,9 +172,11 @@ class ServerUnit(Client):
     def start(self):
         package = "SR" if self.model.parent else "Master"
         stdin, stdout, stderr = self.command(
-            "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> Caretaker.log &".format(
-                package, self.model.id, self.model.dedic.user_single))
+            "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> ~/HostPanel/Caretaker.log &".format(
+                package, self.model.id, "http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT)))
+        # TODO: другой способ получить адрес для прода
         self.log("Сервер запущен.")
+        print("http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT))
         return stdin, stdout, stderr
 
     def stop(self):
@@ -228,7 +231,7 @@ class ServerUnit(Client):
         if self.model.parent:
             # Зачистка
             self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/".format(
-                                                                                    self.model.dedic.user_single))
+                self.model.dedic.user_single))
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
                        '/home/%s/HostPanel/spawner_package.zip' % self.model.dedic.user_single)
@@ -237,13 +240,13 @@ class ServerUnit(Client):
                        self.model.dedic.user_single)
             unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
                     "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/".format(
-                                                                                        self.model.dedic.user_single)
+                self.model.dedic.user_single)
             rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
 
         else:
             # Зачистка
             self.command("rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Caretaker/".format(
-                                                                                        self.model.dedic.user_single))
+                self.model.dedic.user_single))
             print("master")
             client.put(self.model.package.mpackage.master.path, '/home/%s/HostPanel/master_package.zip'
                        % self.model.dedic.user_single)
