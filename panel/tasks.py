@@ -176,7 +176,6 @@ class ServerUnit(Client):
                 package, self.model.id, "http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT)))
         # TODO: другой способ получить адрес для прода
         self.log("Сервер запущен.")
-        print("http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT))
         return stdin, stdout, stderr
 
     def stop(self):
@@ -275,7 +274,7 @@ class ServerUnit(Client):
     def upload_config(self):
         path = "~/HostPanel/Pack/Spawner/application.cfg" if self.model.parent else "~/HostPanel/Master/application.cfg"
         content = shlex.quote(self.model.config)
-        self.command("echo \"%s\" > %s" % (content, path))
+        self.command("echo %s > %s" % (content, path))
 
     def log(self, message):
         self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
