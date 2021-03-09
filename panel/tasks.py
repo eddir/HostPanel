@@ -106,18 +106,25 @@ class DedicUnit(Client):
 
                 # Команды для установки необходимых компонентов и создания пользователя
                 print("Настройка VPS")
-                self.command(  # Создание пользователя
-                    'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && '
-                    # Разрешение на вход в ssh по паролю
-                    'sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" '
-                    '/etc/ssh/sshd_config && '
-                    'sudo service sshd restart && '
-                    # Установка пароля
-                    'echo "{0}:{1}" | sudo chpasswd && '
-                    # Установка зависимостей
-                    'sudo apt install -y python3-psutil unzip && '
-                    'ufw allow 5000; ufw allow 1500:1600/udp'.format(self.model.user_single,
-                                                                     self.model.password_single), root=True)
+
+                if self.model.ssh_key:
+                    password_auth = 'sudo sed -i ' \
+                                    '"/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" ' \
+                                    '/etc/ssh/sshd_config && sudo service sshd restart && sudo service sshd restart && '
+                else:
+                    password_auth = ""
+
+                self.command((  # Создание пользователя
+                                     'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && ' +
+                                     # Разрешение на вход в ssh по паролю
+                                     password_auth +
+                                     # Установка пароля
+                                     'echo "{0}:{1}" | sudo chpasswd && '
+                                     # Установка зависимостей
+                                     'sudo apt install -y python3-psutil unzip && '
+                                     'sudo ufw allow 5000; sudo ufw allow 1500:1600/udp').format(self.model.user_single,
+                                                                                                 self.model.password_single),
+                             root=True)
 
                 self.disconnect(root=True)
                 print("Готово")
