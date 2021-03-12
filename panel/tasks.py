@@ -154,6 +154,17 @@ class DedicUnit(Client):
 
         self.model.delete()
 
+    def reconnect(self):
+        print("Попытка переподключиться к dedic %d" % self.model.id)
+
+        try:
+            self.connect()
+        except:
+            self.model.condition = False
+            return
+
+        self.model.condition = True
+
 
 class ServerUnit(Client):
 
@@ -310,6 +321,8 @@ def dedic_task(dedic_id, operation):
             dedic.init()
         if operation == "delete":
             dedic.delete()
+        if operation == "reconnect":
+            dedic.reconnect()
     except Exception as e:
         dedic.log(str(e))
 

@@ -58,6 +58,11 @@ def delete_dedic(request, pk):
     return redirect('panel:dedicated')
 
 
+def reconnect_dedic(request, pk):
+    tasks.dedic_task(pk, "reconnect")
+    return redirect('panel:dedicated')
+
+
 def create_server(request):
     if request.method == 'POST':
         form = ServerModelForm(request.POST)
