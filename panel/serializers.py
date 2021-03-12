@@ -12,7 +12,8 @@ from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic
 class DedicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dedic
-        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key')
+        fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
+                  'condition')
 
 
 class ServerSerializer(serializers.ModelSerializer):

@@ -51,8 +51,12 @@ class Client:
                                allow_agent=False, look_for_keys=False)
 
         except AuthenticationException as e:
+            self.dedic.condition = False
+            self.dedic.save()
             raise AuthFailedException("Ошибка авторизации: %s" % str(e))
         except socket.error as e:
+            self.dedic.condition = False
+            self.dedic.save()
             raise Exception("Сервер не отвечает: %s" % str(e))
 
         if root:
@@ -127,6 +131,8 @@ class DedicUnit(Client):
                              root=True)
 
                 self.disconnect(root=True)
+                self.model.condition = True
+                self.model.save()
                 print("Готово")
             except AuthenticationException as e:
                 self.log("Ошибка авторизации через root пользователя: " + str(e))

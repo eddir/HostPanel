@@ -170,7 +170,23 @@ let watchVM = new Vue({
         getDedics: function () {
             axios.get('/api/dedics')
                 .then(function (response) {
-                    watchVM.servers = response.data.dedics;
+                    let dedics = response.data.dedics;
+                    for (let i = 0; i < dedics.length; i++) {
+                        if (dedics[i]['condition']) {
+                            dedics[i]['condition'] = {
+                                'code': 'ON',
+                                'message': 'Подключен',
+                                'badge': 'badge badge-success'
+                            }
+                        } else {
+                            dedics[i]['condition'] = {
+                                'code': 'OF',
+                                'message': 'Недоступен',
+                                'badge': 'badge badge-danger'
+                            }
+                        }
+                    }
+                    watchVM.servers = dedics;
                 })
                 .catch(function (error) {
                     console.log(error);

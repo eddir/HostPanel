@@ -28,11 +28,19 @@
                                 </th>
                                 <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
                                     aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >IP
+                                </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
                                 >Root
                                 </th>
                                 <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
                                     aria-sort="ascending" aria-label="Name: activate to sort column descending"
                                 >Пользователь
+                                </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >Состояние
                                 </th>
                                 <th></th>
                                 <th></th>
@@ -41,8 +49,10 @@
                             <tbody>
                             <tr v-for="server in servers">
                                 <td><b><a href="#" v-text="server.name"></a></b></td>
+                                <td><p v-text="server.ip"></p></td>
                                 <td><p v-text="server.user_root"></p></td>
                                 <td><p v-text="server.user_single"></p></td>
+                                <td><p v-bind:class="server.condition.badge" v-text="server.condition.message"></p></td>
                                 <td style="width:1%">
                                     <a v-bind:href="'/dedic/' + server.id + '/edit/'" class="btn btn-warning">
                                             <span class="icon text-black-50">
