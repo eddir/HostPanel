@@ -330,6 +330,12 @@ def server_task(server_id, operation):
             server.init()
         elif operation == "start":
             server.start()
+
+            if server.model.parent is None:
+                spawners = Server.objects.filter(parent=server.model.id)
+                for spawner in spawners:
+                    ServerUnit(spawner).start()
+
         elif operation == "update":
             server.update()
         elif operation == "reboot":
