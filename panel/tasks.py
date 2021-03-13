@@ -125,7 +125,7 @@ class DedicUnit(Client):
                                      # Установка пароля
                                      'echo "{0}:{1}" | sudo chpasswd && '
                                      # Установка зависимостей
-                                     'sudo apt install -y python3-psutil unzip && '
+                                     'sudo apt update && sudo apt install -y python3-psutil unzip && '
                                      'sudo ufw allow 5000; sudo ufw allow 1500:1600/udp').format(self.model.user_single,
                                                                                                  self.model.password_single),
                              root=True)
