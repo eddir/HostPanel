@@ -126,6 +126,7 @@ class ServerInstanceView(APIView):
             }
 
             return Response({
+                "children": Server.objects.filter(parent=pk).exists(),
                 "server": server_data,
                 "status": status,
                 "rooms": rooms,

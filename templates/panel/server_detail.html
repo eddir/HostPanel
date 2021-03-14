@@ -53,6 +53,9 @@
                    class="btn btn-success">Старт</a>
                 <a v-if="server.status && server.status.condition.code=='RN'" href="#" @click.prevent="stopServer()"
                    class="btn btn-danger">Стоп</a>
+                <a v-if="server.children == false && (server.status == null ||
+                    (server.status.condition.code != 'RN' && server.status.condition.code != 'SP'))"
+                    @click.prevent="removeServer()" class="btn btn-danger" href="#">Удалить принудительно</a>
 
                 <hr>
 

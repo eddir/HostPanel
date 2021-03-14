@@ -1,7 +1,7 @@
 import datetime
 from pprint import pprint
 
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
@@ -40,8 +40,12 @@ class ServerDelete(DeleteView):
 
 
 def delete_server(request, pk):
-    tasks.server_task(pk, "delete")
-    return redirect('panel:index')
+    if request.method == 'POST':
+        tasks.server_task(pk, "delete")
+        return redirect('panel:index')
+    elif request.method == 'DELETE':
+        Server.objects.get(pk=pk).delete()
+        return HttpResponse(200)
 
 
 class DedicDelete(DeleteView):

@@ -103,6 +103,15 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data.message);
                 })
         },
+        removeServer: function(type) {
+            axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm')
+                .then(function (response) {
+                    window.location = '/';
+                })
+                .catch(function (error) {
+                    watchVM.alertFailure(error.data.message);
+                });
+        },
         createDedic: function (type) {
             axios.post('/api/dedics/', this.form)
                 .then(function (response) {

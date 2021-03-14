@@ -22,11 +22,12 @@ class ServerSerializer(serializers.ModelSerializer):
     online = serializers.SerializerMethodField()
     rooms = serializers.SerializerMethodField()
     installed = serializers.SerializerMethodField()
+    dedic = serializers.SerializerMethodField()
 
     class Meta:
         model = Server
         fields = ('id', 'parent', 'name', 'dedic', 'config', 'load', 'status', 'package', 'online', 'rooms',
-                  'installed')
+                  'installed', 'dedic')
 
     @staticmethod
     def get_load(server):
@@ -68,6 +69,10 @@ class ServerSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_installed(server):
         return Status.objects.filter(server=server).exists()
+
+    @staticmethod
+    def get_dedic(server):
+        return DedicSerializer(server.dedic).data
 
 
 class MPackageSerializer(serializers.ModelSerializer):
