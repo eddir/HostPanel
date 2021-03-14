@@ -12,11 +12,8 @@ from django.contrib.auth.models import User
 from paramiko import AuthenticationException
 
 from HostPanel import settings
+from panel.exceptions import ServerAuthenticationFailed, ServerBadCommand
 from panel.models import Server, Status, Dedic
-
-
-class AuthFailedException(Exception):
-    pass
 
 
 class Client:
@@ -53,7 +50,9 @@ class Client:
         except AuthenticationException as e:
             self.dedic.condition = False
             self.dedic.save()
-            raise AuthFailedException("Ошибка авторизации: %s" % str(e))
+            raise ServerAuthenticationFailed("Не удалось подключиться к {0}@{1} . Ошибка при авторизации.".format(
+                self.dedic.user_single, self.dedic.ip
+            ))
         except socket.error as e:
             self.dedic.condition = False
             self.dedic.save()
@@ -80,11 +79,13 @@ class Client:
             client = self.root_client if root else self.client
 
         stdin, stdout, stderr = client.exec_command(command)
+        out = stdout.readlines()
+        err = stderr.readlines()
 
         if stdout.channel.recv_exit_status() != 0:
-            raise Exception(stdout.read() + stderr.read())
+            raise ServerBadCommand(' '.join(err))
 
-        return stdin, stdout, stderr
+        return out, err
 
 
 class DedicUnit(Client):
@@ -98,7 +99,7 @@ class DedicUnit(Client):
     def init(self):
         try:
             self.connect()
-        except AuthFailedException:
+        except ServerAuthenticationFailed:
             try:
                 self.log("Начинается инициализация пользователя.")
 
@@ -118,17 +119,23 @@ class DedicUnit(Client):
                 else:
                     password_auth = ""
 
-                self.command((  # Создание пользователя
-                                     'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && ' +
-                                     # Разрешение на вход в ssh по паролю
-                                     password_auth +
-                                     # Установка пароля
-                                     'echo "{0}:{1}" | sudo chpasswd && '
-                                     # Установка зависимостей
-                                     'sudo apt update && sudo apt install -y python3-psutil unzip && '
-                                     'sudo ufw allow 5000; sudo ufw allow 1500:1600/udp').format(self.model.user_single,
-                                                                                                 self.model.password_single),
-                             root=True)
+                self.command((
+                        # Создание пользователя
+                        'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && ' +
+
+                        # Разрешение на вход в ssh по паролю
+                        password_auth +
+
+                        # Установка пароля
+                        'echo "{0}:{1}" | sudo chpasswd && '
+                        
+                        # Установка зависимостей
+                        'sudo apt update && sudo apt install -y python3-psutil unzip && '
+                        'sudo ufw allow 5000 && sudo ufw allow 1500:1600/udp'
+                ).format(
+                    self.model.user_single,
+                    self.model.password_single
+                ), root=True)
 
                 self.disconnect(root=True)
                 self.model.condition = True
@@ -136,13 +143,15 @@ class DedicUnit(Client):
                 print("Готово")
             except AuthenticationException as e:
                 self.log("Ошибка авторизации через root пользователя: " + str(e))
+            except ServerBadCommand as e:
+                self.log("Ошибка при выполнении команды: " + str(e))
             except Exception as e:
                 self.log(str(e))
         except Exception as e:
             self.log(str(e))
 
     def log(self, message):
-        print(message)
+        print("> " + message + " <")
         self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
         self.model.save()
 
@@ -150,7 +159,7 @@ class DedicUnit(Client):
         print("Удаление dedic %d" % self.model.id)
 
         with suppress(Exception):
-            self.command("deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
+            self.command("pkill -u {0} && deluser {0} && rm -rf /home/{0}/".format(self.model.user_single), root=True)
 
         self.model.delete()
 
@@ -159,11 +168,9 @@ class DedicUnit(Client):
 
         try:
             self.connect()
+            self.model.condition = True
         except:
             self.model.condition = False
-            return
-
-        self.model.condition = True
 
 
 class ServerUnit(Client):
@@ -195,20 +202,17 @@ class ServerUnit(Client):
 
     def start(self):
         package = "SR" if self.model.parent else "Master"
-        stdin, stdout, stderr = self.command(
+        self.command(
             "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> ~/HostPanel/Caretaker.log &".format(
                 package, self.model.id, "http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT)))
         # TODO: другой способ получить адрес для прода
         self.log("Сервер запущен.")
-        return stdin, stdout, stderr
 
     def stop(self):
-        stdin, stdout, stderr = self.command("python3 ~/HostPanel/Caretaker/client.py stop")
+        self.command("python3 ~/HostPanel/Caretaker/client.py stop")
 
         self.log("Сервер остановлен.")
         Status(server=self.model, condition=Status.Condition.STOPPED).save()
-
-        return stdin, stdout, stderr
 
     def reboot(self):
         self.log("Reboot")
@@ -242,9 +246,15 @@ class ServerUnit(Client):
 
         # Погрузка архивов M и SR
         print("Загрузка файлов")
-        transport = paramiko.Transport((self.model.dedic.ip, 22))
-        transport.connect(username=self.model.dedic.user_single, password=self.model.dedic.password_single)
-        client = paramiko.SFTPClient.from_transport(transport)
+
+        try:
+            transport = paramiko.Transport((self.model.dedic.ip, 22))
+            transport.connect(username=self.model.dedic.user_single, password=self.model.dedic.password_single)
+            client = paramiko.SFTPClient.from_transport(transport)
+        except AuthenticationException:
+            raise ServerAuthenticationFailed("Не удалось подключиться к {0}@{1} . Ошибка при авторизации.".format(
+                self.model.dedic.user_single, self.model.dedic.ip
+            ))
 
         print("package.tar.gz")
         self.command("mkdir -p /home/{0}/HostPanel/Caretaker".format(self.model.dedic.user_single))

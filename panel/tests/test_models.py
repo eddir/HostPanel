@@ -3,7 +3,7 @@ import time
 from django.test import TestCase
 
 from panel import tasks
-from panel.models import MPackage, Dedic, Server
+from panel.models import MPackage, Dedic, Server, Status
 from panel.tasks import ServerUnit, DedicUnit
 
 
@@ -29,6 +29,9 @@ class ModelsTestCase(TestCase):
         d = DedicUnit(dedic)
         d.init()
 
+        dedic.refresh_from_db()
+        self.assertEqual(dedic.condition, True)
+
         master = Server.objects.create(
             dedic=dedic,
             name="Master test",
@@ -38,9 +41,12 @@ class ModelsTestCase(TestCase):
 
         s = ServerUnit(master)
         s.init()
-        
+
         self.assertEqual(master.get_last_status(), None)
 
+        s.stop()
+        master.refresh_from_db()
+        self.assertEqual(master.get_last_status().condition, Status.Condition.STOPPED)
         s.delete()
         d.delete()
 
