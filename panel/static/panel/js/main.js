@@ -103,7 +103,7 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data.message);
                 })
         },
-        removeServer: function(type) {
+        removeServer: function (type) {
             axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm')
                 .then(function (response) {
                     window.location = '/';
@@ -231,6 +231,8 @@ let watchVM = new Vue({
                             servers[server_id]['max_online'] = max_online;
                             servers[server_id]['spawners'] = rooms_count;
                         }
+                        servers[server_id]['dedic_data'] = watchVM.dedics.find(
+                            el => el.id === servers[server_id]['dedic'])
                     });
 
                     watchVM.servers = servers;

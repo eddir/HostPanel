@@ -18,7 +18,7 @@
                     <div class="col-md-5">
                         <h2 @click="$('#master_'+server.id).collapse('toggle')" v-text="server.name"
                             class="title-vps text-primary"></h2>
-                        <span class="p-2" v-text="server.dedic.ip + ' (' + server.dedic.name + ')'"></span>
+                        <span class="p-2" v-text="server.dedic_data.ip + ' (' + server.dedic_data.name + ')'"></span>
                     </div>
                     <div class="col" v-if="server.rooms">
                         <p class="m-0" v-text="'Spawners - ' + server.spawners"></p>
@@ -81,7 +81,7 @@
                                     <div class="col-md-5">
                                         <h2 class="title-vps">
                                             <a v-text="spawner.name" v-bind:href="'/server/' + spawner.id"></a>
-                                            <span class="p-2" v-text="server.dedic.ip + ' (' + server.dedic.name + ')'"></span>
+                                            <span class="p-2" v-text="server.dedic_data.ip + ' (' + server.dedic_data.name + ')'"></span>
                                         </h2>
                                     </div>
                                     <div class="col" v-if="server.rooms">
