@@ -7,7 +7,7 @@ from panel.models import MPackage, Dedic, Server, Status
 from panel.tasks import ServerUnit, DedicUnit
 
 
-class ModelsTestCase(TestCase):
+class TasksTestCase(TestCase):
 
     def test_servers_create(self):
         mpackage = MPackage.objects.create(

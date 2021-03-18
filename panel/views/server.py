@@ -13,11 +13,13 @@ from panel.models import Status, Server, Dedic
 
 
 class ServerListView(ListView):
+    """Index. Отсюда начинается использование панели."""
     model = Server
     template_name = "panel/index.html"
 
 
 class ServerDetailView(DetailView):
+    """Страница с детальной информацией о сервере."""
     model = Server
 
 
@@ -65,26 +67,6 @@ def delete_dedic(request, pk):
 def reconnect_dedic(request, pk):
     tasks.dedic_task(pk, "reconnect")
     return redirect('panel:dedicated')
-
-
-def create_server(request):
-    if request.method == 'POST':
-        form = ServerModelForm(request.POST)
-
-        if form.is_valid():
-            server = Server(name=form.cleaned_data['name'],
-                            ip=form.cleaned_data['ip'],
-                            user_root=form.cleaned_data['user_root'],
-                            user_single=form.cleaned_data['user_single'],
-                            password_root=form.cleaned_data['password_root'])
-            server.save()
-            tasks.server_task(server.id, "init")
-
-            return HttpResponseRedirect('/')
-    else:
-        form = ServerForm()
-
-    return render(request, 'panel/index.html', {'form': form})
 
 
 def create_dedic(request):

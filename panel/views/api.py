@@ -17,10 +17,11 @@ from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerial
 
 
 class DedicView(APIView):
-    # Инициализация и получение списка всех вдс
+    # Инициализация и получение списка всех дедиков
 
     @staticmethod
     def get(request):
+        """Возвращает список существуюзих дедиков"""
         dedics = DedicSerializer(Dedic.objects.all(), many=True)
 
         return Response({
@@ -29,6 +30,7 @@ class DedicView(APIView):
 
     @staticmethod
     def post(request):
+        """Добавляет дедик по заданным параметрам и добавляет задание на подключение"""
         serializer = DedicSerializer(data=request.data)
         dedic_saved = None
 
@@ -36,7 +38,11 @@ class DedicView(APIView):
             dedic_saved = serializer.save()
             tasks.dedic_task(dedic_saved.id, "init")
 
-        return Response({"success": "Вдс '{}' добавлен.".format(dedic_saved.name)})
+        return Response({
+            "ok": True,
+            "dedic_id": dedic_saved.id,
+            "success": "Вдс '{}' добавлен.".format(dedic_saved.name)
+        })
 
 
 class ServerView(APIView):
@@ -76,7 +82,11 @@ class ServerView(APIView):
             tasks.server_task(server_saved.id, "init")
             Status(server=server_saved, condition=Status.Condition.INSTALLED).save()
 
-        return Response({"success": "Сервер '{}' добавлен.".format(server_saved.name)})
+        return Response({
+            "ok": True,
+            "server_id": server_saved.id,
+            "success": "Сервер '{}' добавлен.".format(server_saved.name)
+        })
 
 
 @method_decorator(csrf_exempt, name='dispatch')
