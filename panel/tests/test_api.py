@@ -11,6 +11,9 @@ class TasksTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
+    def tearDown(self):
+        Task.objects.all().delete()
+
     def assertTaskExists(self, name, params):
         self.assertTrue(Task.objects.filter(task_name=name, task_params=json.dumps([params, {}])).exists())
 
@@ -29,7 +32,7 @@ class TasksTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         content = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(content['ok'], True)
+        self.assertTrue(content['ok'])
         dedic_id = content['dedic_id']
 
         self.assertTaskExists('panel.tasks.dedic_task', [dedic_id, "init"])
@@ -46,7 +49,7 @@ class TasksTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         content = json.loads(response.content.decode('utf-8'))
-        self.assertEqual(content['ok'], True)
+        self.assertTrue(content['ok'])
         server_id = content['server_id']
 
         self.assertTaskExists('panel.tasks.server_task', [server_id, "init"])
