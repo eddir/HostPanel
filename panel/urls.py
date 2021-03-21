@@ -4,7 +4,6 @@ from .views.api import *
 from .views.package import *
 from .views.server import *
 
-
 app_name = 'panel'
 
 urlpatterns = [

@@ -35,7 +35,7 @@ class TasksTestCase(TestCase):
         self.assertTrue(content['ok'])
         dedic_id = content['dedic_id']
 
-        self.assertTaskExists('panel.tasks.dedic_task', [dedic_id, "init"])
+        self.assertTaskExists('panel.tasks.tasks.dedic_task', [dedic_id, "init"])
 
         # Тест создания сервера
 
@@ -52,7 +52,7 @@ class TasksTestCase(TestCase):
         self.assertTrue(content['ok'])
         server_id = content['server_id']
 
-        self.assertTaskExists('panel.tasks.server_task', [server_id, "init"])
+        self.assertTaskExists('panel.tasks.tasks.server_task', [server_id, "init"])
 
         # Тест создания сервера на том же дедике
 

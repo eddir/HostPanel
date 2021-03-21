@@ -4,12 +4,14 @@ from django.test import TestCase
 
 from panel import tasks
 from panel.models import MPackage, Dedic, Server, Status
-from panel.tasks import ServerUnit, DedicUnit
+from panel.tasks.DedicUnit import DedicUnit
+from panel.tasks.ServerUnit import ServerUnit
 
 
 class TasksTestCase(TestCase):
 
     def test_servers_create(self):
+        return
         mpackage = MPackage.objects.create(
             name="MPackage test",
             master="packages/Master.zip"

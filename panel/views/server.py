@@ -1,15 +1,10 @@
-import datetime
-from pprint import pprint
-
-from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils.timezone import now
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
 from panel import tasks
-from panel.forms import ServerForm, ServerModelForm, DedicModelForm, DedicForm
-from panel.models import Status, Server, Dedic
+from panel.models import Server, Dedic
 
 
 class ServerListView(ListView):

@@ -10,7 +10,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from panel import tasks
+from panel.tasks import tasks
 from panel.models import Status, Server, MPackage, SRPackage, Online, Dedic
 from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer, \
     OnlineSerializer, DedicSerializer

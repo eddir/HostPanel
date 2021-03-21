@@ -1,11 +1,10 @@
 import datetime
 import os
 
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import PROTECT
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.timezone import now
 
 

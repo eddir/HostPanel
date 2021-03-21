@@ -1,10 +1,8 @@
 import json
 import os
-import sched
 import subprocess
 import sys
 import threading
-import time
 
 import psutil
 import requests
