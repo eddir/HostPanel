@@ -53,11 +53,13 @@ def start(package, server_id=None, panel_address=None):
             raise ConfigError("Config is damaged")
 
     if package == "Master":
-        os.system('chmod +x ~/HostPanel/Master/Master.x86_64')
-        subprocess.Popen("~/HostPanel/Master/Master.x86_64 >> ~/HostPanel/Master.log", shell=True, preexec_fn=os.setsid)
+        os.chdir("HostPanel/Master/")
+        os.system('chmod +x ./Master.x86_64')
+        subprocess.Popen("./Master.x86_64 >> ../Master.log", shell=True, preexec_fn=os.setsid)
     elif package == "SR":
-        os.system('chmod +x ~/HostPanel/Pack/Spawner/Spawner.x86_64')
-        subprocess.Popen("~/HostPanel/Pack/Spawner/Spawner.x86_64 >> ~/Spawner.log", shell=True, preexec_fn=os.setsid)
+        os.chdir("HostPanel/Pack/Spawner/")
+        os.system('chmod +x ./Spawner.x86_64')
+        subprocess.Popen("./Spawner.x86_64 >> ../Spawner.log", shell=True, preexec_fn=os.setsid)
         os.system('chmod +x ~/HostPanel/Pack/Room/Room.x86_64')
     else:
         raise ValueError("Invalid package " + str(package))
