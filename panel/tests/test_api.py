@@ -17,6 +17,25 @@ class TasksTestCase(TestCase):
     def assertTaskExists(self, name, params):
         self.assertTrue(Task.objects.filter(task_name=name, task_params=json.dumps([params, {}])).exists())
 
+    def test_api_panel(self):
+
+        # Проверка отображения страниц
+        urls = [
+            '/',
+            '/admin/login/',
+            '/dedicated/',
+            '/m_packages/',
+            '/sr_packages/',
+            '/api/servers/',
+            '/api/dedics/',
+            '/api/m_package/',
+            '/api/sr_package/'
+        ]
+
+        for url in urls:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+
     def test_api_server_create(self):
 
         # Тест создания дедика

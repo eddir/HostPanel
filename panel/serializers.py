@@ -18,7 +18,8 @@ class DedicSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(DedicSerializer, self).to_representation(instance)
-        representation['last_listen'] = instance.last_listen.strftime("%d.%m.%Y %H:%M:%S")
+        if representation['last_listen']:
+            representation['last_listen'] = instance.last_listen.strftime("%d.%m.%Y %H:%M:%S")
         return representation
 
 
