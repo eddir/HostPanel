@@ -10,11 +10,10 @@ app_name = 'panel'
 urlpatterns = [
     # Основные ссылки
     path('', ServerListView.as_view(), name='index'),
-    path('server/<int:pk>/', ServerDetailView.as_view(), name="server.view"),
-    path('dedic/add/', create_dedic, name="dedic.add"),
     path('m_packages/', MPackageListView.as_view(), name='m_packages'),
     path('sr_packages/', SRPackageListView.as_view(), name='sr_packages'),
     path('dedicated/', DedicatedView.as_view(), name='dedicated'),
+    path('server/<int:pk>/', ServerDetailView.as_view(), name="server.view"),
 
     # Действия с серверами
     path('server/<int:pk>/update/', ServerUpdate.as_view(), name='server.update'),

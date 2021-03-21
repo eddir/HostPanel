@@ -69,26 +69,6 @@ def reconnect_dedic(request, pk):
     return redirect('panel:dedicated')
 
 
-def create_dedic(request):
-    if request.method == 'POST':
-        form = DedicModelForm(request.POST)
-
-        if form.is_valid():
-            dedic = Dedic(name=form.cleaned_data['name'],
-                          ip=form.cleaned_data['ip'],
-                          user_root=form.cleaned_data['user_root'],
-                          user_single=form.cleaned_data['user_single'],
-                          password_root=form.cleaned_data['password_root'])
-            dedic.save()
-            # tasks.server_task(dedic.id, "init")
-
-            return HttpResponseRedirect('/')
-    else:
-        form = DedicForm()
-
-    return render(request, 'panel/index.html', {'form': form})
-
-
 class DedicatedView(ListView):
     model = Dedic
     template_name = "panel/dedicated.html"
