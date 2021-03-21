@@ -11,7 +11,6 @@ from panel.tasks.ServerUnit import ServerUnit
 class TasksTestCase(TestCase):
 
     def test_servers_create(self):
-        return
         mpackage = MPackage.objects.create(
             name="MPackage test",
             master="packages/Master.zip"
@@ -33,6 +32,11 @@ class TasksTestCase(TestCase):
 
         dedic.refresh_from_db()
         self.assertEqual(dedic.condition, True)
+
+        last_listen = dedic.last_listen
+        d.reconnect()
+        dedic.refresh_from_db()
+        self.assertNotEqual(last_listen, dedic.last_listen)
 
         master = Server.objects.create(
             dedic=dedic,

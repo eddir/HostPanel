@@ -37,6 +37,13 @@ class TasksTestCase(TestCase):
 
         self.assertTaskExists('panel.tasks.tasks.dedic_task', [dedic_id, "init"])
 
+        # Тест попытки переподключиться
+
+        response = self.client.get('/dedic/' + str(dedic_id) + '/reconnect/')
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTaskExists('panel.tasks.tasks.dedic_task', [dedic_id, "reconnect"])
+
         # Тест создания сервера
 
         response = self.client.post('/api/servers/', {

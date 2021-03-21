@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
-from panel import tasks
+from panel.tasks import tasks
 from panel.models import Server, Dedic
 
 

@@ -1,5 +1,7 @@
 from contextlib import suppress
 from datetime import datetime
+
+from django.utils import timezone
 from paramiko import AuthenticationException
 
 from django.contrib.auth.models import User
@@ -91,3 +93,6 @@ class DedicUnit(Client):
             self.model.condition = True
         except:
             self.model.condition = False
+
+        self.model.last_listen = timezone.now()
+        self.model.save()

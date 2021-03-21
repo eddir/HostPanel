@@ -56,6 +56,7 @@ class Dedic(models.Model):
     ssh_key = models.BooleanField('Connect via ssh key')
     log = models.TextField(null=True, blank=True, default=None)
     condition = models.BooleanField(default=False)
+    last_listen = models.DateTimeField(null=True)
 
 
 class Server(models.Model):

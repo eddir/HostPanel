@@ -42,6 +42,10 @@
                                     aria-sort="ascending" aria-label="Name: activate to sort column descending"
                                 >Состояние
                                 </th>
+                                <th class="sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"
+                                    aria-sort="ascending" aria-label="Name: activate to sort column descending"
+                                >Последняя проверка
+                                </th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -53,7 +57,12 @@
                                 <td><p v-text="server.ip"></p></td>
                                 <td><p v-text="server.user_root"></p></td>
                                 <td><p v-text="server.user_single"></p></td>
-                                <td><p v-bind:class="server.condition.badge" v-text="server.condition.message"></p></td>
+                                <td>
+                                    <p v-bind:class="server.condition.badge" v-text="server.condition.message"></p>
+                                </td>
+                                <td>
+                                    <span v-if="server.condition.code == 'OF'" v-text="server.last_listen"></span>
+                                </td>
                                 <td style="width:1%">
                                     <a v-bind:href="'/dedic/' + server.id + '/reconnect/'" class="btn btn-primary">
                                             <span class="icon text-white">

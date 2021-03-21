@@ -14,7 +14,12 @@ class DedicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dedic
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'condition')
+                  'condition', 'last_listen')
+
+    def to_representation(self, instance):
+        representation = super(DedicSerializer, self).to_representation(instance)
+        representation['last_listen'] = instance.last_listen.strftime("%d.%m.%Y %H:%M:%S")
+        return representation
 
 
 class ServerSerializer(serializers.ModelSerializer):
