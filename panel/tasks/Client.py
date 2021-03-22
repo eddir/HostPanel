@@ -62,7 +62,7 @@ class Client:
             self.client.close()
             self.client = None
 
-    def command(self, command, root=False):
+    def command(self, command, root=False, output=False):
         client = self.root_client if root else self.client
 
         if client is None:
@@ -70,10 +70,9 @@ class Client:
             client = self.root_client if root else self.client
 
         stdin, stdout, stderr = client.exec_command(command)
-        out = stdout.readlines()
-        err = stderr.readlines()
 
         if stdout.channel.recv_exit_status() != 0:
+            err = stderr.readlines()
             raise ServerBadCommand(' '.join(err))
 
-        return out, err
+        return stdout.readlines() if output else None

@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 from django.test import TestCase
 
@@ -32,6 +33,9 @@ class TasksTestCase(TestCase):
 
         dedic.refresh_from_db()
         self.assertEqual(dedic.condition, True)
+
+        cmd = d.command('echo ok', root=True, output=True)
+        self.assertEqual(cmd[0], 'ok\n')
 
         last_listen = dedic.last_listen
         d.reconnect()
