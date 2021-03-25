@@ -15,6 +15,11 @@ def dedic_task(dedic_id, operation):
     :param operation:
     :return:
     """
+
+    # Fix temporary (2006, 'MySQL server has gone away')
+    from django.db import close_old_connections
+    close_old_connections()
+    
     dedic = DedicUnit(Dedic.objects.get(id=dedic_id))
 
     try:
@@ -36,6 +41,11 @@ def server_task(server_id, operation):
     :param operation:
     :return:
     """
+
+    # Fix temporary (2006, 'MySQL server has gone away')
+    from django.db import close_old_connections
+    close_old_connections()
+
     server = ServerUnit(Server.objects.get(id=server_id))
 
     try:
@@ -77,6 +87,11 @@ def server_task(server_id, operation):
 
 @background
 def package_task(package_id, operation, package_type):
+
+    # Fix temporary (2006, 'MySQL server has gone away')
+    from django.db import close_old_connections
+    close_old_connections()
+
     try:
         if operation == "install_package":
 
