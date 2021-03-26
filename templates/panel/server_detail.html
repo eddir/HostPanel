@@ -7,7 +7,8 @@
             <h1 class="p-0 font-weight-bold text-primary">{{ server.name }}
                 <template v-if="server.status">
                     <span v-if="server.status.cpu_usage > 80" class="badge badge-warning">Запущен</span>
-                    <span v-else v-bind:class="server.status.condition.badge" v-text="server.status.condition.message"></span>
+                    <span v-else v-bind:class="server.status.condition.badge"
+                          v-text="server.status.condition.message"></span>
                 </template>
                 <span v-else class="badge badge-secondary">Неизвестно</span>
             </h1>
@@ -24,7 +25,7 @@
 
                         <p v-if="server.status">Последний отклик: <span v-text="server.status.created_at"></span></p>
 
-                        <p>Сборка: <span v-text="server.server.package.name"></span> </p>
+                        <p>Сборка: <span v-text="server.server.package.name"></span></p>
 
                         <template v-if="server.status">
                             <p>CPU: <span v-text="server.status.cpu_usage + '%'"></span></p>
@@ -49,13 +50,17 @@
                     <pre class="pre-scrollable" v-html="server.server.log"></pre>
                 </div>
                 <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
-                <a v-if="server.status && server.status.condition.code=='SP'" href="#" @click.prevent="startServer()"
+                <a v-if="server.status && server.status.condition.code=='SP'" href="#"
+                   @click.prevent="startServer()"
                    class="btn btn-success">Старт</a>
                 <a v-if="server.status && server.status.condition.code=='RN'" href="#" @click.prevent="stopServer()"
                    class="btn btn-danger">Стоп</a>
                 <a v-if="server.children == false && (server.status == null ||
                     (server.status.condition.code != 'RN' && server.status.condition.code != 'SP'))"
-                    @click.prevent="removeServer()" class="btn btn-danger" href="#">Удалить принудительно</a>
+                   @click.prevent="removeServer()" class="btn btn-danger float-right" href="#">
+                    Удалить принудительно
+                </a>
+
 
                 <hr>
 
