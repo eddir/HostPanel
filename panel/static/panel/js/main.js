@@ -37,6 +37,59 @@ let watchVM = new Vue({
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
         }
+
+        $('#popover-tasks').popover({
+
+            html: true,
+            content: function () {
+
+                function getTasks() {
+                    return axios.get('/api/task/').then(response => response.data).catch(function (error) {
+                        watchVM.alertFailure(error.data.message);
+                    });
+                }
+
+                let tmpId = 'tmp-id-' + $.now();
+
+                getTasks().then(function (data) {
+                    let html = $('<div>');
+
+                    data['tasks'].forEach(function (task) {
+                        let actions = {
+                            "init": "Установка",
+                            "start": "Запуск",
+                            "update": "Обновление",
+                            "reboot": "Ребут",
+                            "update_config": "Обновление конфига",
+                            "stop": "Остановка",
+                            "delete": "Удаление",
+                            "install_package": "Установка сборки",
+                            "reconnect": "Переподключение",
+                        }
+
+                        let params = JSON.parse(task['task_params']);
+                        let status = '<p><b>' + actions[params[0][1]] + '</b> ' + task['unit_name'] + ' #' +
+                            params[0][0];
+
+                        if (task['locked_by']) {
+                            status += " <span class='text-success'>(выполняется)</span>";
+                        }
+                        else if (task['last_error']) {
+                            status += " <span class='text-danger'>(ошибка)</span>";
+                        }
+                        status += '</p><hr>';
+
+                        html.append(status);
+                    })
+
+                    $('#' + tmpId).removeClass('loading spinner').html(html);
+                })
+
+                return $('<div>').attr('id', tmpId).addClass('loading spinner');
+
+            }
+        });
+
     },
     methods: {
         prepareCreateForm: function (server) {

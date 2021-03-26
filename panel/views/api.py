@@ -9,11 +9,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from background_task.models import Task
 
 from panel.tasks import tasks
 from panel.models import Status, Server, MPackage, SRPackage, Online, Dedic
 from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer, \
-    OnlineSerializer, DedicSerializer
+    OnlineSerializer, DedicSerializer, TaskSerializer
 
 
 class DedicView(APIView):
@@ -299,6 +300,16 @@ class SRPackageView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return Response({"success": "Сборка загружена"})
+
+
+class TaskPackageView(APIView):
+    # Получение списка текущих фоновых задач
+
+    @staticmethod
+    def get(request):
+        tasks_list = Task.objects.all()
+        serializer = TaskSerializer(tasks_list, many=True)
+        return Response({"tasks": serializer.data})
 
 
 @api_view(('POST',))

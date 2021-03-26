@@ -2,15 +2,6 @@
 
 {% block content %}
 
-
-    <div class="card shadow my-4">
-        <div class="card-body">
-            <a class="btn btn-primary" href="{% url 'panel:m_packages' %}">M сборки</a>
-            <a class="btn btn-primary" href="{% url 'panel:sr_packages' %}">SR сборки</a>
-            <a class="btn btn-primary" href="{% url 'panel:dedicated' %}">Dedicated servers</a>
-        </div>
-    </div>
-
     <div v-for="server in servers" v-if="!server.parent" class="card shadow my-4">
         <div class="card-header">
             <div class="container">

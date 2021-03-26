@@ -19,7 +19,7 @@ def dedic_task(dedic_id, operation):
     # Fix temporary (2006, 'MySQL server has gone away')
     from django.db import close_old_connections
     close_old_connections()
-    
+
     dedic = DedicUnit(Dedic.objects.get(id=dedic_id))
 
     try:

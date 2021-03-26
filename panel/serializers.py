@@ -1,11 +1,11 @@
 import datetime
+import json
 import os
-from pprint import pprint
 
 from django.template.defaultfilters import filesizeformat
-from django.utils import timezone
 from django.utils.timezone import now
 from rest_framework import serializers
+from background_task.models import Task
 
 from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic
 
@@ -126,7 +126,25 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 class OnlineSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Online
         fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super(TaskSerializer, self).to_representation(instance)
+
+        params = json.loads(representation['task_params'])
+
+        if representation['task_name'] == "panel.tasks.tasks.dedic_task":
+            representation['unit_name'] = Dedic.objects.get(pk=params[0][0]).name
+        elif representation['task_name'] == "panel.tasks.tasks.server_task":
+            representation['unit_name'] = Server.objects.get(pk=params[0][0]).name
+        elif representation['task_name'] == "panel.tasks.tasks.package_task":
+            representation['unit_name'] = params[0][0]
+        return representation

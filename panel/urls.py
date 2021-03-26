@@ -47,4 +47,6 @@ urlpatterns = [
 
     path('api/sr_package/<int:pk>/install/', SRPackageInstanceView.as_view()),
     path('api/sr_package/', SRPackageView.as_view()),
+
+    path('api/task/', TaskPackageView.as_view()),
 ]
