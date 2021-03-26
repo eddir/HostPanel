@@ -32,10 +32,21 @@ let watchVM = new Vue({
 
         if (path[1] === "") {
             this.$nextTick(this.getServers);
+            window.setInterval(() => {
+                this.getServers();
+            },10000);
+
         } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
+            window.setInterval(() => {
+                this.getServer();
+            },10000);
+
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
+            window.setInterval(() => {
+                this.getDedics();
+            },10000);
         }
 
         $('#popover-tasks').popover({
