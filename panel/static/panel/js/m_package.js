@@ -9,6 +9,7 @@ let watchVM = new Vue({
         error: "",
         uploadPercentage: -1,
         packages: {},
+        tasks: {},
         form: {
             name: "Сборка ###",
             master: "",
@@ -16,8 +17,38 @@ let watchVM = new Vue({
     },
     mounted: function () {
         this.$nextTick(this.getPackages);
+        this.$nextTick(this.getTasks);
+        window.setInterval(() => {
+            this.getTasks();
+        }, 10000);
     },
     methods: {
+        getTasks: function () {
+            axios.get('/api/task/')
+                .then(function (response) {
+                    watchVM.tasks = response.data.tasks;
+                    let actions = {
+                        "init": "Установка",
+                        "start": "Запуск",
+                        "update": "Обновление",
+                        "reboot": "Ребут",
+                        "update_config": "Обновление конфига",
+                        "stop": "Остановка",
+                        "delete": "Удаление",
+                        "install_package": "Установка сборки",
+                        "reconnect": "Переподключение",
+                    }
+                    watchVM.tasks.forEach(function (task, task_id) {
+                        let params = JSON.parse(task['task_params']);
+                        watchVM.tasks[task_id]['params'] = params;
+                        watchVM.tasks[task_id]['action'] = actions[params[0][1]];
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    watchVM.alertFailure(error)
+                })
+        },
         getPackages: function () {
             axios.get('/api/m_package/')
                 .then(function (response) {

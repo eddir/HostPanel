@@ -13,6 +13,7 @@ let watchVM = new Vue({
         sr_packages: {},
         dedics: {},
         loaded: false,
+        tasks: {},
         form: {
             parent: null,
             name: "Unit " + Math.floor(Math.random() * 1000),
@@ -34,73 +35,24 @@ let watchVM = new Vue({
             this.$nextTick(this.getServers);
             window.setInterval(() => {
                 this.getServers();
-            },10000);
+            }, 10000);
 
         } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
             window.setInterval(() => {
                 this.getServer();
-            },10000);
+            }, 10000);
 
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
             window.setInterval(() => {
                 this.getDedics();
-            },10000);
+            }, 10000);
         }
-
-        $('#popover-tasks').popover({
-
-            html: true,
-            content: function () {
-
-                function getTasks() {
-                    return axios.get('/api/task/').then(response => response.data).catch(function (error) {
-                        watchVM.alertFailure(error.data.message);
-                    });
-                }
-
-                let tmpId = 'tmp-id-' + $.now();
-
-                getTasks().then(function (data) {
-                    let html = $('<div>');
-
-                    data['tasks'].forEach(function (task) {
-                        let actions = {
-                            "init": "Установка",
-                            "start": "Запуск",
-                            "update": "Обновление",
-                            "reboot": "Ребут",
-                            "update_config": "Обновление конфига",
-                            "stop": "Остановка",
-                            "delete": "Удаление",
-                            "install_package": "Установка сборки",
-                            "reconnect": "Переподключение",
-                        }
-
-                        let params = JSON.parse(task['task_params']);
-                        let status = '<p><b>' + actions[params[0][1]] + '</b> ' + task['unit_name'] + ' #' +
-                            params[0][0];
-
-                        if (task['locked_by']) {
-                            status += " <span class='text-success'>(выполняется)</span>";
-                        }
-                        else if (task['last_error']) {
-                            status += " <span class='text-danger'>(ошибка)</span>";
-                        }
-                        status += '</p><hr>';
-
-                        html.append(status);
-                    })
-
-                    $('#' + tmpId).removeClass('loading spinner').html(html);
-                })
-
-                return $('<div>').attr('id', tmpId).addClass('loading spinner');
-
-            }
-        });
-
+        this.$nextTick(this.getTasks);
+        window.setInterval(() => {
+            this.getTasks();
+        }, 10000);
     },
     methods: {
         prepareCreateForm: function (server) {
@@ -300,6 +252,32 @@ let watchVM = new Vue({
                     });
 
                     watchVM.servers = servers;
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    watchVM.alertFailure(error)
+                })
+        },
+        getTasks: function () {
+            axios.get('/api/task/')
+                .then(function (response) {
+                    watchVM.tasks = response.data.tasks;
+                    let actions = {
+                        "init": "Установка",
+                        "start": "Запуск",
+                        "update": "Обновление",
+                        "reboot": "Ребут",
+                        "update_config": "Обновление конфига",
+                        "stop": "Остановка",
+                        "delete": "Удаление",
+                        "install_package": "Установка сборки",
+                        "reconnect": "Переподключение",
+                    }
+                    watchVM.tasks.forEach(function (task, task_id) {
+                        let params = JSON.parse(task['task_params']);
+                        watchVM.tasks[task_id]['params'] = params;
+                        watchVM.tasks[task_id]['action'] = actions[params[0][1]];
+                    });
                 })
                 .catch(function (error) {
                     console.log(error)

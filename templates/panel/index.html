@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <div v-for="server in servers" v-if="!server.parent" class="card shadow my-4">
+    <div v-for="server in servers" v-if="!server.parent" class="card shadow mb-4">
         <div class="card-header">
             <div class="container">
                 <div class="row control">
@@ -196,7 +196,7 @@
         </div>
     </div>
 
-    <div class="text-center">
+    <div class="text-center mb-4">
         <a @click="prepareCreateMasterForm" href="#" class="btn btn-primary text-white px-5">
             <span class="icon"><i class="fas fa-plus"></i></span><br>
             <span>Создать мастер</span>
