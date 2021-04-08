@@ -50,6 +50,9 @@ class DedicUnit(Client):
 
                         # Установка пароля
                         'echo "{0}:{1}" | sudo chpasswd && '
+                        
+                        # Настройка системы на хороший лад
+                        'echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf && '
 
                         # Установка зависимостей
                         'sudo apt update && sudo apt install -y python3-psutil unzip && '
