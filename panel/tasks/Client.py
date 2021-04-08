@@ -12,11 +12,11 @@ class Client:
     def __init__(self, model):
         self.client = None
         self.root_client = None
+        self.sftp_client = None
         self.dedic = model
 
     def __del__(self):
-        self.disconnect(root=True)
-        self.disconnect(root=False)
+        self.disconnect(root=True, single=True, sftp=True)
 
     def connect(self, root=False):
         client = paramiko.SSHClient()
@@ -54,13 +54,24 @@ class Client:
         else:
             self.client = client
 
-    def disconnect(self, root=False):
+    def disconnect(self, root=False, single=False, sftp=False):
+        """
+        Закрываем все соединения, чтобы не висели в памяти
+
+        :param sftp: отключиться от клиента SFTP
+        :param single: отключиться от SSH клиента под обычным пользователем
+        :param root: отключиться от SSH клиента под рут пользователем
+        :return:
+        """
         if root and self.root_client is not None:
             self.root_client.close()
             self.root_client = None
-        elif self.client is not None:
+        if single and self.client is not None:
             self.client.close()
             self.client = None
+        if sftp and self.sftp_client is not None:
+            self.sftp_client.close()
+            self.sftp_client = None
 
     def command(self, command, root=False, output=False):
         client = self.root_client if root else self.client
@@ -76,3 +87,15 @@ class Client:
             raise ServerBadCommand(' '.join(err))
 
         return stdout.readlines() if output else None
+
+    def get_sftp_client(self):
+        if self.sftp_client is None:
+            try:
+                transport = paramiko.Transport((self.dedic.ip, 22))
+                transport.connect(username=self.dedic.user_single, password=self.dedic.password_single)
+                self.sftp_client = paramiko.SFTPClient.from_transport(transport)
+            except AuthenticationException:
+                raise ServerAuthenticationFailed("Не удалось подключиться к {0}@{1} . Ошибка при авторизации.".format(
+                    self.dedic.user_single, self.dedic.ip
+                ))
+        return self.sftp_client

@@ -78,6 +78,13 @@ def server_task(server_id, operation):
                 server.stop()
             server.delete()
 
+        elif operation == "update_caretaker":
+            server.update_caretaker()
+
+        elif operation == "update_caretaker_legacy":
+            # Обновление управляющего скрипта в первых его версиях, когда ещё не была реализована тихая установка.
+            server.update_caretaker_legacy()
+
     except Exception as e:
         print("Для сервера {0}: {1}".format(server_id, str(e)))
         server.log(str(e))

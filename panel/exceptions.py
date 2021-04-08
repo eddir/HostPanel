@@ -12,3 +12,11 @@ class ServerBadCommand(Exception):
     команды на VPS.
     """
     pass
+
+
+class UndefinedCaretakerVersion(Exception):
+    """
+    Вывзывается при ошибке во время распознавания версии
+    скрипта Caretaker.
+    """
+    pass

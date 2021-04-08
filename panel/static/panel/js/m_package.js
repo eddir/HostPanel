@@ -37,6 +37,8 @@ let watchVM = new Vue({
                         "delete": "Удаление",
                         "install_package": "Установка сборки",
                         "reconnect": "Переподключение",
+                        "update_caretaker_legacy": "Обновление скрипта",
+                        "update_caretaker": "Обновление скрипта",
                     }
                     watchVM.tasks.forEach(function (task, task_id) {
                         let params = JSON.parse(task['task_params']);

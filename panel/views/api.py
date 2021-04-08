@@ -1,5 +1,7 @@
 import datetime
+import sys
 
+from packaging import version
 from django.template.defaultfilters import filesizeformat
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -11,10 +13,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from background_task.models import Task
 
+from HostPanel.settings import MEDIA_ROOT
 from panel.tasks import tasks
 from panel.models import Status, Server, MPackage, SRPackage, Online, Dedic
 from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer, \
     OnlineSerializer, DedicSerializer, TaskSerializer
+from panel.utils import get_caretaker_version
 
 
 class DedicView(APIView):
@@ -195,6 +199,17 @@ class StatusView(APIView):
         serializer = StatusSerializer(data=stat)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+
+        if 'caretaker_version' in request.data:
+            client_version = version.parse(request.data['caretaker_version'])
+        else:
+            client_version = version.parse("1.0.0")
+
+        if client_version < version.parse("2.0.0"):
+            tasks.server_task(request.data['server'], 'update_caretaker_legacy')
+
+        elif client_version < version.parse(get_caretaker_version()):
+            tasks.server_task(request.data['server'], 'update_caretaker')
 
         return Response({"success": "Статус сервера обновлён."})
 

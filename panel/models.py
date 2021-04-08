@@ -72,6 +72,9 @@ class Server(models.Model):
             server=self, created_at__gte=(now() - datetime.timedelta(minutes=10))
         ).first()
 
+    def is_running(self):
+        return self.get_last_status().condition == Status.Condition.RUNNING
+
 
 class Status(models.Model):
 

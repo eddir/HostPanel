@@ -41,8 +41,7 @@ let watchVM = new Vue({
             this.$nextTick(this.getServer);
             window.setInterval(() => {
                 this.getServer();
-            }, 10000);
-
+            }, 5000);
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
             window.setInterval(() => {
@@ -54,6 +53,14 @@ let watchVM = new Vue({
             this.getTasks();
         }, 10000);
     },
+    updated: function () {
+        if (location.pathname.split("/")[1] === "server") {
+            let server_log = document.getElementById('server_log');
+            if (server_log) {
+                server_log.scrollTop = server_log.scrollHeight;
+            }
+        }
+    },
     methods: {
         prepareCreateForm: function (server) {
             this.server = server;
@@ -62,14 +69,16 @@ let watchVM = new Vue({
             spawner.on('shown.bs.collapse', function () {
                 this.scrollIntoView();
             });
-        },
+        }
+        ,
         prepareCreateMasterForm: function (server) {
             let master = $('#create_master');
             master.collapse('toggle');
             master.on('shown.bs.collapse', function () {
                 this.scrollIntoView();
             });
-        },
+        }
+        ,
         changePackage: function (isMaster) {
             if (isMaster) {
                 this.form['config'] = "-mstStartMaster=true\n" +
@@ -85,7 +94,8 @@ let watchVM = new Vue({
                     "-mstMaxProcesses=1\n" +
                     "-mstRoomExe=~\\Pack\\Room\\Room.x86_64"
             }
-        },
+        }
+        ,
         startServer: function () {
             axios.put('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
@@ -95,7 +105,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         stopServer: function () {
             axios.delete('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
@@ -105,7 +116,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         createServer: function (type) {
             if (type === "spawner") {
                 this.form.parent = this.server.id;
@@ -118,7 +130,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         removeServer: function (type) {
             axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm')
                 .then(function (response) {
@@ -127,7 +140,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 });
-        },
+        }
+        ,
         createDedic: function (type) {
             axios.post('/api/dedics/', this.form)
                 .then(function (response) {
@@ -137,7 +151,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         reboot: function (server_id) {
             axios.patch('/api/server/' + server_id + '/')
                 .then(function (response) {
@@ -146,7 +161,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         updateConfig: function () {
             axios.post('/api/server/' + this.server.server.id + "/config", {"config": this.server.server.config})
                 .then(function (response) {
@@ -155,7 +171,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         getServer: function () {
             axios.get('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/')
                 .then(function (response) {
@@ -186,12 +203,47 @@ let watchVM = new Vue({
                     });
 
                     draw_charts(data);
+
+                    if (response.data.server.log) {
+                        let codes = {
+                            "&0": "#607d8b",
+                            "&1": "#3f51b5",
+                            "&2": "#4caf50",
+                            "&3": "#00bcd4",
+                            "&4": "#f44336",
+                            "&5": "#9c27b0",
+                            "&6": "#ffc107",
+                            "&7": "#9e9e9e",
+                            "&8": "#757575",
+                            "&9": "#2196F3",
+                            "&a": "#03a9f4",
+                            "&b": "#E91E63",
+                            "&c": "#673ab7",
+                            "&d": "#ff903b",
+                            "&e": "#ffeb3b",
+                            "&f": "#fff",
+                        }
+
+                        let log = response.data.server.log.split("<br>");
+                        for (let i = 0; i < log.length; i++) {
+                            for (const key in codes) {
+                                let pos = log[i].indexOf(key);
+                                if (pos !== -1) {
+                                    console.log()
+                                    log[i] = log[i].slice(0, pos) + "<span style='color: " + codes[key] + "'>" +
+                                        log[i].slice(pos + 2) + "</span>";
+                                }
+                            }
+                        }
+                        watchVM.server.server.log = log.join('<br>');
+                    }
                 })
                 .catch(function (error) {
                     watchVM.loaded = true;
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         getDedics: function () {
             axios.get('/api/dedics')
                 .then(function (response) {
@@ -217,7 +269,8 @@ let watchVM = new Vue({
                     console.log(error);
                     watchVM.alertFailure(error);
                 })
-        },
+        }
+        ,
         getServers: function () {
             axios.get('/api/servers/')
                 .then(function (response) {
@@ -257,7 +310,8 @@ let watchVM = new Vue({
                     console.log(error)
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         getTasks: function () {
             axios.get('/api/task/')
                 .then(function (response) {
@@ -272,6 +326,8 @@ let watchVM = new Vue({
                         "delete": "Удаление",
                         "install_package": "Установка сборки",
                         "reconnect": "Переподключение",
+                        "update_caretaker_legacy": "Обновление скрипта",
+                        "update_caretaker": "Обновление скрипта",
                     }
                     watchVM.tasks.forEach(function (task, task_id) {
                         let params = JSON.parse(task['task_params']);
@@ -283,19 +339,22 @@ let watchVM = new Vue({
                     console.log(error)
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         alertSuccess: function (message) {
             this.message = message;
             let toasts = $('#alert-success');
             toasts.toast({delay: 5000});
             toasts.toast('show');
-        },
+        }
+        ,
         alertFailure: function (message) {
             this.error = message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');
-        },
+        }
+        ,
         notImplemented: function () {
             this.alertFailure("Фича не реализована")
         }
