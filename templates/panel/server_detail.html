@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="highlight">
-                    <pre class="pre-scrollable" v-html="server.server.log"></pre>
+                    <pre class="pre-scrollable" v-html="server.server.log" id="server_log"></pre>
                 </div>
                 <a href="{% url 'panel:index' %}" class="btn btn-primary">Назад</a>
                 <a v-if="server.status && server.status.condition.code=='SP'" href="#"

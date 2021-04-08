@@ -33,7 +33,7 @@
 
 @media (max-width: 400px) {
     .container {
-      padding: 0;
+        padding: 0;
     }
 }
 
@@ -49,30 +49,37 @@
 }
 
 .blink {
-  animation: blinker 1s step-start infinite;
+    animation: blinker 1s step-start infinite;
 }
 
 @keyframes blinker {
-  50% {
-    opacity: 0;
-  }
+    50% {
+        opacity: 0;
+    }
 }
 
 
 /* credit: http://stephanwagner.me/only-css-loading-spinner */
 @keyframes spinner {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
+
 @-webkit-keyframes spinner {
-    to { -webkit-transform: rotate(360deg); }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
 }
+
 .spinner {
     margin-top: 20px;
     min-width: 24px;
     min-height: 24px;
 }
+
 .spinner:before {
-    content:'Loading…';
+    content: 'Loading…';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -81,6 +88,7 @@
     margin-top: -10px;
     margin-left: -10px;
 }
+
 .spinner:not(:required):before {
     content: '';
     border-radius: 50%;
@@ -93,3 +101,75 @@
 .scrollable {
     overflow-x: auto;
 }
+
+body {
+    color: #f3f4f6 !important;
+}
+
+.bg-dark {
+    background-color: #1a202c !important;
+}
+
+.card {
+    background-color: #1f2937 !important;
+    border: 0 solid #e5e7eb !important;
+}
+
+.card-header {
+    border-bottom: 1px solid #222b3a !important;
+    background-color: #2f3949 !important;
+}
+
+.btn-primary {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+}
+
+.form-control {
+    background-color: #111827 !important;
+    border: 1px solid transparent !important;
+}
+
+.table-bordered td, .table thead th, .table-bordered {
+    border: transparent !important;
+}
+
+.table-bordered tbody tr:nth-child(2n) {
+    background-color: #1a202c;
+}
+
+.table-bordered tbody tr:nth-child(odd) {
+    background-color: #252f3f;
+}
+
+.custom-file-label, .custom-file-label::after {
+    background-color: #2f3949 !important;
+    border: transparent !important;
+}
+
+.custom-file input {
+    cursor: pointer;
+}
+
+input:default {
+    background-color: #2f3949;
+    color: #fff;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #111827;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-corner { background: rgba(0,0,0,0.5); }
