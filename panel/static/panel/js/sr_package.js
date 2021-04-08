@@ -81,7 +81,8 @@ let watchVM = new Vue({
                 watchVM.alertSuccess("Сборка загружена.");
                 watchVM.getPackages();
             }).catch(function (e) {
-                watchVM.alertFailure("Ошибка. " + e);
+                console.log(e)
+                watchVM.alertFailure("Ошибка. " + e.data.message);
             });
         },
         installPackage(pid) {
@@ -105,7 +106,7 @@ let watchVM = new Vue({
             toasts.toast('show');
         },
         alertFailure: function (message) {
-            this.error = message.data.message;
+            this.error = message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');

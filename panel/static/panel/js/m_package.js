@@ -80,7 +80,7 @@ let watchVM = new Vue({
                 watchVM.alertSuccess("Сборка загружена.");
                 watchVM.getPackages();
             }).catch(function (e) {
-                watchVM.alertFailure("Ошибка. " + e.response);
+                watchVM.alertFailure("Ошибка. " + e.data.message);
             });
         },
         installPackage(pid) {

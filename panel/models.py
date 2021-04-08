@@ -2,6 +2,7 @@ import datetime
 import os
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
@@ -15,14 +16,14 @@ class Package(models.Model):
 class MPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
-    master = models.FileField(null=True, upload_to='packages')
+    master = models.FileField(upload_to='packages')
 
 
 class SRPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
-    spawner = models.FileField(null=True, upload_to='packages')
-    room = models.FileField(null=True, upload_to='packages')
+    spawner = models.FileField(upload_to='packages')
+    room = models.FileField(upload_to='packages')
 
 
 @receiver(models.signals.post_delete, sender=MPackage)
