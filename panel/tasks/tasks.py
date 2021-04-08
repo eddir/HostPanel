@@ -108,14 +108,15 @@ def package_task(package_id, operation, package_type):
                 servers = Server.objects.exclude(parent=None)
 
             for server in servers:
-                server.package_id = package_id
-                server.save()
-                server_unit = ServerUnit(server)
-                server_unit.log("Обновление сборки (package_id=%d)..." % package_id)
-                server_unit.stop()
-                server_unit.upload_package()
-                server_unit.start()
-                server_unit.log("Сборка обновлена.")
+                with suppress(Exception):
+                    server.package_id = package_id
+                    server.save()
+                    server_unit = ServerUnit(server)
+                    server_unit.log("Обновление сборки (package_id=%d)..." % package_id)
+                    server_unit.stop()
+                    server_unit.upload_package()
+                    server_unit.start()
+                    server_unit.log("Сборка обновлена.")
 
     except Exception as e:
         print(str(e))
