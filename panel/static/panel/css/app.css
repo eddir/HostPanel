@@ -2,6 +2,10 @@
     overflow-x: visible;
 }
 
+#main {
+    z-index: 1;
+}
+
 .toast {
     position: fixed;
     margin: 20px;
