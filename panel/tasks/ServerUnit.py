@@ -87,7 +87,6 @@ class ServerUnit(Client):
         self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))
 
         self.upload_package()
-        self.start()
         self.log("Сервер обновлён успешно.")
 
     def upload_package(self):
