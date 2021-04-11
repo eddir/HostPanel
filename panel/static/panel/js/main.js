@@ -135,7 +135,7 @@ let watchVM = new Vue({
         },
         removeServer: function (type) {
             if (confirm("Удалить сервер безвозвратно?")) {
-                axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm')
+                axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm/')
                     .then(function (response) {
                         window.location = '/';
                     })
@@ -177,7 +177,7 @@ let watchVM = new Vue({
             }
         },
         updateConfig: function () {
-            axios.post('/api/server/' + this.server.server.id + "/config", {"config": this.server.server.config})
+            axios.post('/api/server/' + this.server.server.id + "/config/", {"config": this.server.server.config})
                 .then(function (response) {
                     watchVM.alertSuccess("Конфиг обновлён");
                 })
@@ -256,7 +256,7 @@ let watchVM = new Vue({
                 })
         },
         getDedics: function () {
-            axios.get('/api/dedics')
+            axios.get('/api/dedics/')
                 .then(function (response) {
                     let dedics = response.data.dedics;
                     for (let i = 0; i < dedics.length; i++) {
@@ -280,6 +280,9 @@ let watchVM = new Vue({
                     console.log(error);
                     watchVM.alertFailure(error);
                 })
+        },
+        showDedicLogs: function (dedic_id) {
+            $('#log').html(watchVM.servers.find(el => el.id === dedic_id).log)
         },
         getServers: function () {
             axios.get('/api/servers/')

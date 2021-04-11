@@ -114,7 +114,7 @@ body {
     background-color: #1a202c !important;
 }
 
-.card {
+.card, .modal-content {
     background-color: #1f2937 !important;
     border: 0 solid #e5e7eb !important;
 }

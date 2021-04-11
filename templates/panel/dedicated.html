@@ -4,7 +4,7 @@
 
     <div class="card shadow md-4">
         <div class="card-header">
-             <h1 class="p-0 font-weight-bold text-primary">Дедики</h1>
+            <h1 class="p-0 font-weight-bold text-primary">Дедики</h1>
         </div>
 
         <div class="card-body">
@@ -43,6 +43,7 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -57,13 +58,19 @@
                                 <td>
                                     <span v-if="server.condition.code == 'OF'" v-text="server.last_listen"></span>
                                 </td>
+                                <td>
+                                    <a v-if="server.condition.code == 'OF'" class="btn btn-outline-primary btn-sm"
+                                       @click="showDedicLogs(server.id)" href="#" data-toggle="modal"
+                                       data-target="#log_modal">Логи</a>
+                                </td>
                                 <td style="width:1%">
                                     <a v-bind:href="'/dedic/' + server.id + '/reconnect/'" class="btn btn-primary">
                                             <span class="icon text-white">
                                                 <i class="fas fa-redo"></i>
                                             </span>
                                     </a>
-                                </td><td style="width:1%">
+                                </td>
+                                <td style="width:1%">
                                     <a v-bind:href="'/dedic/' + server.id + '/edit/'" class="btn btn-warning">
                                             <span class="icon text-black-50">
                                                 <i class="fas fa-edit"></i>
@@ -163,4 +170,27 @@
 {% block js %}
     {% load static %}
     <script src="{% static "panel/js/main.js" %}"></script>
+{% endblock %}
+
+{% block extra_footer %}
+    <div class="modal bg-dark" id="log_modal" tabindex="10" role="dialog" aria-labelledby="log_modal_label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="log_modal_label">Логи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="highlight">
+                        <pre class="pre-scrollable" id="log"></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

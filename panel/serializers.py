@@ -14,7 +14,7 @@ class DedicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dedic
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'condition', 'last_listen')
+                  'condition', 'last_listen', 'log')
 
     def to_representation(self, instance):
         representation = super(DedicSerializer, self).to_representation(instance)
