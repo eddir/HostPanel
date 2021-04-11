@@ -229,7 +229,7 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Дедик
-                            <select v-model="form.dedic" @change="changeConfig(true)" id="dedic" class="form-control">
+                            <select v-model="form.dedic" @change="changeConfig(false)" id="dedic" class="form-control">
                                 <option disabled selected value :value="null"> ---- </option>
                                 <option v-for="dedic in dedics" v-text="dedic.name" v-bind:value="dedic.id"></option>
                             </select>

@@ -45,18 +45,10 @@ def delete_server(request, pk):
         return HttpResponse(200)
 
 
-class DedicDelete(DeleteView):
-    model = Dedic
-    success_url = reverse_lazy('panel:index')
-
-    def get_context_data(self, **kwargs):
-        context = super(DedicDelete, self).get_context_data(**kwargs)
-        return context
-
-
 def delete_dedic(request, pk):
-    tasks.dedic_task(pk, "delete")
-    return redirect('panel:dedicated')
+    if not Server.objects.filter(dedic=pk).exists():
+        tasks.dedic_task(pk, "delete")
+    return HttpResponse(200)
 
 
 def reconnect_dedic(request, pk):

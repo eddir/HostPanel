@@ -163,8 +163,22 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        }
-        ,
+        },
+        deleteDedic: function (dedic) {
+            if (!dedic['has_child']) {
+                if (confirm("Удалить дедик " + dedic.name + " вместе со всеми данными на нём?")) {
+                    axios.post("/dedic/" + dedic.id + "/delete/confirm/")
+                        .then(function (response) {
+                            watchVM.alertSuccess("Удаление запущено.");
+                        })
+                        .catch(function (error) {
+                            watchVM.alertFailure(error.data.message);
+                        })
+                }
+            } else {
+                watchVM.alertFailure("Нельзя удалить дедик с серверами на нём.");
+            }
+        },
         reboot: function (server_id) {
             if (confirm("Начать ребут вдс?")) {
                 axios.patch('/api/server/' + server_id + '/')

@@ -11,10 +11,16 @@ from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic
 
 
 class DedicSerializer(serializers.ModelSerializer):
+    has_child = serializers.SerializerMethodField()
+
     class Meta:
         model = Dedic
         fields = ('id', 'name', 'ip', 'user_root', 'password_root', 'user_single', 'password_single', 'ssh_key',
-                  'condition', 'last_listen', 'log')
+                  'condition', 'last_listen', 'log', 'has_child')
+
+    @staticmethod
+    def get_has_child(dedic):
+        return Server.objects.filter(dedic=dedic).exists()
 
     def to_representation(self, instance):
         representation = super(DedicSerializer, self).to_representation(instance)

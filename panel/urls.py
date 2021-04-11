@@ -20,7 +20,6 @@ urlpatterns = [
     path('server/<int:pk>/delete/confirm/', delete_server, name='server.delete.confirm'),
 
     # Действия с дедиками
-    path('dedic/<int:pk>/delete/', DedicDelete.as_view(), name='dedic.delete'),
     path('dedic/<int:pk>/delete/confirm/', delete_dedic, name='dedic.delete.confirm'),
     path('dedic/<int:pk>/edit/', DedicEdit.as_view(), name='dedic.edit'),
     path('dedic/<int:pk>/reconnect/', reconnect_dedic, name='dedic.reconnect'),
