@@ -77,20 +77,27 @@ let watchVM = new Vue({
                 this.scrollIntoView();
             });
         },
-        changePackage: function (isMaster) {
-            if (isMaster) {
+        changeConfig: function (isSpawner) {
+            if (isSpawner) {
+                let dedic = watchVM.dedics.find(function (d) {
+                    return d.id === watchVM.form.dedic;
+                });
+
+                console.log(watchVM.server);
+
+                this.form['config'] =
+                    "-mstStartSpawner=true\n" +
+                    "-mstStartClientConnection=true\n" +
+                    "-mstMasterIp=" + watchVM.server.dedic_data.ip + "\n" +
+                    "-mstMasterPort=5000\n" +
+                    "-mstRoomIp=" + dedic.ip + "\n" +
+                    "-mstRoomExe=\\root\\" + dedic.user_single + "\\Room\\Room.x86_64\n" +
+                    "-mstMaxProcesses=1"
+            } else {
                 this.form['config'] = "-mstStartMaster=true\n" +
                     "-mstStartClientConnection=true\n" +
                     "-mstMasterIp=127.0.0.1\n" +
                     "-mstMasterPort=5000"
-            } else {
-                this.form['config'] = "-mstStartSpawner=true\n" +
-                    "-mstStartClientConnection=true\n" +
-                    "-mstMasterIp=213.139.209.176\n" +
-                    "-mstMasterPort=5000\n" +
-                    "-mstRoomIp=213.139.209.176\n" +
-                    "-mstMaxProcesses=1\n" +
-                    "-mstRoomExe=~\\Pack\\Room\\Room.x86_64"
             }
         },
         startServer: function () {

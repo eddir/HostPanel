@@ -150,14 +150,14 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Название
-                            <input v-model="form['name']" type="text" value="Server ###"
+                            <input v-model="form['name']" type="text" value="Server "
                                    class="form-control form-control-sm">
                         </label>
                     </div>
                     <div class="form-group col-sm-6">
                         <label>
                             Дедик
-                            <select v-model="form.dedic" id="dedic" class="form-control">
+                            <select v-model="form.dedic" @change="changeConfig(true)" id="dedic" class="form-control">
                                 <option disabled selected value :value="null"> ---- </option>
                                 <option v-for="dedic in dedics" v-text="dedic.name" v-bind:value="dedic.id"></option>
                             </select>
@@ -166,7 +166,7 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Сборка
-                            <select v-model="form.package" @change="changePackage(true)" id="package"
+                            <select v-model="form.package" id="package"
                                     class="form-control">
                                 <option disabled selected value :value="null"> ---- </option>
                                 <option v-for="package in sr_packages" v-text="package.name"
@@ -222,14 +222,14 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Название
-                            <input v-model="form['name']" type="text" value="Server ###"
+                            <input v-model="form['name']" type="text" value="Server "
                                    class="form-control form-control-sm">
                         </label>
                     </div>
                     <div class="form-group col-sm-6">
                         <label>
                             Дедик
-                            <select v-model="form.dedic" id="dedic" class="form-control">
+                            <select v-model="form.dedic" @change="changeConfig(true)" id="dedic" class="form-control">
                                 <option disabled selected value :value="null"> ---- </option>
                                 <option v-for="dedic in dedics" v-text="dedic.name" v-bind:value="dedic.id"></option>
                             </select>
@@ -238,8 +238,7 @@
                     <div class="form-group col-sm-6">
                         <label>
                             Сборка
-                            <select v-model="form.package" @change="changePackage(true)" id="package"
-                                    class="form-control">
+                            <select v-model="form.package" id="package" class="form-control">
                                 <option disabled selected value :value="null"> ---- </option>
                                 <option v-for="package in m_packages" v-text="package.name"
                                         v-bind:value="package.id"></option>
