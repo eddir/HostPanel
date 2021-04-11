@@ -82,6 +82,7 @@ class TasksTestCase(TestCase):
 
         # Тест создания сервера на том же дедике
 
+        print("[*] Ниже должна появиться ошибка.")
         response = self.client.post('/api/servers/', {
             'parent': "",
             'dedic': dedic_id,

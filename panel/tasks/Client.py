@@ -80,7 +80,13 @@ class Client:
             self.connect(root)
             client = self.root_client if root else self.client
 
-        stdin, stdout, stderr = client.exec_command(command)
+        try:
+            stdin, stdout, stderr = client.exec_command(command)
+        except paramiko.ssh_exception.SSHException:
+            # Вызвается при утрате соединения
+            self.connect()
+            client = self.root_client if root else self.client
+            stdin, stdout, stderr = client.exec_command(command)
 
         if stdout.channel.recv_exit_status() != 0:
             err = stderr.readlines()

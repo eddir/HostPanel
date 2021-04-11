@@ -69,6 +69,12 @@ class ServerView(APIView):
 
     @staticmethod
     def post(request):
+        """
+        Инициализация сервера
+
+        :param request:
+        :return:
+        """
         serializer = ServerSerializer(data=request.data)
         server_saved = None
 
@@ -174,6 +180,18 @@ class ServerInstanceView(APIView):
         tasks.server_task(pk, "stop")
         Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
         return Response({"success": "Сервер остановлен."})
+
+    @staticmethod
+    def post(request, pk):
+        """
+        Переустановка сервера
+
+        :param pk:
+        :param request:
+        :return:
+        """
+        tasks.server_task(pk, "reinstall")
+        return Response({"success": "Сервер переустанавливается."})
 
 
 @method_decorator(csrf_exempt, name='dispatch')

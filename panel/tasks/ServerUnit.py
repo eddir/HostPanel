@@ -74,12 +74,14 @@ class ServerUnit(Client):
 
         self.command("reboot", root=True)
 
-    def delete(self):
+    def delete(self, save_model=False):
         print("Удаление сервера %d" % self.model.id)
         Status(server=self.model, condition=Status.Condition.DELETED).save()
 
         self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single), root=True)
-        self.model.delete()
+
+        if not save_model:
+            self.model.delete()
 
     def update(self):
         self.stop()

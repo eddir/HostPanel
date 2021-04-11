@@ -19,14 +19,20 @@ class DedicUnit(Client):
             self.model.log = ""
 
     def init(self):
+        """
+        Инициализация дедика. Устанавливаются нужные зависимости и создаётся пользователь.
+
+        :return:
+        """
         try:
             self.connect()
         except ServerAuthenticationFailed:
             try:
                 self.log("Начинается инициализация пользователя.")
 
-                self.model.password_single = User.objects.make_random_password()
-                self.model.save()
+                if not self.model.password_single:
+                    self.model.password_single = User.objects.make_random_password()
+                    self.model.save()
 
                 print("Подключение...")
                 self.connect(root=True)
@@ -80,13 +86,14 @@ class DedicUnit(Client):
         self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message)
         self.model.save()
 
-    def delete(self):
+    def delete(self, save_model=False):
         print("Удаление dedic %d" % self.model.id)
 
         with suppress(Exception):
             self.command("pkill -u {0} && deluser {0} && rm -rf /home/{0}/".format(self.model.user_single), root=True)
 
-        self.model.delete()
+        if not save_model:
+            self.model.delete()
 
     def reconnect(self):
         print("Попытка переподключиться к dedic %d" % self.model.id)

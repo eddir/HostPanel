@@ -57,8 +57,11 @@
                    class="btn btn-danger">Стоп</a>
                 <a v-if="server.children == false && (server.status == null ||
                     (server.status.condition.code != 'RN' && server.status.condition.code != 'SP'))"
-                   @click.prevent="removeServer()" class="btn btn-danger float-right" href="#">
+                   @click.prevent="removeServer()" class="btn btn-danger float-right ml-1" href="#">
                     Удалить принудительно
+                </a>
+                <a @click.prevent="reinstallServer()" class="btn btn-warning float-right ml-1" href="#">
+                    Полная переустановка
                 </a>
 
 
@@ -76,8 +79,6 @@
 
                 <p>Сервер пока не создан. Это могло произойти по следующим причинам:</p>
                 <ol>
-                    <li>Сервер прямо сейчас создаётся и в скором времени информация о нём появится в панели.</li>
-                    <li>Процесс выполнения задач не запущен.</li>
                     <li>Произошла непревиденная ошибка в процессе его создания.</li>
                 </ol>
             </template>

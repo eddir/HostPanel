@@ -66,3 +66,5 @@ class TasksTestCase(TestCase):
         s.delete()
         d.delete()
 
+        print("[*] Тест фоновых задач пройден!")
+
