@@ -30,7 +30,6 @@ class ServerUnit(Client):
         self.log("Начинается инициализация сервера.")
 
         self.upload_package()
-        self.upload_config()
 
         print("Запуск клиента...")
         self.start()
@@ -134,6 +133,7 @@ class ServerUnit(Client):
         cmd = """mkdir -p /home/{0}/HostPanel/Caretaker && \
             {1} && rm ~/HostPanel/Caretaker.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
         self.command(cmd, root=False)
+        self.upload_config()
         print("Распаковано")
 
     def update_config(self):
