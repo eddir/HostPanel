@@ -4,11 +4,12 @@ import subprocess
 import sys
 import threading
 from contextlib import suppress
+from datetime import datetime
 
 import psutil
 import requests
 
-VERSION = "2.1.2.4"
+VERSION = "2.2.0.0"
 
 
 def watch(configuration):
@@ -55,15 +56,19 @@ def start(configuration):
     if configuration.package == "Master":
         os.chdir("HostPanel/Master/")
         os.system('chmod +x ./Master.x86_64')
-        configuration.server_pid = subprocess.Popen("./Master.x86_64 >> ../Master.log", shell=True,
-                                                    preexec_fn=os.setsid).pid
+        configuration.server_pid = subprocess.Popen(
+            "./Master.x86_64 >> ../{0}_master.log".format(
+                datetime.now().strftime("%d.%m_%H:%M")
+            ), shell=True, preexec_fn=os.setsid).pid
 
     elif configuration.package == "SR":
         os.chdir("HostPanel/Pack/Spawner/")
         os.system("chmod +x ./Spawner.x86_64")
         os.system("chmod +x ~/HostPanel/Pack/Room/Room.x86_64")
-        configuration.server_pid = subprocess.Popen("./Spawner.x86_64 >> ../Spawner.log", shell=True,
-                                                    preexec_fn=os.setsid).pid
+        configuration.server_pid = subprocess.Popen(
+            "./Spawner.x86_64 >> ../{0}_spawner.log".format(
+                datetime.now().strftime("%d.%m_%H:%M")
+            ), shell=True, preexec_fn=os.setsid).pid
 
     else:
         raise ValueError("Invalid package " + str(configuration.package))
