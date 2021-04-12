@@ -91,7 +91,7 @@ let watchVM = new Vue({
                     "-mstMasterIp=" + watchVM.server.dedic_data.ip + "\n" +
                     "-mstMasterPort=5000\n" +
                     "-mstRoomIp=" + dedic.ip + "\n" +
-                    "-mstRoomExe=\\root\\" + dedic.user_single + "\\Room\\Room.x86_64\n" +
+                    "-mstRoomExe=\\home\\" + dedic.user_single + "\\Room\\Room.x86_64\n" +
                     "-mstMaxProcesses=1"
             } else {
                 this.form['config'] = "-mstStartMaster=true\n" +
