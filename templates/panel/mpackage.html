@@ -88,7 +88,7 @@
                         <label for="master">Master архив</label>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="master" accept=".zip"
-                                   ref="file" v-on:change="handleFileUpload($event)">
+                                   v-on:change="handleFileUpload($event)">
                             <label v-if="form.master" v-text="form.master.name" class="custom-file-label"
                                    for="room"></label>
                             <label v-else class="custom-file-label" for="room">Выберите файл</label>

@@ -2,13 +2,8 @@ import os
 import shlex
 import tarfile
 from datetime import datetime
-from pprint import pprint
-
-import paramiko
-from paramiko import AuthenticationException
 
 from HostPanel import settings
-from panel.exceptions import ServerAuthenticationFailed
 from panel.models import Status
 from panel.tasks.Client import Client
 

@@ -1,9 +1,7 @@
-import logging
 import re
 import traceback
 from pprint import pprint
 
-from rest_framework.views import exception_handler
 from django.http import JsonResponse
 
 from HostPanel.settings import MEDIA_ROOT

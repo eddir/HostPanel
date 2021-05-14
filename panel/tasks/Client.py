@@ -38,7 +38,7 @@ class Client:
                 client.connect(hostname=self.dedic.ip, username=username, password=password, port=22, timeout=3,
                                allow_agent=False, look_for_keys=False)
 
-        except AuthenticationException as e:
+        except AuthenticationException:
             self.dedic.condition = False
             self.dedic.save()
             raise ServerAuthenticationFailed("Не удалось подключиться к {0}@{1} . Ошибка при авторизации.".format(

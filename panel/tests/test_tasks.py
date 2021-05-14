@@ -1,9 +1,5 @@
-import time
-from pprint import pprint
-
 from django.test import TestCase
 
-from panel import tasks
 from panel.models import MPackage, Dedic, Server, Status
 from panel.tasks.DedicUnit import DedicUnit
 from panel.tasks.ServerUnit import ServerUnit

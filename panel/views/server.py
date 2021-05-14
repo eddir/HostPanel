@@ -3,8 +3,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, UpdateView, DetailView, ListView
 
-from panel.tasks import tasks
 from panel.models import Server, Dedic
+from panel.tasks import tasks
 
 
 class ServerListView(ListView):
@@ -38,9 +38,11 @@ class ServerDelete(DeleteView):
 
 def delete_server(request, pk):
     if request.method == 'POST':
+        # Обычное удаление с зачисткой файлов на вдс
         tasks.server_task(pk, "delete")
         return redirect('panel:index')
     elif request.method == 'DELETE':
+        # Принудительное удаление без обращения к вдс
         Server.objects.get(pk=pk).delete()
         return HttpResponse(200)
 

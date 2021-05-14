@@ -1,10 +1,8 @@
 import json
-from pprint import pprint
 from unittest import TestCase
 
 from background_task.models import Task
 from django.test import Client
-from django.utils.timezone import now
 
 
 class TasksTestCase(TestCase):

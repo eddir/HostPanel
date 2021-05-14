@@ -1,23 +1,21 @@
 import datetime
-import sys
 
-from packaging import version
+from background_task.models import Task
 from django.template.defaultfilters import filesizeformat
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
+from packaging import version
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from background_task.models import Task
 
-from HostPanel.settings import MEDIA_ROOT
-from panel.tasks import tasks
 from panel.models import Status, Server, MPackage, SRPackage, Online, Dedic
 from panel.serializers import StatusSerializer, ServerSerializer, MPackageSerializer, SRPackageSerializer, \
     OnlineSerializer, DedicSerializer, TaskSerializer
+from panel.tasks import tasks
 from panel.utils import get_caretaker_version
 
 

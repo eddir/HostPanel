@@ -1,10 +1,9 @@
 from contextlib import suppress
 from datetime import datetime
 
+from django.contrib.auth.models import User
 from django.utils import timezone
 from paramiko import AuthenticationException
-
-from django.contrib.auth.models import User
 
 from panel.exceptions import ServerAuthenticationFailed, ServerBadCommand
 from panel.tasks.Client import Client
