@@ -92,8 +92,8 @@ class ServerUnit(Client):
 
         if self.model.parent:
             # Зачистка
-            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/".format(
-                self.model.dedic.user_single))
+            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/ "
+                         "&& mkdir -p /home/{0}/HostPanel".format(self.model.dedic.user_single))
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
                        '/home/%s/HostPanel/spawner_package.zip' % self.model.dedic.user_single)
@@ -101,14 +101,14 @@ class ServerUnit(Client):
             client.put(self.model.package.srpackage.room.path, '/home/%s/HostPanel/room_package.zip' %
                        self.model.dedic.user_single)
             unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
-                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/".format(
-                self.model.dedic.user_single)
+                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/"\
+                .format(self.model.dedic.user_single)
             rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
 
         else:
             # Зачистка
             cmd = "rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Caretaker/ && " \
-                  "mkdir /home/{0}/HostPanel"
+                  "mkdir -p /home/{0}/HostPanel"
             self.command(cmd.format(self.model.dedic.user_single))
 
             print("master")
