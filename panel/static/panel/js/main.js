@@ -14,6 +14,7 @@ let watchVM = new Vue({
         dedics: {},
         loaded: false,
         tasks: {},
+        config: "",
         form: {
             parent: null,
             name: "Unit " + Math.floor(Math.random() * 1000),
@@ -40,7 +41,7 @@ let watchVM = new Vue({
         } else if (path[1] === "server" && path.length === 4) {
             this.$nextTick(this.getServer);
             window.setInterval(() => {
-                this.getServer();
+                this.getServer(false);
             }, 5000);
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
@@ -189,7 +190,7 @@ let watchVM = new Vue({
             }
         },
         updateConfig: function () {
-            axios.post('/api/server/' + this.server.server.id + "/config/", {"config": this.server.server.config})
+            axios.post('/api/server/' + this.server.server.id + "/config/", {"config": this.config})
                 .then(function (response) {
                     watchVM.alertSuccess("Конфиг обновлён");
                 })
@@ -197,11 +198,15 @@ let watchVM = new Vue({
                     watchVM.alertFailure(error.data.message);
                 })
         },
-        getServer: function () {
+        getServer: function (touchConfig=true) {
             axios.get('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/')
                 .then(function (response) {
                     watchVM.loaded = true;
                     watchVM.server = response.data;
+
+                    if (touchConfig) {
+                        watchVM.config = response.data.server.config;
+                    }
 
                     if (watchVM.server.status) {
                         let conditions = {
