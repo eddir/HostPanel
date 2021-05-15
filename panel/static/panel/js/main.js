@@ -83,15 +83,13 @@ let watchVM = new Vue({
                     return d.id === watchVM.form.dedic;
                 });
 
-                console.log(watchVM.server);
-
                 this.form['config'] =
                     "-mstStartSpawner=true\n" +
                     "-mstStartClientConnection=true\n" +
                     "-mstMasterIp=" + watchVM.server.dedic_data.ip + "\n" +
                     "-mstMasterPort=5000\n" +
                     "-mstRoomIp=" + dedic.ip + "\n" +
-                    "-mstRoomExe=\\home\\" + dedic.user_single + "\\Room\\Room.x86_64\n" +
+                    "-mstRoomExe=\\home\\" + dedic.user_single + "\\HostPanel\\Pack\\Room\\Room.x86_64\n" +
                     "-mstMaxProcesses=1"
             } else {
                 this.form['config'] = "-mstStartMaster=true\n" +
