@@ -38,7 +38,7 @@ urlpatterns = [
     path('api/servers/status/', StatusView.as_view()),
     path('api/servers/online/', OnlineView.as_view()),
     path('api/server/<int:pk>/', ServerInstanceView.as_view()),
-    path('api/server/<int:pk>/config', update_config),
+    path('api/server/<int:pk>/config/', update_config),
 
     path('api/m_package/', MPackageView.as_view()),
     path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),
