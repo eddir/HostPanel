@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.dispatch import receiver
 from django.utils.timezone import now
+from background_task.models import Task
 
 
 class Package(models.Model):
@@ -58,6 +59,19 @@ class Dedic(models.Model):
     last_listen = models.DateTimeField(null=True)
 
 
+@receiver(models.signals.post_delete, sender=Dedic)
+def auto_delete_tasks_on_delete_dedic(sender, instance, **kwargs):
+    """
+    Отменяем задачи, связанные с дедиком, которого уже нет вследствие его удаления.
+    :param sender:
+    :param instance:
+    :param kwargs:
+    :return:
+    """
+    Task.objects.filter(task_params__contains="[" + str(instance.id)).filter(task_name="panel.tasks.tasks.dedic_task")\
+        .delete()
+
+
 class Server(models.Model):
     parent = models.ForeignKey('Server', on_delete=models.CASCADE, null=True, blank=True)
     dedic = models.ForeignKey('Dedic', on_delete=models.RESTRICT)
@@ -73,6 +87,19 @@ class Server(models.Model):
 
     def is_running(self):
         return self.get_last_status().condition == Status.Condition.RUNNING
+
+
+@receiver(models.signals.post_delete, sender=Server)
+def auto_delete_tasks_on_delete_server(sender, instance, **kwargs):
+    """
+    Отменяем задачи, связанные с сервером, которого уже нет вследствие его удаления.
+    :param sender:
+    :param instance:
+    :param kwargs:
+    :return:
+    """
+    Task.objects.filter(task_params__contains="[" + str(instance.id)).filter(task_name="panel.tasks.tasks.server_task")\
+        .delete()
 
 
 class Status(models.Model):
