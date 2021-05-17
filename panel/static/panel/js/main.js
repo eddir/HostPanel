@@ -15,6 +15,7 @@ let watchVM = new Vue({
         loaded: false,
         tasks: {},
         config: "",
+        starting: false,
         form: {
             parent: null,
             name: "Unit " + Math.floor(Math.random() * 1000),
@@ -43,23 +44,27 @@ let watchVM = new Vue({
             window.setInterval(() => {
                 this.getServer(false);
             }, 5000);
+
         } else if (path[1] === "dedicated") {
             this.$nextTick(this.getDedics);
             window.setInterval(() => {
                 this.getDedics();
             }, 10000);
         }
+
         this.$nextTick(this.getTasks);
         window.setInterval(() => {
             this.getTasks();
         }, 10000);
     },
     updated: function () {
-        if (location.pathname.split("/")[1] === "server") {
+        if (this.starting && location.pathname.split("/")[1] === "server") {
+            displayConfigSettings();
             let server_log = document.getElementById('server_log');
             if (server_log) {
                 server_log.scrollTop = server_log.scrollHeight;
             }
+            this.starting = false;
         }
     },
     methods: {
@@ -70,14 +75,16 @@ let watchVM = new Vue({
             spawner.on('shown.bs.collapse', function () {
                 this.scrollIntoView();
             });
-        },
+        }
+        ,
         prepareCreateMasterForm: function (server) {
             let master = $('#create_master');
             master.collapse('toggle');
             master.on('shown.bs.collapse', function () {
                 this.scrollIntoView();
             });
-        },
+        }
+        ,
         changeConfig: function (isSpawner) {
             if (isSpawner) {
                 let dedic = watchVM.dedics.find(function (d) {
@@ -98,7 +105,8 @@ let watchVM = new Vue({
                     "-mstMasterIp=127.0.0.1\n" +
                     "-mstMasterPort=5000"
             }
-        },
+        }
+        ,
         startServer: function () {
             axios.put('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
@@ -108,7 +116,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         stopServer: function () {
             axios.delete('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
                 .then(function (response) {
@@ -118,7 +127,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         createServer: function (type) {
             if (type === "spawner") {
                 this.form.parent = this.server.id;
@@ -131,7 +141,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         removeServer: function (type) {
             if (confirm("Удалить сервер безвозвратно?")) {
                 axios.delete('/server/' + watchVM.server.server.id + '/delete/confirm/')
@@ -142,7 +153,8 @@ let watchVM = new Vue({
                         watchVM.alertFailure(error.data.message);
                     });
             }
-        },
+        }
+        ,
         reinstallServer: function () {
             if (confirm("Переустановка может привести к потере данных. Будут переустановлены все сервера " +
                 "под данным пользователем. Продолжить?")) {
@@ -152,7 +164,8 @@ let watchVM = new Vue({
                         watchVM.alertFailure(error.data.message);
                     });
             }
-        },
+        }
+        ,
         createDedic: function (type) {
             axios.post('/api/dedics/', this.form)
                 .then(function (response) {
@@ -162,7 +175,8 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
+        }
+        ,
         deleteDedic: function (dedic) {
             if (!dedic['has_child']) {
                 if (confirm("Удалить дедик " + dedic.name + " вместе со всеми данными на нём?")) {
@@ -177,7 +191,8 @@ let watchVM = new Vue({
             } else {
                 watchVM.alertFailure("Нельзя удалить дедик с серверами на нём.");
             }
-        },
+        }
+        ,
         reboot: function (server_id) {
             if (confirm("Начать ребут вдс?")) {
                 axios.patch('/api/server/' + server_id + '/')
@@ -188,7 +203,8 @@ let watchVM = new Vue({
                         watchVM.alertFailure(error.data.message);
                     })
             }
-        },
+        }
+        ,
         updateConfig: function () {
             axios.post('/api/server/' + this.server.server.id + "/config/", {"config": this.config})
                 .then(function (response) {
@@ -197,8 +213,9 @@ let watchVM = new Vue({
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
-        },
-        getServer: function (touchConfig=true) {
+        }
+        ,
+        getServer: function (touchConfig = true) {
             axios.get('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/')
                 .then(function (response) {
                     watchVM.loaded = true;
@@ -206,6 +223,7 @@ let watchVM = new Vue({
 
                     if (touchConfig) {
                         watchVM.config = response.data.server.config;
+                        displayConfigSettings();
                     }
 
                     if (watchVM.server.status) {
@@ -265,13 +283,15 @@ let watchVM = new Vue({
                             }
                         }
                         watchVM.server.server.log = log.join('<br>');
+                        watchVM.starting = true;
                     }
                 })
                 .catch(function (error) {
                     watchVM.loaded = true;
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         getDedics: function () {
             axios.get('/api/dedics/')
                 .then(function (response) {
@@ -297,10 +317,12 @@ let watchVM = new Vue({
                     console.log(error);
                     watchVM.alertFailure(error);
                 })
-        },
+        }
+        ,
         showDedicLogs: function (dedic_id) {
             $('#log').html(watchVM.servers.find(el => el.id === dedic_id).log)
-        },
+        }
+        ,
         getServers: function () {
             axios.get('/api/servers/')
                 .then(function (response) {
@@ -340,7 +362,8 @@ let watchVM = new Vue({
                     console.log(error)
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         getTasks: function () {
             axios.get('/api/task/')
                 .then(function (response) {
@@ -369,19 +392,22 @@ let watchVM = new Vue({
                     console.log(error)
                     watchVM.alertFailure(error)
                 })
-        },
+        }
+        ,
         alertSuccess: function (message) {
             this.message = message;
             let toasts = $('#alert-success');
             toasts.toast({delay: 5000});
             toasts.toast('show');
-        },
+        }
+        ,
         alertFailure: function (message) {
             this.error = message;
             let toasts = $('#alert-fail');
             toasts.toast({delay: 5000});
             toasts.toast('show');
-        },
+        }
+        ,
         notImplemented: function () {
             this.alertFailure("Фича не реализована")
         }

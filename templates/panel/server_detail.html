@@ -69,10 +69,10 @@
 
                 <div class="form-group col-sm-12">
                     <label for="config">application.cfg</label>
-                    <textarea class="form-control" v-model="config"
-                              id="config" rows="9" style="min-width: 100%"></textarea>
+                    <div id="config"></div>
                 </div>
-                <button type="button" class="btn btn-outline-success" @click.prevent="updateConfig()">Сохранить</button>
+                <button type="button" class="btn btn-outline-success" onclick="increaseConfig()">+ поле</button>
+                <button type="button" class="btn btn-outline-success" onclick="saveConfig()">Сохранить</button>
                 <br>
             </template>
             <template v-else-if="loaded">
@@ -91,6 +91,7 @@
 {% block js %}
     {% load static %}
     <script src="{% static "panel/js/statistics.js" %}"></script>
+    <script src="{% static "panel/js/server_config.js" %}"></script>
     <script src="{% static "panel/js/main.js" %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
 {% endblock %}
