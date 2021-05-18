@@ -16,6 +16,7 @@ let watchVM = new Vue({
         tasks: {},
         config: "",
         starting: false,
+        first_load: true,
         form: {
             parent: null,
             name: "Unit " + Math.floor(Math.random() * 1000),
@@ -58,13 +59,14 @@ let watchVM = new Vue({
         }, 10000);
     },
     updated: function () {
-        if (this.starting && location.pathname.split("/")[1] === "server") {
+        if (this.starting && this.first_load && location.pathname.split("/")[1] === "server") {
             displayConfigSettings();
             let server_log = document.getElementById('server_log');
             if (server_log) {
                 server_log.scrollTop = server_log.scrollHeight;
             }
             this.starting = false;
+            this.first_load = false;
         }
     },
     methods: {
