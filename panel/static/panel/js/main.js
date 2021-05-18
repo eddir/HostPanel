@@ -109,22 +109,32 @@ let watchVM = new Vue({
             }
         }
         ,
-        startServer: function () {
-            axios.put('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
+        startServer: function (server_id = null, update_server = true) {
+            if (server_id == null) {
+                server_id = location.pathname.split("/").slice(-2)[0];
+            }
+            axios.put('/api/server/' + server_id + '/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер запущен");
-                    watchVM.getServer();
+                    if (update_server) {
+                        watchVM.getServer();
+                    }
                 })
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);
                 })
         }
         ,
-        stopServer: function () {
-            axios.delete('/api/server/' + location.pathname.split("/").slice(-2)[0] + '/', this.form)
+        stopServer: function (server_id = null, update_server = true) {
+            if (server_id == null) {
+                server_id = location.pathname.split("/").slice(-2)[0];
+            }
+            axios.delete('/api/server/' + server_id + '/', this.form)
                 .then(function (response) {
                     watchVM.alertSuccess("Сервер остановлен");
-                    watchVM.getServer();
+                    if (update_server) {
+                        watchVM.getServer();
+                    }
                 })
                 .catch(function (error) {
                     watchVM.alertFailure(error.data.message);

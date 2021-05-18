@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-md-3 d-flex align-items-center justify-content-center">
                         <template v-if="server.status">
-                            <a @click="notImplemented()" href="#" class="btn">
+                            <a @click="stopServer(server.id, false)" href="#" class="btn">
                                 <span class="icon text-danger"><i class="fas fa-stop"></i></span>
                             </a>
                             <a @click="notImplemented()" href="#" class="btn">
@@ -40,7 +40,7 @@
                             </a>
                         </template>
                         <template v-else>
-                            <a @click="notImplemented()" v-if="server.installed" href="#" class="btn">
+                            <a @click="startServer(server.id, false)" v-if="server.installed" href="#" class="btn">
                                 <span class="icon text-success"><i class="fas fa-play"></i></span>
                             </a>
                         </template>
