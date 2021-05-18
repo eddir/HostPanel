@@ -16,16 +16,26 @@
                         <p class="m-0" v-text="'Players - ' + server.online"></p>
                     </div>
                     <div class="col border-right d-flex align-items-center justify-content-center">
-
-                        <span v-if="!server.installed" class="icon fa-stack">
-                            <i class="fas fa-circle text-warning indicator blink"></i>
-                        </span>
-                        <span v-else-if="server.status && !server.load" class="icon fa-stack">
-                            <i class="fas fa-circle text-success indicator"></i>
-                        </span>
-                        <span v-else-if="server.status" class="icon fa-stack">
-                            <i class="fas fa-circle text-warning indicator"></i>
-                        </span>
+                        <template v-if="server.status">
+                            <span v-if="['RN'].includes(server.status.condition)" class="icon fa-stack">
+                                <i class="fas fa-circle text-success indicator"></i>
+                            </span>
+                            <span v-else-if="['ST'].includes(server.status.condition)" class="icon fa-stack">
+                                <i class="fas fa-circle text-success indicator blink"></i>
+                            </span>
+                            <span v-else-if="['ST', 'IN', 'RB'].includes(server.status.condition)" class="icon fa-stack">
+                                <i class="fas fa-circle text-warning indicator blink"></i>
+                            </span>
+                            <span v-else-if="['SP'].includes(server.status.condition)" class="icon fa-stack">
+                                <i class="fas fa-circle text-warning indicator"></i>
+                            </span>
+                            <span v-else-if="['PS', 'TR'].includes(server.status.condition)" class="icon fa-stack">
+                                <i class="fas fa-circle text-danger indicator blink"></i>
+                            </span>
+                            <span v-else class="icon fa-stack">
+                                <i class="fas fa-circle text-danger indicator"></i>
+                            </span>
+                        </template>
                         <span v-else class="icon fa-stack">
                             <i class="fas fa-circle text-danger indicator"></i>
                         </span>
@@ -82,15 +92,26 @@
                                            v-text="'Online - ' + server.online + '/' + server.max_online"></p>
                                     </div>
                                     <div class="col border-right d-flex align-items-center justify-content-center">
-                                        <span v-if="!server.installed" class="icon fa-stack">
-                                            <i class="fas fa-circle text-warning indicator blink"></i>
-                                        </span>
-                                        <span v-else-if="server.status && !server.load" class="icon fa-stack">
-                                            <i class="fas fa-circle text-success indicator"></i>
-                                        </span>
-                                        <span v-else-if="server.status" class="icon fa-stack">
-                                            <i class="fas fa-circle text-warning indicator"></i>
-                                        </span>
+                                        <template v-if="spawner.status">
+                                            <span v-if="['RN'].includes(spawner.status.condition)" class="icon fa-stack">
+                                                <i class="fas fa-circle text-success indicator"></i>
+                                            </span>
+                                            <span v-else-if="['ST'].includes(spawner.status.condition)" class="icon fa-stack">
+                                                <i class="fas fa-circle text-success indicator blink"></i>
+                                            </span>
+                                            <span v-else-if="['ST', 'IN', 'RB'].includes(spawner.status.condition)" class="icon fa-stack">
+                                                <i class="fas fa-circle text-warning indicator blink"></i>
+                                            </span>
+                                            <span v-else-if="['SP'].includes(spawner.status.condition)" class="icon fa-stack">
+                                                <i class="fas fa-circle text-warning indicator"></i>
+                                            </span>
+                                            <span v-else-if="['PS', 'TR'].includes(spawner.status.condition)" class="icon fa-stack">
+                                                <i class="fas fa-circle text-danger indicator blink"></i>
+                                            </span>
+                                            <span v-else class="icon fa-stack">
+                                                <i class="fas fa-circle text-danger indicator"></i>
+                                            </span>
+                                        </template>
                                         <span v-else class="icon fa-stack">
                                             <i class="fas fa-circle text-danger indicator"></i>
                                         </span>
