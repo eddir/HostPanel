@@ -18,7 +18,7 @@ exports[`Dashboard.vue renders correctly 1`] = `
             class="card-title mb-0"
             id="traffic"
           >
-            Traffic
+            Online
           </h4>
            
           <div
@@ -948,7 +948,7 @@ exports[`Dashboard.vue renders correctly 1`] = `
            
           <cdatatable-stub
             class="mb-0 table-outline"
-            fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"
+            fields="[object Object],[object Object],[object Object],[object Object]"
             head-color="light"
             header="true"
             hover="true"

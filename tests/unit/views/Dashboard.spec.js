@@ -28,7 +28,7 @@ describe('Dashboard.vue', () => {
   })
   it('should render correct content', () => {
     const wrapper = shallowMount(Dashboard)
-    expect(wrapper.find('#traffic').text()).toMatch('Traffic')
+    expect(wrapper.find('#traffic').text()).toMatch('Online')
   })
   test('renders correctly', () => {
     const wrapper = shallowMount(Dashboard)
