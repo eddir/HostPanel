@@ -5,7 +5,7 @@
       <CCardBody>
         <CRow>
           <CCol sm="5">
-            <h4 id="traffic" class="card-title mb-0">Traffic</h4>
+            <h4 id="traffic" class="card-title mb-0">Online</h4>
             <div class="small text-muted">November 2017</div>
           </CCol>
           <CCol sm="7" class="d-none d-md-block">
@@ -442,7 +442,7 @@
                 />
               </td>
               <td slot="activity" slot-scope="{item}">
-                <div class="small text-muted">Last login</div>
+                <div class="small text-muted">Последний отклик</div>
                 <strong>{{item.activity}}</strong>
               </td>
             </CDataTable>
@@ -471,7 +471,7 @@ export default {
       tableItems: [
         {
           avatar: { url: 'img/avatars/1.jpg', status: 'success' },
-          user: { name: 'Yiorgos Avraamu', new: true, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: true, registered: 'Jan 1, 2015' },
           country: { name: 'USA', flag: 'cif-us' },
           usage: { value: 50, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'Mastercard', icon: 'cib-cc-mastercard' },
@@ -479,7 +479,7 @@ export default {
         },
         {
           avatar: { url: 'img/avatars/2.jpg', status: 'danger' },
-          user: { name: 'Avram Tarasios', new: false, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: false, registered: 'Jan 1, 2015' },
           country: { name: 'Brazil', flag: 'cif-br' },
           usage: { value: 22, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'Visa', icon: 'cib-cc-visa' },
@@ -487,7 +487,7 @@ export default {
         },
         {
           avatar: { url: 'img/avatars/3.jpg', status: 'warning' },
-          user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: true, registered: 'Jan 1, 2015' },
           country: { name: 'India', flag: 'cif-in' },
           usage: { value: 74, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'Stripe', icon: 'cib-stripe' },
@@ -495,7 +495,7 @@ export default {
         },
         {
           avatar: { url: 'img/avatars/4.jpg', status: '' },
-          user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: true, registered: 'Jan 1, 2015' },
           country: { name: 'France', flag: 'cif-fr' },
           usage: { value: 98, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'PayPal', icon: 'cib-paypal' },
@@ -503,7 +503,7 @@ export default {
         },
         {
           avatar: { url: 'img/avatars/5.jpg', status: 'success' },
-          user: { name: 'Agapetus Tadeáš', new: true, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: true, registered: 'Jan 1, 2015' },
           country: { name: 'Spain', flag: 'cif-es' },
           usage: { value: 22, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'Google Wallet', icon: 'cib-google-pay' },
@@ -511,7 +511,7 @@ export default {
         },
         {
           avatar: { url: 'img/avatars/6.jpg', status: 'danger' },
-          user: { name: 'Friderik Dávid', new: true, registered: 'Jan 1, 2015' },
+          user: { name: 'linksss.ru', new: true, registered: 'Jan 1, 2015' },
           country: { name: 'Poland', flag: 'cif-pl' },
           usage: { value: 43, period: 'Jun 11, 2015 - Jul 10, 2015' },
           payment: { name: 'Amex', icon: 'cib-cc-amex' },
@@ -519,11 +519,9 @@ export default {
         }
       ],
       tableFields: [
-        { key: 'avatar', label: '', _classes: 'text-center' },
-        { key: 'user' },
+        { key: 'user', label: 'Hostname' },
         { key: 'country', _classes: 'text-center' },
         { key: 'usage' },
-        { key: 'payment', label: 'Payment method', _classes: 'text-center' },
         { key: 'activity' },
       ]
     }
