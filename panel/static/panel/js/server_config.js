@@ -1,5 +1,5 @@
 function displayConfigSettings() {
-    let config = watchVM.config.split("\r\n").map(pair => pair.split("="));
+    let config = watchVM.config.split(/\r?\n/).map(pair => pair.split("="));
     let element = $("#config");
 
     element.html("");
