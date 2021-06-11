@@ -46,10 +46,10 @@
               <td slot="activity" slot-scope="{item}">
                 <div class="small text-muted">Последний отклик</div>
                 <strong v-if="item.activity.format">
-                  <vue-moments-ago prefix="" suffix="ago" :date="item.activity.time" lang="en"/>
+                  <timeago :datetime="item.activity.time" locale="ru"></timeago>
                 </strong>
                 <strong v-else>
-                  {{item.activity.time}}
+                  {{ item.activity.time }}
                 </strong>
               </td>
             </CDataTable>
@@ -63,13 +63,9 @@
 <script>
 
 import axios from "axios";
-import VueMomentsAgo from 'vue-moments-ago'
 
 export default {
   name: 'Dashboard',
-  components: {
-    VueMomentsAgo
-  },
   data() {
     return {
       selected: 'Month',
@@ -108,7 +104,7 @@ export default {
 
           if (server.status) {
             usage = server.status.cpu_usage
-            activity_time = server.status.created_at + " UTC+0";
+            activity_time = server.status.created_at + "+00:00";
             activity_format = true;
           } else {
             activity_format = false;
