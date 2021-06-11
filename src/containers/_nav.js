@@ -18,12 +18,6 @@ export default [
       },
       {
         _name: 'CSidebarNavItem',
-        name: 'Все сервера',
-        to: '/theme/colors',
-        icon: 'cil-drop'
-      },
-      {
-        _name: 'CSidebarNavItem',
         name: 'Активные',
         to: '/theme/typography',
         icon: 'cil-pencil'
