@@ -18,18 +18,7 @@ exports[`Dashboard.vue renders correctly 1`] = `
         </ccardheader-stub>
          
         <ccardbody-stub>
-          <cdatatable-stub
-            class="mb-0 table-outline"
-            fields="[object Object],[object Object],[object Object],[object Object]"
-            head-color="light"
-            header="true"
-            hover="true"
-            items=""
-            itemsperpage="10"
-            no-sorting=""
-            responsive="true"
-            sortervalue="[object Object]"
-          />
+          <servers-stub />
         </ccardbody-stub>
       </ccard-stub>
     </ccol-stub>
