@@ -27,7 +27,7 @@ import {
     cilMediaPlay,
     cilMediaStop,
     cilReload,
-    ci, cilLoop, cilInput, cilTrash
+    cilLoop, cilInput, cilTrash
 } from '@coreui/icons'
 import {
     cifUs,
