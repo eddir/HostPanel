@@ -63,7 +63,6 @@
       <CIcon name="cil-input" height="25" role="details"></CIcon>
     </td>
 
-    </td>
   </CDataTable>
 </template>
 
