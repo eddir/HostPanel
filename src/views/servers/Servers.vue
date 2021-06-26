@@ -50,16 +50,16 @@
         <CDropdownItem>Delete</CDropdownItem>
       </CDropdown>
     </td>
-    <td slot="control-start" class="align-middle" style="width: 1%">
+    <td slot="control-start" class="align-middle control-icon" style="width: 1%">
       <CIcon name="cil-media-play" height="25" role="start"></CIcon>
     </td>
-    <td slot="control-stop" class="align-middle" style="width: 1%">
+    <td slot="control-stop" class="align-middle control-icon" style="width: 1%">
       <CIcon name="cil-media-stop" height="25" role="stop"></CIcon>
     </td>
-    <td slot="control-restart" class="align-middle" style="width: 1%">
+    <td slot="control-restart" class="align-middle control-icon" style="width: 1%">
       <CIcon name="cil-reload" height="25" role="restart"></CIcon>
     </td>
-    <td slot="control-details" class="align-middle" style="width: 1%">
+    <td slot="control-details" class="align-middle control-icon" style="width: 1%">
       <CIcon name="cil-input" height="25" role="details"></CIcon>
     </td>
 
