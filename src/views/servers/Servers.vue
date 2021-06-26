@@ -68,7 +68,7 @@
 
 <script>
 
-import API from "../../services/server.ts"
+import ServersAPI from "../../services/server.js"
 
 export default {
   name: "Servers",
@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     loadServers() {
-      API.getMasters().then((servers) => this.tableItems = servers);
+      ServersAPI.getMasters().then((servers) => this.tableItems = ServersAPI.parseMasters(servers.data));
     },
     color(value) {
       let $color

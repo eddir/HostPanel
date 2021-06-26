@@ -1,12 +1,11 @@
 {
-  "name": "@coreui/coreui-free-vue-admin-template",
+  "name": "@ilsnk/hostpanel-frontend",
   "version": "3.1.4",
-  "description": "Open Source Bootstrap Admin Template",
+  "description": "Интерфейс панели управления игровыми серверами",
   "author": {
-    "name": "CoreUI",
-    "url": "https://coreui.io",
-    "github": "https://github.com/coreui",
-    "twitter": "https://twitter.com/core_ui"
+    "name": "Eduard Rostkov",
+    "url": "http://rostkov.me",
+    "github": "https://github.com/eddir"
   },
   "contributors": [
     {
@@ -16,9 +15,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:coreui/coreui-free-vue-admin-template.git"
+    "url": "git@github.com:ilsnk/hostpanel-frontend.git"
   },
-  "homepage": "http://coreui.io",
+  "homepage": "http://hp.linksss.ru",
   "copyright": "Copyright 2021 creativeLabs Łukasz Holeczek",
   "license": "MIT",
   "scripts": {
