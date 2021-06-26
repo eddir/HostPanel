@@ -24,11 +24,16 @@
       />
     </td>
     <td slot="usage" slot-scope="{item}">
-      <div class="clearfix">
-        <div class="float-left">
-          <strong>{{ item.usage.value }}%</strong>
+      <template v-if="!item.status || item.status==='RN'">
+        <div class="clearfix">
+          <div class="float-left">
+            <strong>{{ item.usage.value }}%</strong>
+          </div>
         </div>
-      </div>
+      </template>
+      <CBadge v-else :color="states[item.status].badge">
+        {{ states[item.status].message }}
+      </CBadge>
       <CProgress
           class="progress-xs"
           v-model="item.usage.value"
@@ -40,9 +45,6 @@
       <strong v-if="item.activity.format">
         <timeago :datetime="item.activity.time" locale="ru"></timeago>
       </strong>
-      <strong v-else>
-        {{ item.activity.time }}
-      </strong>
     </td>
     <td slot="control-danger" style="width: 1%">
       <CDropdown color="secondary" toggler-text="Actions">
@@ -50,14 +52,13 @@
         <CDropdownItem>Delete</CDropdownItem>
       </CDropdown>
     </td>
-    <td slot="control-start" class="align-middle control-icon" style="width: 1%">
+    <td slot="control-start" class="align-middle control-icon" style="width: 1%"
+        slot-scope="{item}" @click="start(item.host.id)">
       <CIcon name="cil-media-play" height="25" role="start"></CIcon>
     </td>
-    <td slot="control-stop" class="align-middle control-icon" style="width: 1%">
+    <td slot="control-stop" class="align-middle control-icon" style="width: 1%"
+        slot-scope="{item}" @click="stop(item.host.id)">
       <CIcon name="cil-media-stop" height="25" role="stop"></CIcon>
-    </td>
-    <td slot="control-restart" class="align-middle control-icon" style="width: 1%">
-      <CIcon name="cil-reload" height="25" role="restart"></CIcon>
     </td>
     <td slot="control-details" class="align-middle control-icon" style="width: 1%">
       <CIcon name="cil-input" height="25" role="details"></CIcon>
@@ -68,10 +69,12 @@
 
 <script>
 
-import ServersAPI from "../../services/server.js"
+import ServersAPI from "../../services/Server.vue"
+import Action from "../../services/Action.vue"
 
 export default {
   name: "Servers",
+  mixins: [ServersAPI],
   data() {
     return {
       tableItems: [],
@@ -83,9 +86,18 @@ export default {
         {key: 'control-danger', label: '', sorter: false, filter: false},
         {key: 'control-start', label: '', sorter: false, filter: false},
         {key: 'control-stop', label: '', sorter: false, filter: false},
-        {key: 'control-restart', label: '', sorter: false, filter: false},
         {key: 'control-details', label: '', sorter: false, filter: false},
-      ]
+      ],
+      states: {
+        'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},
+        'ST': {'code': 'ST', 'message': 'Запускается', 'badge': 'info'},
+        'RN': {'code': 'RN', 'message': 'Запущен', 'badge': 'success'},
+        'PS': {'code': 'PS', 'message': 'Останавливается', 'badge': 'info'},
+        'SP': {'code': 'SP', 'message': 'Остановлен', 'badge': 'danger'},
+        'TR': {'code': 'TR', 'message': 'Удаляется', 'badge': 'warning'},
+        'DL': {'code': 'DL', 'message': 'Удалён', 'badge': 'danger'},
+        'RB': {'code': 'RB', 'message': 'Ребут', 'badge': 'warning'},
+      }
     }
   },
   created() {
@@ -95,6 +107,12 @@ export default {
   methods: {
     loadServers() {
       ServersAPI.getMasters().then((servers) => this.tableItems = ServersAPI.parseMasters(servers.data));
+    },
+    start(id) {
+      Action.serverAction('start', id);
+    },
+    stop(id) {
+      Action.serverAction('stop', id);
     },
     color(value) {
       let $color

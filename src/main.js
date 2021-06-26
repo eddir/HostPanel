@@ -5,10 +5,18 @@ import router from './router'
 import CoreuiVue from '@coreui/vue'
 import { iconsSet as icons } from './assets/icons/icons.js'
 import store from './store'
+
 import VueTimeago from 'vue-timeago'
 
+import VueToast from 'vue-toast-notification';
+// Import one of the available themes
+//import 'vue-toast-notification/dist/theme-default.css';
+import 'vue-toast-notification/dist/theme-sugar.css';
+
 Vue.config.performance = true
+
 Vue.use(CoreuiVue)
+Vue.use(VueToast, {position: 'top-right'});
 Vue.use(VueTimeago, {
   name: 'Timeago', // Component name, `Timeago` by default
   locale: 'en', // Default locale
@@ -18,6 +26,7 @@ Vue.use(VueTimeago, {
     ru: require('date-fns/locale/ru'),
   }
 })
+
 Vue.prototype.$log = console.log.bind(console)
 
 new Vue({
