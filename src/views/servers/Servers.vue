@@ -1,5 +1,6 @@
 <template>
   <CDataTable
+      v-if="tableItems.length > 0"
       hover
       :items="tableItems"
       :fields="tableFields"
@@ -31,8 +32,8 @@
           </div>
         </div>
       </template>
-      <CBadge v-if="item.status" :color="states[item.status].badge">
-        {{ states[item.status].message }}
+      <CBadge v-if="item.status" :color="item.status.badge">
+        {{ item.status.message }}
       </CBadge>
       <CBadge v-else color="danger">Отключен</CBadge>
       <CProgress
@@ -87,17 +88,7 @@ export default {
         {key: 'control-danger', label: '', sorter: false, filter: false},
         {key: 'control', label: '', sorter: false, filter: false},
         {key: 'control-details', label: '', sorter: false, filter: false},
-      ],
-      states: {
-        'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},
-        'ST': {'code': 'ST', 'message': 'Запускается', 'badge': 'info'},
-        'RN': {'code': 'RN', 'message': 'Запущен', 'badge': 'success'},
-        'PS': {'code': 'PS', 'message': 'Останавливается', 'badge': 'info'},
-        'SP': {'code': 'SP', 'message': 'Остановлен', 'badge': 'danger'},
-        'TR': {'code': 'TR', 'message': 'Удаляется', 'badge': 'warning'},
-        'DL': {'code': 'DL', 'message': 'Удалён', 'badge': 'danger'},
-        'RB': {'code': 'RB', 'message': 'Ребут', 'badge': 'warning'},
-      }
+      ]
     }
   },
   created() {

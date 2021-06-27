@@ -20,6 +20,15 @@ export default {
       case "stop":
         this.action(ServersAPI.stop(server_id));
         break;
+      case "reinstall":
+        this.action(ServersAPI.reinstall(server_id));
+        break;
+      case "remove":
+        this.action(ServersAPI.remove(server_id));
+        break;
+      case "forget":
+        this.action(ServersAPI.forget(server_id));
+        break;
     }
     return true;
   }

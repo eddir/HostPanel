@@ -27,7 +27,10 @@ import {
     cilMediaPlay,
     cilMediaStop,
     cilReload,
-    cilLoop, cilInput, cilTrash
+    cilLoop,
+    cilInput,
+    cilTrash,
+    cilFire
 } from '@coreui/icons'
 import {
     cifUs,
@@ -177,7 +180,8 @@ export const iconsSet = Object.assign(
         cilReload,
         cilLoop,
         cilInput,
-        cilTrash
-
+        cilTrash,
+        cilFire,
+        cilXCircle
     }
 )

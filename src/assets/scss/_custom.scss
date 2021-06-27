@@ -1,3 +1,18 @@
 .control-icon svg:hover {
   transform: scale(1.2);
 }
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3c4b64;
+  border-radius: 10px;
+}
