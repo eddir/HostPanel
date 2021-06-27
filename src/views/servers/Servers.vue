@@ -24,16 +24,17 @@
       />
     </td>
     <td slot="usage" slot-scope="{item}">
-      <template v-if="!item.status || item.status==='RN'">
+      <template v-if="item.status || item.status==='RN'">
         <div class="clearfix">
           <div class="float-left">
             <strong>{{ item.usage.value }}%</strong>
           </div>
         </div>
       </template>
-      <CBadge v-else :color="states[item.status].badge">
+      <CBadge v-if="item.status" :color="states[item.status].badge">
         {{ states[item.status].message }}
       </CBadge>
+      <CBadge v-else color="danger">Отключен</CBadge>
       <CProgress
           class="progress-xs"
           v-model="item.usage.value"
@@ -45,24 +46,24 @@
       <strong v-if="item.activity.format">
         <timeago :datetime="item.activity.time" locale="ru"></timeago>
       </strong>
+      <strong v-else>Недоступен</strong>
     </td>
     <td slot="control-danger" style="width: 1%">
       <CDropdown color="secondary" toggler-text="Actions">
-        <CDropdownItem>Reboot</CDropdownItem>
-        <CDropdownItem>Delete</CDropdownItem>
+        <CDropdownItem disabled>Reboot</CDropdownItem>
+        <CDropdownItem disabled>Delete</CDropdownItem>
       </CDropdown>
     </td>
-    <td slot="control-start" class="align-middle control-icon" style="width: 1%"
+    <td slot="control" class="text-right align-middle control-icon" style="width: 1%"
         slot-scope="{item}" @click="start(item.host.id)">
-      <CIcon name="cil-media-play" height="25" role="start"></CIcon>
+      <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
+      <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
     </td>
-    <td slot="control-stop" class="align-middle control-icon" style="width: 1%"
-        slot-scope="{item}" @click="stop(item.host.id)">
-      <CIcon name="cil-media-stop" height="25" role="stop"></CIcon>
-    </td>
-    <td slot="control-details" class="align-middle control-icon" style="width: 1%">
-      <CIcon name="cil-input" height="25" role="details"></CIcon>
-    </td>
+    <router-link tag="td" :to="'/servers/' + item.host.id"
+                 slot="control-details" class="align-middle control-icon" style="width: 1%"
+                 slot-scope="{item}" @click="window.location.href='/server/'+item.host.id">
+      <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
+    </router-link>
 
   </CDataTable>
 </template>
@@ -84,8 +85,7 @@ export default {
         {key: 'usage'},
         {key: 'activity'},
         {key: 'control-danger', label: '', sorter: false, filter: false},
-        {key: 'control-start', label: '', sorter: false, filter: false},
-        {key: 'control-stop', label: '', sorter: false, filter: false},
+        {key: 'control', label: '', sorter: false, filter: false},
         {key: 'control-details', label: '', sorter: false, filter: false},
       ],
       states: {

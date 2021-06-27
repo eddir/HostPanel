@@ -35,7 +35,6 @@ export default {
         activity_format = true;
       } else {
         activity_format = false;
-        activity_time = 'Недоступен'
       }
 
       let package_data = data.m_packages.find(function (p) {
