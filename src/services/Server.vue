@@ -1,7 +1,9 @@
 <script>
 import axios from 'axios'
 
-const REST_URL = "http://147.135.211.1:8000/api/";
+const SERVER_URL = "http://45.80.71.86:8000/"
+//const SERVER_URL = "http://147.135.211.1:8000/api/"
+const REST_URL = `${SERVER_URL}api/`;
 
 //todo: рассмотреть готовые фреймворки вместо этого
 export default {
@@ -115,6 +117,7 @@ export default {
         country: {name: 'USA', flag: 'cib-server-fault'}, //todo: все страны
         usage: {value: usage},
         status: state,
+        parent: server.parent,
         activity: {
           format: activity_format,
           time: activity_time
