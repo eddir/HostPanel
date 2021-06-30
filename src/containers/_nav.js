@@ -18,6 +18,12 @@ export default [
       },
       {
         _name: 'CSidebarNavItem',
+        name: 'Создать мастер',
+        to: '/servers/create/master',
+        icon: 'cil-pencil'
+      },/*
+      {
+        _name: 'CSidebarNavItem',
         name: 'Активные',
         to: '/theme/typography',
         icon: 'cil-pencil'
@@ -27,11 +33,11 @@ export default [
         name: 'Отключенные',
         to: '/theme/typography',
         icon: 'cil-pencil'
-      },
+      },*/
       {
         _name: 'CSidebarNavTitle',
         _children: ['Сборки']
-      },
+      },/*
       {
         _name: 'CSidebarNavItem',
         name: 'Master',
@@ -43,7 +49,7 @@ export default [
         name: 'Spawner',
         to: '/charts',
         icon: 'cil-pencil'
-      },
+      },*/
     ]
   }
 ]
