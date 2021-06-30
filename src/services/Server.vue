@@ -1,8 +1,7 @@
 <script>
 import axios from 'axios'
 
-const SERVER_URL = "http://45.80.71.86:8000/"
-//const SERVER_URL = "http://147.135.211.1:8000/api/"
+const SERVER_URL = window.location.href.indexOf("localhost") >= 0 ? "http://147.135.211.1:8000/" : "http://45.80.71.86:8000/";
 const REST_URL = `${SERVER_URL}api/`;
 
 //todo: рассмотреть готовые фреймворки вместо этого
