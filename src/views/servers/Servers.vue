@@ -192,11 +192,22 @@ export default {
   },
   methods: {
     loadServers() {
+      // Сохраняем предыдущие данные, чтобы знать их и предостеречь закрытия collapse.
+      let oldTableItems = this.tableItems;
 
+      // Обращение к данным и их обработка
       ServersAPI.getMasters().then((servers) => {
-        this.servers = ServersAPI.parseMasters(servers.data)
+        this.servers = ServersAPI.parseMasters(servers.data);
+
+        // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
+        // спавнеры.
         this.tableItems = this.servers.filter(server => server.parent === null).map((item) => {
-          item._toggled = false;
+
+          // Для этого нужна узнать была ли строчка расскрыта пользователем до этого
+          let old = oldTableItems.find(s => s.host.id === item.host.id);
+
+          // Если это совершенно новая строчка, то её нужно отобразить без collapse.
+          item._toggled = old ? old._toggled : false;
           item.childs = this.servers.filter(server => server.parent === item.host.id);
           return item;
         });
@@ -209,7 +220,7 @@ export default {
       Action.serverAction('stop', id);
     },
     onRowClicked(item, index) {
-      this.$set(this.tableItems[index], '_toggled', !item._toggled)
+      this.tableItems[index]._toggled = !this.tableItems[index]._toggled;
       this.collapseDuration = 300
       this.$nextTick(() => {
         this.collapseDuration = 0
