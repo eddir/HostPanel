@@ -56,40 +56,6 @@ exports[`TheHeader.vue renders correctly 1`] = `
       
       </cheadernavlink-stub>
     </cheadernavitem-stub>
-     
-    <cheadernavitem-stub
-      class="px-3"
-    >
-      <cheadernavlink-stub
-        activeclass="router-link-active"
-        event="click"
-        exact="true"
-        exactactiveclass="router-link-exact-active"
-        routertag="a"
-        target="_self"
-        to="/users"
-      >
-        
-        Users
-      
-      </cheadernavlink-stub>
-    </cheadernavitem-stub>
-     
-    <cheadernavitem-stub
-      class="px-3"
-    >
-      <cheadernavlink-stub
-        activeclass="router-link-active"
-        event="click"
-        exactactiveclass="router-link-exact-active"
-        routertag="a"
-        target="_self"
-      >
-        
-        Settings
-      
-      </cheadernavlink-stub>
-    </cheadernavitem-stub>
   </cheadernav-stub>
    
   <cheadernav-stub
