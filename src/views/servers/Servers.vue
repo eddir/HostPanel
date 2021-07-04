@@ -183,12 +183,17 @@ export default {
         {key: 'control', label: '', sorter: false, filter: false},
         {key: 'control-details', label: '', sorter: false, filter: false},
       ],
-      collapseDuration: 0
+      collapseDuration: 0,
+      loadInterval: null
     }
   },
   created() {
     this.loadServers();
-    setInterval(this.loadServers, 10 * 1000);
+    this.loadInterval = setInterval(this.loadServers, 10 * 1000);
+  },
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.loadInterval);
+    next();
   },
   methods: {
     loadServers() {

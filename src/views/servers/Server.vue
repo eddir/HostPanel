@@ -96,12 +96,17 @@ export default {
       server: null,
       deleteModal: false,
       forgetModal: false,
-      reinstallModal: false
+      reinstallModal: false,
+      loadInterval: null
     }
   },
   created() {
     this.load();
-    setInterval(this.load, 10 * 1000);
+    this.loadInterval = setInterval(this.load, 10 * 1000);
+  },
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.loadInterval);
+    next();
   },
   methods: {
     load() {
