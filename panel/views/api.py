@@ -175,9 +175,15 @@ class ServerInstanceView(APIView):
 
     @staticmethod
     def delete(request, pk):
-        tasks.server_task(pk, "stop")
-        Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
-        return Response({"success": "Сервер остановлен."})
+        if 'force' in request.data:
+            # Удаляет сервер, но оставить файлы
+            Server.objects.get(id=pk).delete()
+            return Response({"success": "Сервер удалён."})
+        else:
+            # Удалять вместе с файлами на сервере
+            tasks.server_task(pk, "stop")
+            Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
+            return Response({"success": "Сервер остановлен."})
 
     @staticmethod
     def post(request, pk):
