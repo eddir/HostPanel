@@ -120,7 +120,7 @@ export default {
     },
     updateForgetModal(open, e, accept) {
       if (!open && accept) {
-        Action.quickAction('forget', this.server.server.id);
+        Action.quickAction('forget', this.server.server.id, () => window.location.href = '/#/');
       }
     },
     updateReinstallModal(open, e, accept) {

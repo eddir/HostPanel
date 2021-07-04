@@ -22,22 +22,22 @@ export default {
       }
     });
   },
-  quickAction(action, server_id) {
+  quickAction(action, server_id, callback) {
     switch (action) {
       case "start":
-        this.action(ServersAPI.start(server_id));
+        this.action(ServersAPI.start(server_id), callback);
         break;
       case "stop":
-        this.action(ServersAPI.stop(server_id));
+        this.action(ServersAPI.stop(server_id), callback);
         break;
       case "reinstall":
-        this.action(ServersAPI.reinstall(server_id));
+        this.action(ServersAPI.reinstall(server_id), callback);
         break;
       case "remove":
-        this.action(ServersAPI.remove(server_id));
+        this.action(ServersAPI.remove(server_id), callback);
         break;
       case "forget":
-        this.action(ServersAPI.forget(server_id));
+        this.action(ServersAPI.forget(server_id), callback);
         break;
     }
   },

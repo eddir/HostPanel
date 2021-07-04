@@ -23,7 +23,7 @@ export default {
     return axios.get(`${REST_URL}server/${server_id}/delete/`);
   },
   forget(server_id) {
-    return axios.post(`${REST_URL}server/${server_id}/delete/confirm/`);
+    return axios.delete(`${REST_URL}server/${server_id}/`, {data: {force: true}});
   },
   reinstall(server_id) {
     return axios.post(`${REST_URL}server/${server_id}/ `);
