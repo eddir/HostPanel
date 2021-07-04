@@ -3,6 +3,7 @@ import traceback
 from pprint import pprint
 
 from django.http import JsonResponse
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from HostPanel.settings import MEDIA_ROOT
 from panel.exceptions import UndefinedCaretakerVersion
@@ -11,9 +12,15 @@ from panel.exceptions import UndefinedCaretakerVersion
 def custom_exception_handler(exc, context):
     pprint(''.join(traceback.format_tb(exc.__traceback__)))
     pprint(exc)
+
+    if isinstance(exc, ValidationError):
+        message = exc.detail
+    else:
+        message = str(exc)
+
     return JsonResponse({
         "code": 500,
-        "message": str(exc)
+        "message": message
     }, safe=False, status=500)
 
 
