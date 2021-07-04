@@ -154,6 +154,12 @@
               </router-link>
             </template>
           </CDataTable>
+          <router-link :to="'/servers/create/' + item.host.id">
+            <CButton type="submit" size="sm" color="primary">
+              <CIcon name="cil-plus"/>
+              Создать
+            </CButton>
+          </router-link>
 
         </CCardBody>
       </CCollapse>

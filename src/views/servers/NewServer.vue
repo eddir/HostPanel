@@ -3,7 +3,7 @@
     <CRow>
       <CCol md="12">
         <CCard>
-          <CCardHeader>Создание мастера</CCardHeader>
+          <CCardHeader>Создание {{ input.type === "master" ? 'мастера' : 'спавнера для ' + parentName }}</CCardHeader>
           <CCardBody>
             <CRow>
               <CCol sm="6">
@@ -15,7 +15,7 @@
             </CRow>
             <CRow>
               <CCol sm="6">
-                <CSelect :value.sync="input.package" label="Сборка" :options="packages.master"/>
+                <CSelect :value.sync="input.package" label="Сборка" :options="packages"/>
               </CCol>
               <CCol sm="6">
                 <div class="form-group">
@@ -38,9 +38,10 @@
 <script>
 import ServersAPI from "@/services/Server";
 import Action from "@/services/Action";
+import Vue from "vue";
 
 export default {
-  name: "NewMaster",
+  name: "NewServer",
   data() {
     return {
       input: {
@@ -52,20 +53,19 @@ export default {
         config: null,
         type: "master",
       },
+      parentName: "",
       dedics: [],
-      packages: {
-        master: [],
-        spawner: []
-      },
+      packages: []
     }
   },
   created() {
+    if (this.$route.params.id) {
+      this.input.type = "spawner"
+      this.input.parent = parseInt(this.$route.params.id);
+    }
     ServersAPI.getServers().then((response) => {
       this.dedics = [];
-      this.packages = {
-        master: [],
-        spawner: []
-      }
+      this.packages = []
 
       response.data.dedics.forEach(dedic => this.dedics.push({
         value: dedic.id,
@@ -73,16 +73,30 @@ export default {
       }));
       this.input.dedic = response.data.dedics[0].id;
 
-      response.data.m_packages.forEach(pack => this.packages.master.push({
-        value: pack.id,
-        label: pack.name
-      }));
-      this.input.package = response.data.m_packages[0].id;
+      if (this.input.type === "master") {
+        this.input.package = response.data.m_packages[0].id;
 
-      response.data.sr_packages.forEach(pack => this.packages.spawner.push({
-        value: pack.id,
-        label: pack.name
-      }));
+        response.data.m_packages.forEach(pack => this.packages.push({
+          value: pack.id,
+          label: pack.name
+        }));
+
+      } else {
+        let parent = response.data.servers.find(s => s.id === this.input.parent);
+
+        if (parent) {
+          this.parentName = parent.name;
+        } else {
+          Vue.$toast.error("Неизвестный мастер");
+        }
+
+        this.input.package = response.data.sr_packages[0].id;
+        response.data.sr_packages.forEach(pack => this.packages.push({
+          value: pack.id,
+          label: pack.name
+        }));
+      }
+
     });
   },
   methods: {

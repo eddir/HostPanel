@@ -16,7 +16,7 @@ const Register = () => import('@/views/pages/Register')
 // Servers
 const Servers = () => import('@/views/servers/Servers');
 const Server = () => import('@/views/servers/Server');
-const NewMaster = () => import('@/views/servers/NewMaster');
+const NewServer = () => import('@/views/servers/NewServer');
 
 Vue.use(Router)
 
@@ -58,23 +58,19 @@ function configRoutes() {
                         },
                         {
                             path: 'create',
-                            name: 'Create server',
+                            name: 'Create master',
                             meta: {
-                                label: 'Create'
+                                label: 'Create master'
                             },
-                            component: {
-                                render(c) {
-                                    return c('router-view')
-                                }
-                            },
+                            component: NewServer,
                             children: [
                                 {
-                                    path: 'master',
+                                    path: ':id',
                                     meta: {
-                                        label: 'Master'
+                                        label: 'Create spawner'
                                     },
-                                    name: 'Create master server',
-                                    component: NewMaster
+                                    name: 'Create spawner',
+                                    component: NewServer
                                 }
                             ]
                         },

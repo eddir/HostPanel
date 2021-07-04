@@ -6,11 +6,7 @@ export default [
         _name: 'CSidebarNavItem',
         name: 'Dashboard',
         to: '/dashboard',
-        icon: 'cil-speedometer',
-        badge: {
-          color: 'primary',
-          text: 'NEW'
-        }
+        icon: 'cil-speedometer'
       },
       {
         _name: 'CSidebarNavTitle',
@@ -19,7 +15,7 @@ export default [
       {
         _name: 'CSidebarNavItem',
         name: 'Создать мастер',
-        to: '/servers/create/master',
+        to: '/servers/create',
         icon: 'cil-pencil'
       },/*
       {
