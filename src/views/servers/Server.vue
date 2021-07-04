@@ -108,7 +108,7 @@ export default {
       ServersAPI.getServer(this.$route.params.id).then((server) => {
         let server_data = server.data;
         server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
-        server_data.server.log = ServersAPI.parseLog(server_data.server.log);
+        server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
         this.server = server_data;
       });
     },
@@ -120,19 +120,19 @@ export default {
     },
     updateForgetModal(open, e, accept) {
       if (!open && accept) {
-        Action.serverAction('forget', this.server.server.id);
+        Action.quickAction('forget', this.server.server.id);
       }
     },
     updateReinstallModal(open, e, accept) {
       if (!open && accept) {
-        Action.serverAction('reinstall', this.server.server.id);
+        Action.quickAction('reinstall', this.server.server.id);
       }
     },
     start() {
-      Action.serverAction('start', this.server.server.id);
+      Action.quickAction('start', this.server.server.id);
     },
     stop() {
-      Action.serverAction('stop', this.server.server.id);
+      Action.quickAction('stop', this.server.server.id);
     }
   }
 }

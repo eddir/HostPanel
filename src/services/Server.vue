@@ -7,7 +7,7 @@ const REST_URL = `${SERVER_URL}api/`;
 //todo: рассмотреть готовые фреймворки вместо этого
 export default {
   name: "ServersAPI",
-  getMasters() {
+  getServers() {
     return axios.get(`${REST_URL}servers/`);
   },
   getServer(server_id) {
@@ -27,6 +27,9 @@ export default {
   },
   reinstall(server_id) {
     return axios.post(`${REST_URL}server/${server_id}/ `);
+  },
+  createServer(server) {
+    return axios.post(`${REST_URL}servers/`, server);
   },
   parseStatus(status) {
     return {
@@ -78,8 +81,9 @@ export default {
      * @param response.data.servers массив игровых серверов
      * @param response.data.dedics массив виртуальных серверов
      * @param response.data.m_packages сборки мастер серверов
+     * @param response.data.sr_packages сборки спавнер серверов
      */
-    data.servers.forEach(function (server) {
+    data.servers.forEach((server) => {
       let usage, state, activity_time, activity_format;
       /**
        * @param server.status.cpu_usage использование CPU в процентах

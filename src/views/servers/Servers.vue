@@ -196,7 +196,7 @@ export default {
       let oldTableItems = this.tableItems;
 
       // Обращение к данным и их обработка
-      ServersAPI.getMasters().then((servers) => {
+      ServersAPI.getServers().then((servers) => {
         this.servers = ServersAPI.parseMasters(servers.data);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
@@ -214,10 +214,10 @@ export default {
       });
     },
     start(id) {
-      Action.serverAction('start', id);
+      Action.quickAction('start', id);
     },
     stop(id) {
-      Action.serverAction('stop', id);
+      Action.quickAction('stop', id);
     },
     onRowClicked(item, index) {
       this.tableItems[index]._toggled = !this.tableItems[index]._toggled;
