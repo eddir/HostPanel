@@ -164,7 +164,14 @@
         </CCardBody>
       </CCollapse>
     </template>
-
+    <template slot="under-table">
+      <router-link :to="'/servers/create/'">
+        <CButton type="submit" size="sm" color="primary">
+          <CIcon name="cil-plus"/>
+          Создать
+        </CButton>
+      </router-link>
+    </template>
   </CDataTable>
 </template>
 

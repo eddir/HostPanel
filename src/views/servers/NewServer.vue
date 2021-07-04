@@ -10,7 +10,7 @@
                 <CInput :value.sync="input.name" label="Name" placeholder="Название сервера"/>
               </CCol>
               <CCol sm="6">
-                <CSelect :value.sync="input.dedic" label="Дедик" :options="dedics"/>
+                <CSelect @change="prepareConfig" :value.sync="input.dedic" label="Дедик" :options="dedics"/>
               </CCol>
             </CRow>
             <CRow>
@@ -55,7 +55,8 @@ export default {
       },
       parentName: "",
       dedics: [],
-      packages: []
+      packages: [],
+      dedics_data: [],
     }
   },
   created() {
@@ -65,13 +66,14 @@ export default {
     }
     ServersAPI.getServers().then((response) => {
       this.dedics = [];
-      this.packages = []
+      this.packages = [];
+      this.dedics_data = response.data.dedics;
 
-      response.data.dedics.forEach(dedic => this.dedics.push({
+      this.dedics_data.forEach(dedic => this.dedics.push({
         value: dedic.id,
         label: dedic.name
       }));
-      this.input.dedic = response.data.dedics[0].id;
+      this.input.dedic = this.dedics_data[0].id;
 
       if (this.input.type === "master") {
         this.input.package = response.data.m_packages[0].id;
@@ -96,10 +98,28 @@ export default {
           label: pack.name
         }));
       }
-
+      this.prepareConfig();
     });
   },
   methods: {
+    prepareConfig() {
+      if (this.input.type === "spawner") {
+        let dedic = this.dedics_data.find((d) => d.id === this.input.dedic);
+        this.input.config =
+            "-mstStartSpawner=true\n" +
+            "-mstStartClientConnection=true\n" +
+            "-mstMasterIp=" + dedic.ip + "\n" +
+            "-mstMasterPort=5000\n" +
+            "-mstRoomIp=" + dedic.ip + "\n" +
+            "-mstRoomExe=\\home\\" + dedic.user_single + "\\HostPanel\\Pack\\Room\\Room.x86_64\n" +
+            "-mstMaxProcesses=1";
+      } else {
+        this.input.config = "-mstStartMaster=true\n" +
+            "-mstStartClientConnection=true\n" +
+            "-mstMasterIp=127.0.0.1\n" +
+            "-mstMasterPort=5000";
+      }
+    },
     send() {
       Action.formAction("create_server", this.input, () => window.location.href = '/#/');
     }
@@ -108,4 +128,7 @@ export default {
 </script>
 
 <style scoped>
+textarea {
+  height: 100px;
+}
 </style>

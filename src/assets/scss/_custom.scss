@@ -1,6 +1,11 @@
 .control-icon svg:hover {
   transform: scale(1.2);
 }
+
+textarea {
+  min-height: 180px;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
