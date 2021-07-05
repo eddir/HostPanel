@@ -13,7 +13,7 @@ exports[`Dashboard.vue renders correctly 1`] = `
       <ccard-stub>
         <ccardheader-stub>
           
-          Мастер сервера
+          Сервера
         
         </ccardheader-stub>
          
