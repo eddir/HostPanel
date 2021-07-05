@@ -18,6 +18,9 @@ const Servers = () => import('@/views/servers/Servers');
 const Server = () => import('@/views/servers/Server');
 const NewServer = () => import('@/views/servers/NewServer');
 
+// Dedicated servers
+const Dedics = () => import('@/views/dedics/Dedics');
+
 Vue.use(Router)
 
 export default new Router({
@@ -83,7 +86,34 @@ function configRoutes() {
                             component: Server
                         }
                     ]
-                }]
+                },
+                {
+                    path: 'dedics',
+                    meta: {
+                        label: 'Dedicated servers'
+                    },
+                    component: {
+                        render(c) {
+                            return c('router-view')
+                        }
+                    },
+                    children: [
+                        {
+                            path: '',
+                            name: 'Dedics',
+                            component: Dedics
+                        },
+                        {
+                            path: 'create',
+                            name: 'Create dedic',
+                            meta: {
+                                label: 'Create dedicated server'
+                            },
+                            component: Dedics,
+                        }
+                    ]
+                }
+            ]
         },
         {
             path: '/pages',

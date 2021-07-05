@@ -145,11 +145,6 @@ export default {
 
 <style scoped>
 
-.pre-scrollable {
-  background-color: #636f83;
-  color: #fff;
-}
-
 .buttons-panel i {
   background: #fafafa;
   width: 60px;

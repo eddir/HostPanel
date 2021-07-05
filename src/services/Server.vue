@@ -10,6 +10,9 @@ export default {
   getServers() {
     return axios.get(`${REST_URL}servers/`);
   },
+  getDedics() {
+    return axios.get(`${REST_URL}dedics/`);
+  },
   getServer(server_id) {
     return axios.get(`${REST_URL}server/${server_id}/`);
   },
@@ -30,6 +33,14 @@ export default {
   },
   createServer(server) {
     return axios.post(`${REST_URL}servers/`, server);
+  },
+  rebootDedic(dedic_id) {
+    return axios.put(`${REST_URL}dedic/${dedic_id}/`);
+    //throw new Error("Non implemented");
+  },
+  removeDedic(dedic_id) {
+    return axios.delete(`${REST_URL}dedic/${dedic_id}/`);
+    //throw new Error("Non implemented");
   },
   parseStatus(status) {
     return {
@@ -83,7 +94,7 @@ export default {
      * @param response.data.m_packages сборки мастер серверов
      * @param response.data.sr_packages сборки спавнер серверов
      */
-    data.servers.forEach((server) => {
+    data.servers.forEach(server => {
       let usage, state, activity_time, activity_format;
       /**
        * @param server.status.cpu_usage использование CPU в процентах

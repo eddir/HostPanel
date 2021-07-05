@@ -9,15 +9,18 @@ export default [
         icon: 'cil-speedometer'
       },
       {
-        _name: 'CSidebarNavTitle',
-        _children: ['Сервера']
-      },
-      {
         _name: 'CSidebarNavItem',
         name: 'Создать мастер',
         to: '/servers/create',
         icon: 'cil-pencil'
-      },/*
+      },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Дедики',
+        to: '/dedics',
+        icon: 'cil-pencil'
+      },
+      /*
       {
         _name: 'CSidebarNavItem',
         name: 'Активные',

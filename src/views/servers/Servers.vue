@@ -214,12 +214,12 @@ export default {
       let oldTableItems = this.tableItems;
 
       // Обращение к данным и их обработка
-      ServersAPI.getServers().then((servers) => {
+      ServersAPI.getServers().then(servers => {
         this.servers = ServersAPI.parseMasters(servers.data);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.
-        this.tableItems = this.servers.filter(server => server.parent === null).map((item) => {
+        this.tableItems = this.servers.filter(server => server.parent === null).map(item => {
 
           // Для этого нужна узнать была ли строчка расскрыта пользователем до этого
           let old = oldTableItems.find(s => s.host.id === item.host.id);
