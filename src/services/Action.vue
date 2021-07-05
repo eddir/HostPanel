@@ -55,6 +55,8 @@ export default {
     switch (action) {
       case "create_server":
         return this.action(ServersAPI.createServer(formData), callback);
+      case "create_dedic":
+        return this.action(ServersAPI.createDedic(formData), callback);
     }
   }
 }

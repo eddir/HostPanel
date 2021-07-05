@@ -34,6 +34,9 @@ export default {
   createServer(server) {
     return axios.post(`${REST_URL}servers/`, server);
   },
+  createDedic(dedic) {
+    return axios.post(`${REST_URL}dedics/`, dedic);
+  },
   rebootDedic(dedic_id) {
     return axios.put(`${REST_URL}dedic/${dedic_id}/`);
     //throw new Error("Non implemented");

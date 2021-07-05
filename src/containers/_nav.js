@@ -20,6 +20,12 @@ export default [
         to: '/dedics',
         icon: 'cil-pencil'
       },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Создать дедик',
+        to: '/dedics/create',
+        icon: 'cil-pencil'
+      },
       /*
       {
         _name: 'CSidebarNavItem',

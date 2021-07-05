@@ -20,6 +20,7 @@ const NewServer = () => import('@/views/servers/NewServer');
 
 // Dedicated servers
 const Dedics = () => import('@/views/dedics/Dedics');
+const NewDedic = () => import('@/views/dedics/NewDedic');
 
 Vue.use(Router)
 
@@ -109,7 +110,7 @@ function configRoutes() {
                             meta: {
                                 label: 'Create dedicated server'
                             },
-                            component: Dedics,
+                            component: NewDedic,
                         }
                     ]
                 }

@@ -12,7 +12,8 @@
                       :fields="tableFields"
                       head-color="light"
                       itemsPerPageSelect
-                      pagination>
+                      pagination
+          >
             <td slot="status" slot-scope="{item}">
               <CBadge :color="item.status.color">
                 {{ item.status.message }}
@@ -38,6 +39,14 @@
                 class="text-right align-middle control-icon" style="width: 1%">
               <CIcon name="cil-trash" height="25" role="stop" class="mx-2"></CIcon>
             </td>
+            <template slot="under-table">
+              <router-link :to="'/dedics/create/'">
+                <CButton class="mb-2" type="submit" size="sm" color="primary">
+                  <CIcon name="cil-plus"/>
+                  Создать
+                </CButton>
+              </router-link>
+            </template>
           </CDataTable>
         </CCardBody>
       </CCard>

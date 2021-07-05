@@ -4,7 +4,7 @@
       <CCol md="12">
         <CCard>
           <CCardHeader>
-            Мастер сервера
+            Сервера
           </CCardHeader>
           <CCardBody>
             <servers></servers>

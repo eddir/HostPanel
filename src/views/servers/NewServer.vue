@@ -17,14 +17,6 @@
               <CCol sm="6">
                 <CSelect :value.sync="input.package" label="Сборка" :options="packages"/>
               </CCol>
-              <CCol sm="6">
-                <div class="form-group">
-                  <label>SSH ключ</label>
-                  <div class="form-group">
-                    <CSwitch :checked.sync="input.ssh_key" color="dark"/>
-                  </div>
-                </div>
-              </CCol>
             </CRow>
             <CTextarea :value.sync="input.config" label="application.cfg"></CTextarea>
             <CButton key="send" color="success" class="m-2" @click="send">Создать</CButton>
