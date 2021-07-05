@@ -48,6 +48,25 @@ class DedicView(APIView):
         })
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class DedicInstanceView(APIView):
+    # Переподключение и удаление дедика
+    @staticmethod
+    def put(request, pk):
+        """Попытка переподключения"""
+        tasks.dedic_task(pk, "reconnect")
+        return Response({"success": "Переподключение..."})
+
+    @staticmethod
+    def delete(request, pk):
+        """Удаление дедика из панели вместе с пользователем из сервера"""
+        if not Server.objects.filter(dedic=pk).exists():
+            tasks.dedic_task(pk, "delete")
+            return Response({"success": "Удаление начато"})
+        else:
+            raise ValueError("Невозможно удалить дедик с установленными на нём серверами.")
+
+
 class ServerView(APIView):
     # Инициализация и получение списка всех серверов
 

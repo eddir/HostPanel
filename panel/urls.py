@@ -33,6 +33,7 @@ urlpatterns = [
     # AJAX
 
     path('api/dedics/', DedicView.as_view()),
+    path('api/dedic/<int:pk>/', DedicInstanceView.as_view()),
 
     path('api/servers/', ServerView.as_view()),
     path('api/servers/status/', StatusView.as_view()),
