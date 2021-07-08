@@ -45,6 +45,24 @@ export default {
     return axios.delete(`${REST_URL}dedic/${dedic_id}/`);
     //throw new Error("Non implemented");
   },
+  getMasterPackages() {
+    return axios.get(`${REST_URL}m_package/`);
+  },
+  getSpawnerPackages() {
+    return axios.get(`${REST_URL}sr_package/`);
+  },
+  installMasterPackage(package_id) {
+    return axios.post(`${REST_URL}m_package/${package_id}/install/`);
+  },
+  installSpawnerPackage(package_id) {
+    return axios.post(`${REST_URL}sr_package/${package_id}/install/`);
+  },
+  removeMasterPackage(package_id) {
+    return axios.delete(`${REST_URL}m_package/${package_id}/`);
+  },
+  removeSpawnerPackage(package_id) {
+    return axios.delete(`${REST_URL}sr_package/${package_id}/`);
+  },
   parseStatus(status) {
     return {
       'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},

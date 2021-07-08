@@ -22,6 +22,9 @@ const NewServer = () => import('@/views/servers/NewServer');
 const Dedics = () => import('@/views/dedics/Dedics');
 const NewDedic = () => import('@/views/dedics/NewDedic');
 
+// Packages
+const Packages = () => import('@/views/packages/Packages');
+
 Vue.use(Router)
 
 export default new Router({
@@ -112,6 +115,47 @@ function configRoutes() {
                             },
                             component: NewDedic,
                         }
+                    ]
+                },
+                {
+                    path: 'packages',
+                    meta: {
+                        label: 'Packages'
+                    },
+                    component: {
+                        render(c) {
+                            return c('router-view')
+                        }
+                    },
+                    children: [
+                        {
+                            path: ':type',
+                            meta: {
+                                label: 'Packages list'
+                            },
+                            name: 'Packages',
+                            component: {
+                                render(c) {
+                                    return c('router-view')
+                                }
+                            },
+                            children: [
+                                {
+                                    path: '',
+                                    name: 'Packages',
+                                    component: Packages
+                                },
+                                {
+                                    path: 'create',
+                                    name: 'Create package',
+                                    meta: {
+                                        label: 'Create package'
+                                    },
+                                    component: NewDedic,
+                                }
+
+                            ]
+                        },
                     ]
                 }
             ]

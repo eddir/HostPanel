@@ -26,35 +26,18 @@ export default [
         to: '/dedics/create',
         icon: 'cil-pencil'
       },
-      /*
       {
         _name: 'CSidebarNavItem',
-        name: 'Активные',
-        to: '/theme/typography',
+        name: 'Master сборки',
+        to: '/packages/master',
         icon: 'cil-pencil'
       },
       {
         _name: 'CSidebarNavItem',
-        name: 'Отключенные',
-        to: '/theme/typography',
-        icon: 'cil-pencil'
-      },*/
-      {
-        _name: 'CSidebarNavTitle',
-        _children: ['Сборки']
-      },/*
-      {
-        _name: 'CSidebarNavItem',
-        name: 'Master',
-        to: '/theme/typography',
+        name: 'Spawner сборки',
+        to: '/packages/spawner',
         icon: 'cil-pencil'
       },
-      {
-        _name: 'CSidebarNavItem',
-        name: 'Spawner',
-        to: '/charts',
-        icon: 'cil-pencil'
-      },*/
     ]
   }
 ]
