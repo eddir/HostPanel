@@ -175,7 +175,8 @@ class ServerInstanceView(APIView):
                             condition=Status.Condition.RUNNING,
                             created_at__gte=(now() - datetime.timedelta(days=1))
                         ), many=True).data,
-                    "online": Online.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))).values(),
+                    "online": Online.objects.filter(server=pk,
+                                                    created_at__gte=(now() - datetime.timedelta(days=1))).values(),
                 }
             })
         except IndexError:
@@ -302,8 +303,8 @@ class MPackageView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MPackageInstanceView(APIView):
-    # Получение информации о сборке
 
+    # Получение информации о сборке
     @staticmethod
     def get(request, pk):
         try:
@@ -323,21 +324,32 @@ class MPackageInstanceView(APIView):
             })
 
     # Установка сборки во все сервера
-
     @staticmethod
     def post(request, pk):
         tasks.package_task(pk, "install_package", "master")
         return Response({"success": "Сборка установлена"})
 
+    # Удаление сборки через api
+    @staticmethod
+    def delete(request, pk):
+        MPackage.objects.get(id=pk).delete()
+        return Response({"success": "Сборка удалена"})
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SRPackageInstanceView(APIView):
-    # Установка сборки во все сервера
 
+    # Установка сборки во все сервера
     @staticmethod
     def post(request, pk):
         tasks.package_task(pk, "install_package", "spawner")
         return Response({"success": "Сборка установлена"})
+
+    # Удаление сборки через api
+    @staticmethod
+    def delete(request, pk):
+        SRPackage.objects.get(id=pk).delete()
+        return Response({"success": "Сборка удалена"})
 
 
 class SRPackageView(APIView):

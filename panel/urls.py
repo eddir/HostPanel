@@ -45,6 +45,7 @@ urlpatterns = [
     path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),
     path('api/m_package/<int:pk>/install/', MPackageInstanceView.as_view()),
 
+    path('api/sr_package/<int:pk>/', SRPackageInstanceView.as_view()),
     path('api/sr_package/<int:pk>/install/', SRPackageInstanceView.as_view()),
     path('api/sr_package/', SRPackageView.as_view()),
 
