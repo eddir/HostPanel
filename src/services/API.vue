@@ -45,6 +45,9 @@ export default {
     return axios.delete(`${REST_URL}dedic/${dedic_id}/`);
     //throw new Error("Non implemented");
   },
+  getTasks() {
+    return axios.get(`${REST_URL}task/`);
+  },
   getMasterPackages() {
     return axios.get(`${REST_URL}m_package/`);
   },

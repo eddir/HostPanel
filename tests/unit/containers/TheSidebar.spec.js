@@ -10,7 +10,9 @@ localVue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     sidebarShow: 'responsive',
-    sidebarMinimize: false
+    sidebarMinimize: false,
+    rightSidebar: 'responsive',
+    rightSidebarMinimize: false
   }
 })
 
