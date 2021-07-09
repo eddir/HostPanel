@@ -10,20 +10,8 @@ export default [
       },
       {
         _name: 'CSidebarNavItem',
-        name: 'Создать мастер',
-        to: '/servers/create',
-        icon: 'cil-pencil'
-      },
-      {
-        _name: 'CSidebarNavItem',
         name: 'Дедики',
         to: '/dedics',
-        icon: 'cil-pencil'
-      },
-      {
-        _name: 'CSidebarNavItem',
-        name: 'Создать дедик',
-        to: '/dedics/create',
         icon: 'cil-pencil'
       },
       {

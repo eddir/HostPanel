@@ -24,6 +24,7 @@ const NewDedic = () => import('@/views/dedics/NewDedic');
 
 // Packages
 const Packages = () => import('@/views/packages/Packages');
+const NewPackage = () => import('@/views/packages/NewPackage')
 
 Vue.use(Router)
 
@@ -151,7 +152,7 @@ function configRoutes() {
                                     meta: {
                                         label: 'Create package'
                                     },
-                                    component: NewDedic,
+                                    component: NewPackage,
                                 }
 
                             ]

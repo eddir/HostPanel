@@ -63,6 +63,33 @@ export default {
   removeSpawnerPackage(package_id) {
     return axios.delete(`${REST_URL}sr_package/${package_id}/`);
   },
+  uploadMasterPackage(name, master, progressCallback) {
+    let formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("master", master);
+
+    return this.uploadFiles(`${REST_URL}m_package/`, formData, progressCallback);
+  },
+  uploadSpawnerPackage(name, spawner, room, progressCallback) {
+    let formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("spawner", spawner);
+    formData.append("room", room);
+
+    return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
+  },
+  uploadFiles(url, formData, progressCallback) {
+    return axios.post(url, formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: progressCallback
+        }
+    );
+  },
   parseStatus(status) {
     return {
       'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},

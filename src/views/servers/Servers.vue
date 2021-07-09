@@ -177,7 +177,7 @@
 
 <script>
 
-import ServersAPI from "../../services/Server.vue"
+import ServersAPI from "../../services/API.vue"
 import Action from "../../services/Action.vue"
 
 export default {

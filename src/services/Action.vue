@@ -1,5 +1,5 @@
 <script>
-import ServersAPI from "@/services/Server.vue"
+import ServersAPI from "@/services/API.vue"
 import Vue from "vue";
 
 export default {
@@ -70,6 +70,18 @@ export default {
       case "create_dedic":
         return this.action(ServersAPI.createDedic(formData), callback);
     }
-  }
+  },
+  fileAction(action, formData, progressCallback, successCallback) {
+    switch (action) {
+      case "upload_master_package":
+        return this.action(ServersAPI.uploadMasterPackage(
+            formData.name, formData.master, progressCallback
+        ), successCallback);
+      case "upload_spawner_package":
+        return this.action(ServersAPI.uploadSpawnerPackage(
+            formData.name, formData.spawner, formData.room, progressCallback
+        ), successCallback);
+    }
+  },
 }
 </script>

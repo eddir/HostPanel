@@ -21,13 +21,21 @@
             <CDropdownItem @click="remove(item.id)">Delete</CDropdownItem>
           </CDropdown>
         </td>
+        <template slot="under-table">
+          <router-link :to="'/packages/' + type + '/create/'">
+            <CButton class="mb-2" type="submit" size="sm" color="primary">
+              <CIcon name="cil-plus"/>
+              Создать
+            </CButton>
+          </router-link>
+        </template>
       </CDataTable>
     </CCardBody>
   </CCard>
 </template>
 
 <script>
-import ServersAPI from "../../services/Server.vue"
+import ServersAPI from "../../services/API.vue"
 import Action from "@/services/Action";
 
 export default {

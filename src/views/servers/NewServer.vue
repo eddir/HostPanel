@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import ServersAPI from "@/services/Server";
+import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
 import Vue from "vue";
 

@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import ServersAPI from "@/services/Server";
+import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
 
 export default {
