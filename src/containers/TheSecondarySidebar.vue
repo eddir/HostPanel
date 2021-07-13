@@ -64,7 +64,6 @@ export default {
             unit_name: task.unit_name
           }
         })
-        console.log(this.tasks);
       });
     }
   },

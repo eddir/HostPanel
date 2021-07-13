@@ -8,7 +8,11 @@ export default {
   action(response, callback) {
     return response.then(function (response) {
       Vue.$toast.success(response.data.success);
-      callback();
+      try {
+        callback();
+      } catch (e) {
+        Vue.$toast.error(e);
+      }
     }).catch(function (error) {
       let messages = error.response.data.message;
       if (typeof messages === 'string') {
@@ -61,6 +65,12 @@ export default {
       }
     } catch (e) {
       Vue.$toast.error(e.message);
+    }
+  },
+  serverAction(action, server_id, formData, callback = () => null) {
+    switch (action) {
+      case "update_config":
+        return this.action(ServersAPI.updateConfig(server_id, formData), callback);
     }
   },
   formAction(action, formData, callback) {

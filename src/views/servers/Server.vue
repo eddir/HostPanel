@@ -17,6 +17,12 @@
             </ul>
           </CCardBody>
         </CCard>
+        <CCard>
+          <CCardHeader>Конфиг</CCardHeader>
+          <CCardBody>
+            <ServerConfig :rawConfig="server.server.config" :serverId="server.server.id" @update:config="updateConfig"></ServerConfig>
+          </CCardBody>
+        </CCard>
       </CCol>
       <CCol md="6">
         <CCard>
@@ -78,8 +84,9 @@
 </template>
 
 <script>
-import ServersAPI from "../../services/API.vue";
+import ServersAPI from "@/services/API.vue";
 import Action from "@/services/Action";
+import ServerConfig from "@/views/servers/ServerConfig";
 import Vue from "vue";
 
 /**
@@ -100,6 +107,7 @@ export default {
       loadInterval: null
     }
   },
+  components: {ServerConfig},
   created() {
     this.load();
     this.loadInterval = setInterval(this.load, 10 * 1000);
@@ -116,6 +124,9 @@ export default {
         server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
         this.server = server_data;
       });
+    },
+    updateConfig(config) {
+      Action.serverAction("update_config", this.server.server.id, config);
     },
     updateRemoveModal(open, e, accept) {
       if (!open && accept) {

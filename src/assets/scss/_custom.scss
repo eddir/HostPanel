@@ -11,6 +11,16 @@ textarea {
   min-height: 180px;
 }
 
+.input-table {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.input-table > .form-group {
+  flex: 1 1 auto;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

@@ -31,6 +31,9 @@ export default {
   reinstall(server_id) {
     return axios.post(`${REST_URL}server/${server_id}/ `);
   },
+  updateConfig(server_id, config) {
+    return axios.post(`${REST_URL}server/${server_id}/config/`, {config: config});
+  },
   createServer(server) {
     return axios.post(`${REST_URL}servers/`, server);
   },
