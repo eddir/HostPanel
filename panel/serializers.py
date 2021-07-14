@@ -48,7 +48,7 @@ class ServerSerializer(serializers.ModelSerializer):
     def get_status(server):
         status = Status.objects.filter(
             server=server, created_at__gte=(now() - datetime.timedelta(minutes=10))
-        ).first()
+        ).last()
         if status:
             return StatusSerializer(status).data
         else:
