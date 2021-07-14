@@ -240,6 +240,7 @@ export default {
           // Если это совершенно новая строчка, то её нужно отобразить без collapse.
           item._toggled = old ? old._toggled : false;
           item.childs = this.servers.filter(server => server.parent === item.host.id);
+
           return item;
         });
       });
@@ -256,9 +257,9 @@ export default {
       }
 
       this.tableItems[index]._toggled = !this.tableItems[index]._toggled;
-      this.collapseDuration = 300
+      this.collapseDuration = 300;
       this.$nextTick(() => {
-        this.collapseDuration = 0
+        this.collapseDuration = 0;
       });
     },
     showRebootModal(server) {

@@ -11,7 +11,8 @@
           v-for="task in tasks"
           :name="task.name + ' ' + task.unit_name"
           :key="task.id"
-          icon="cil-clock"
+          :icon="task.state_icon"
+          :color="task.state_color"
       />
     </CSidebarNav>
     <CSidebarMinimizer
@@ -58,10 +59,30 @@ export default {
             "update_caretaker": "Обновление скрипта",
             "reinstall": "Переустановка",
           }
+          let states = {
+            "queue": "cil-clock",
+            "locked": "cil-terminal",
+            "failed": "cil-x-circle",
+          }
+
+          let icon, color;
+          if (task.locked_by) {
+            icon = states['locked'];
+            color = "info";
+          } else if (task.failed_at) {
+            icon = states['failed'];
+            color = "danger";
+          } else {
+            icon = states['queue'];
+            color = "";
+          }
+
           let params = JSON.parse(task.task_params);
           return {
             name: actions[params[0][1]],
-            unit_name: task.unit_name
+            unit_name: task.unit_name,
+            state_icon: icon,
+            state_color: color
           }
         })
       });
