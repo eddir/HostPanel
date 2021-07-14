@@ -33,11 +33,11 @@
             </td>
             <td slot="control-reload" slot-scope="{item}" @click="reboot(item.id)"
                 class="text-right align-middle control-icon" style="width: 1%">
-              <CIcon name="cil-reload" height="25" role="stop" class="mx-2"></CIcon>
+              <CIcon name="cil-reload" height="25" class="mx-2"></CIcon>
             </td>
             <td slot="control-remove" slot-scope="{item}" @click="remove(item.id)"
                 class="text-right align-middle control-icon" style="width: 1%">
-              <CIcon name="cil-trash" height="25" role="stop" class="mx-2"></CIcon>
+              <CIcon name="cil-trash" height="25" class="mx-2"></CIcon>
             </td>
             <template slot="under-table">
               <router-link :to="'/dedics/create/'">
@@ -107,7 +107,7 @@ export default {
   },
   methods: {
     reboot(dedic) {
-      Action.quickAction('dedic_reboot', dedic);
+      Action.quickAction('reboot', dedic);
     },
     remove(dedic) {
       Action.quickAction('dedic_remove', dedic);

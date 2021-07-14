@@ -1,4 +1,5 @@
 <template>
+  <div>
   <CDataTable
       v-if="tableItems.length > 0"
       hover
@@ -55,11 +56,11 @@
         <strong v-else>Недоступен</strong>
       </td>
     </template>
-    <template #control-danger>
+    <template #control-danger="{item}">
       <td style="width: 1%">
         <CDropdown color="secondary" toggler-text="Actions">
-          <CDropdownItem disabled>Reboot</CDropdownItem>
-          <CDropdownItem disabled>Delete</CDropdownItem>
+          <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+          <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
         </CDropdown>
       </td>
     </template>
@@ -136,8 +137,8 @@
             <template #control-danger>
               <td style="width: 1%">
                 <CDropdown color="secondary" toggler-text="Actions">
-                  <CDropdownItem disabled>Reboot</CDropdownItem>
-                  <CDropdownItem disabled>Delete</CDropdownItem>
+                  <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+                  <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
                 </CDropdown>
               </td>
             </template>
@@ -173,6 +174,15 @@
       </router-link>
     </template>
   </CDataTable>
+    <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
+      Во время ребута сервера будут недоступны в течении нескольких минут.
+    </CModal>
+    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal"
+            v-if="selected !== null">
+      Удалить сервер {{ selected.name }}? Будут удалены все данные о нём, в том числе файлы на сервере.
+    </CModal>
+
+  </div>
 </template>
 
 <script>
@@ -197,6 +207,9 @@ export default {
         {key: 'control-details', label: '', sorter: false, filter: false},
       ],
       collapseDuration: 0,
+      selected: null,
+      rebootModal: false,
+      removeModal: false,
       loadInterval: null
     }
   },
@@ -237,12 +250,34 @@ export default {
     stop(id) {
       Action.quickAction('stop', id);
     },
-    onRowClicked(item, index) {
+    onRowClicked(item, index, column, event) {
+      if (['BUTTON', 'A'].indexOf(event.target.tagName) !== -1) {
+        return;
+      }
+
       this.tableItems[index]._toggled = !this.tableItems[index]._toggled;
       this.collapseDuration = 300
       this.$nextTick(() => {
         this.collapseDuration = 0
-      })
+      });
+    },
+    showRebootModal(server) {
+      this.selected = server;
+      this.rebootModal = true;
+    },
+    showRemoveModal(server) {
+      this.selected = server;
+      this.removeModal = true;
+    },
+    updateRebootModal(open, e, accept) {
+      if (!open && accept) {
+        Action.quickAction('reboot', this.selected.host.id);
+      }
+    },
+    updateRemoveModal(open, e, accept) {
+      if (!open && accept) {
+        Action.quickAction('remove', this.selected.host.id);
+      }
     },
     color(value) {
       let $color

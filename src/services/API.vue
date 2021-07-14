@@ -23,7 +23,7 @@ export default {
     return axios.delete(`${REST_URL}server/${server_id}/`);
   },
   remove(server_id) {
-    return axios.get(`${REST_URL}server/${server_id}/delete/`);
+    return axios.delete(`${REST_URL}server/${server_id}/`);
   },
   forget(server_id) {
     return axios.delete(`${REST_URL}server/${server_id}/`, {data: {force: true}});
@@ -40,9 +40,8 @@ export default {
   createDedic(dedic) {
     return axios.post(`${REST_URL}dedics/`, dedic);
   },
-  rebootDedic(dedic_id) {
-    return axios.put(`${REST_URL}dedic/${dedic_id}/`);
-    //throw new Error("Non implemented");
+  reboot(dedic_id) {
+    return axios.patch(`${REST_URL}server/${dedic_id}/`);
   },
   removeDedic(dedic_id) {
     return axios.delete(`${REST_URL}dedic/${dedic_id}/`);

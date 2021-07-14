@@ -44,8 +44,8 @@ export default {
         case "forget":
           this.action(ServersAPI.forget(unit_id), callback);
           break;
-        case "dedic_reboot":
-          this.action(ServersAPI.rebootDedic(unit_id), callback);
+        case "reboot":
+          this.action(ServersAPI.reboot(unit_id), callback);
           break;
         case "dedic_remove":
           this.action(ServersAPI.removeDedic(unit_id), callback);
