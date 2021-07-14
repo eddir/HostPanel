@@ -191,7 +191,7 @@ class ServerInstanceView(APIView):
     @staticmethod
     def patch(request, pk):
         tasks.server_task(pk, "reboot")
-        return Response({"Success": "Ребут начат"})
+        return Response({"success": "Ребут начат"})
 
     @staticmethod
     def delete(request, pk):
@@ -201,9 +201,9 @@ class ServerInstanceView(APIView):
             return Response({"success": "Сервер удалён."})
         else:
             # Удалять вместе с файлами на сервере
-            tasks.server_task(pk, "stop")
+            tasks.server_task(pk, "delete")
             Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
-            return Response({"success": "Сервер остановлен."})
+            return Response({"success": "Сервер удалён."})
 
     @staticmethod
     def post(request, pk):
