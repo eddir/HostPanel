@@ -10,5 +10,9 @@ module.exports = {
   transpileDependencies: [
     '@coreui/utils',
     '@coreui/vue'
-  ]
+  ],
+  devServer: {
+    disableHostCheck: true,
+    port: 80
+  }
 }

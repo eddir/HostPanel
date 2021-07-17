@@ -1,12 +1,15 @@
 <script>
 import axios from 'axios'
 
-const SERVER_URL = window.location.href.indexOf("localhost") >= 0 ? "http://147.135.211.1:8000/" : "http://45.80.71.86:8000/";
+let debugMode = window.location.href.indexOf("localhost") >= 0;
+
+const SERVER_URL = debugMode ? "http://147.135.211.1:8000/" : "http://45.80.71.86:8000/";
 const REST_URL = `${SERVER_URL}api/`;
 
 //todo: рассмотреть готовые фреймворки вместо этого
 export default {
   name: "ServersAPI",
+  AUTH_TELEGRAM_BOT: debugMode ? "RostkovBot" : "HostPanelRobot",
   getServers() {
     return axios.get(`${REST_URL}servers/`);
   },
@@ -94,6 +97,14 @@ export default {
           onUploadProgress: progressCallback
         }
     );
+  },
+  login(user) {
+    axios.post(`${SERVER_URL}auth/telegram/login/`, user).then(resp => {
+      let user = resp.data.user;
+      console.log(user);
+    }).catch(err => {
+      console.log(err.response);
+    })
   },
   parseStatus(status) {
     return {
