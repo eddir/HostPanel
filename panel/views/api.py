@@ -184,9 +184,14 @@ class ServerInstanceView(APIView):
 
     @staticmethod
     def put(request, pk):
-        tasks.server_task(pk, "start")
-        Status(server=Server.objects.get(id=pk), condition=Status.Condition.STARTS).save()
-        return Response({"success": "Сервер запущен."})
+        if request.data['action'] == "start":
+            tasks.server_task(pk, "start")
+            Status(server=Server.objects.get(id=pk), condition=Status.Condition.STARTS).save()
+            return Response({"success": "Сервер запущен."})
+        elif request.data['action'] == "stop": #todo: вынести в отдельный url
+            tasks.server_task(pk, "stop")
+            Status(server=Server.objects.get(id=pk), condition=Status.Condition.STOPPED).save()
+            return Response({"success": "Сервер остановлен."})
 
     @staticmethod
     def patch(request, pk):
