@@ -17,10 +17,10 @@ export default {
     return axios.get(`${REST_URL}server/${server_id}/`);
   },
   start(server_id) {
-    return axios.put(`${REST_URL}server/${server_id}/`);
+    return axios.put(`${REST_URL}server/${server_id}/`, {action: "start"});
   },
   stop(server_id) {
-    return axios.delete(`${REST_URL}server/${server_id}/`);
+    return axios.put(`${REST_URL}server/${server_id}/`, {action: "stop"});
   },
   remove(server_id) {
     return axios.delete(`${REST_URL}server/${server_id}/`);

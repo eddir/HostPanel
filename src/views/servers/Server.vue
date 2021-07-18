@@ -29,7 +29,7 @@
           <CCardBody>
             <div class="buttons-panel">
               <ul>
-                <li v-if="server.status.condition.code === 'SP' || true">
+                <li v-if="server.status.condition.code === 'SP'">
                   <i @click="start()">
                     <CIcon name="cil-media-play" class="text-success" height="30"></CIcon>
                   </i>
