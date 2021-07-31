@@ -101,9 +101,8 @@ export default {
     this.loadDedics();
     this.loadInterval = setInterval(this.loadDedics, 10 * 1000);
   },
-  beforeRouteLeave(to, from, next) {
+  destroyed() {
     clearInterval(this.loadInterval);
-    next();
   },
   methods: {
     reboot(dedic) {

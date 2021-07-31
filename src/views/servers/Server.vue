@@ -112,9 +112,8 @@ export default {
     this.load();
     this.loadInterval = setInterval(this.load, 10 * 1000);
   },
-  beforeRouteLeave(to, from, next) {
+  destroyed() {
     clearInterval(this.loadInterval);
-    next();
   },
   methods: {
     load() {

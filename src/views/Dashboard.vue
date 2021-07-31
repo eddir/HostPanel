@@ -16,8 +16,7 @@
 </template>
 
 <script>
-
-import Servers from "@/views/servers/Servers";
+import Servers from "@/views/servers/Servers"
 
 export default {
   name: 'Dashboard',

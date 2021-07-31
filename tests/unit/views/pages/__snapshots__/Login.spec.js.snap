@@ -13,133 +13,37 @@ exports[`Login.vue renders correctly 1`] = `
       tag="div"
     >
       <ccol-stub
-        md="8"
+        md="6"
         tag="div"
       >
-        <ccardgroup-stub
-          tag="div"
+        <ccard-stub
+          class="p-4"
         >
-          <ccard-stub
-            class="p-4"
-          >
-            <ccardbody-stub>
-              <cform-stub>
-                <h1>
-                  Login
-                </h1>
-                 
-                <p
-                  class="text-muted"
-                >
-                  Sign In to your account
-                </p>
-                 
-                <cinput-stub
-                  autocomplete="username email"
-                  lazy="400"
-                  placeholder="Username"
-                  type="text"
-                />
-                 
-                <cinput-stub
-                  autocomplete="curent-password"
-                  lazy="400"
-                  placeholder="Password"
-                  type="password"
-                />
-                 
-                <crow-stub
-                  gutters="true"
-                  tag="div"
-                >
-                  <ccol-stub
-                    class="text-left"
-                    col="6"
-                    tag="div"
-                  >
-                    <cbutton-stub
-                      activeclass="router-link-active"
-                      class="px-4"
-                      color="primary"
-                      event="click"
-                      exactactiveclass="router-link-exact-active"
-                      routertag="a"
-                      target="_self"
-                      type="button"
-                    >
-                      Login
-                    </cbutton-stub>
-                  </ccol-stub>
-                   
-                  <ccol-stub
-                    class="text-right"
-                    col="6"
-                    tag="div"
-                  >
-                    <cbutton-stub
-                      activeclass="router-link-active"
-                      class="px-0"
-                      color="link"
-                      event="click"
-                      exactactiveclass="router-link-exact-active"
-                      routertag="a"
-                      target="_self"
-                      type="button"
-                    >
-                      Forgot password?
-                    </cbutton-stub>
-                     
-                    <cbutton-stub
-                      activeclass="router-link-active"
-                      class="d-lg-none"
-                      color="link"
-                      event="click"
-                      exactactiveclass="router-link-exact-active"
-                      routertag="a"
-                      target="_self"
-                      type="button"
-                    >
-                      Register now!
-                    </cbutton-stub>
-                  </ccol-stub>
-                </crow-stub>
-              </cform-stub>
-            </ccardbody-stub>
-          </ccard-stub>
+          <ccardheader-stub>
+            <h1>
+              Login
+            </h1>
+          </ccardheader-stub>
            
-          <ccard-stub
-            bodywrapper="true"
-            class="text-center py-5 d-md-down-none"
-            color="primary"
-            textcolor="white"
-          >
-            <ccardbody-stub>
-              <h2>
-                Sign up
-              </h2>
-               
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-               
-              <cbutton-stub
-                activeclass="router-link-active"
-                color="light"
-                event="click"
-                exactactiveclass="router-link-exact-active"
-                routertag="a"
-                size="lg"
-                target="_self"
-                type="button"
-                variant="outline"
-              >
-                
-                Register Now!
-              
-              </cbutton-stub>
-            </ccardbody-stub>
-          </ccard-stub>
-        </ccardgroup-stub>
+          <ccardbody-stub>
+            <calert-stub
+              color="primary"
+              fade="true"
+              show="true"
+            >
+              Требуется авторизация - @RostkovBot.
+            </calert-stub>
+             
+            <vue-telegram-login-stub
+              mode="callback"
+              redirecturl=""
+              requestaccess="read"
+              size="large"
+              telegramlogin="RostkovBot"
+              userpic="true"
+            />
+          </ccardbody-stub>
+        </ccard-stub>
       </ccol-stub>
     </crow-stub>
   </ccontainer-stub>
