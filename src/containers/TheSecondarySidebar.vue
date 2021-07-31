@@ -37,9 +37,8 @@ export default {
     this.update();
     this.loadInterval = setInterval(this.update, 10 * 1000);
   },
-  beforeRouteLeave(to, from, next) {
+  destroyed() {
     clearInterval(this.loadInterval);
-    next();
   },
   methods: {
     update() {

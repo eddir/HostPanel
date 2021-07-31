@@ -217,9 +217,8 @@ export default {
     this.loadServers();
     this.loadInterval = setInterval(this.loadServers, 10 * 1000);
   },
-  beforeRouteLeave(to, from, next) {
+  destroyed() {
     clearInterval(this.loadInterval);
-    next();
   },
   methods: {
     loadServers() {

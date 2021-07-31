@@ -1,75 +1,82 @@
 <script>
-import axios from 'axios'
+import Vue from "vue";
+import axios from 'axios';
+import Utils from "@/services/Utils";
 
 let debugMode = window.location.href.indexOf("localhost") >= 0;
 
-const SERVER_URL = debugMode ? "http://147.135.211.1:8000/" : "http://45.80.71.86:8000/";
+const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "http://45.80.71.86:8000/";
 const REST_URL = `${SERVER_URL}api/`;
 
-//todo: рассмотреть готовые фреймворки вместо этого
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
+
 export default {
   name: "ServersAPI",
   AUTH_TELEGRAM_BOT: debugMode ? "RostkovBot" : "HostPanelRobot",
+  SERVER_URL,
+  REST_URL,
   getServers() {
-    return axios.get(`${REST_URL}servers/`);
+    return this.get(`${REST_URL}servers/`);
   },
   getDedics() {
-    return axios.get(`${REST_URL}dedics/`);
+    return this.get(`${REST_URL}dedics/`);
   },
   getServer(server_id) {
-    return axios.get(`${REST_URL}server/${server_id}/`);
+    return this.get(`${REST_URL}server/${server_id}/`);
   },
   start(server_id) {
-    return axios.put(`${REST_URL}server/${server_id}/`);
+    return this.put(`${REST_URL}server/${server_id}/`, {action: "start"});
   },
   stop(server_id) {
-    return axios.delete(`${REST_URL}server/${server_id}/`);
+    return this.put(`${REST_URL}server/${server_id}/`, {action: "stop"});
   },
   remove(server_id) {
-    return axios.delete(`${REST_URL}server/${server_id}/`);
+    return this.delete(`${REST_URL}server/${server_id}/`);
   },
   forget(server_id) {
-    return axios.delete(`${REST_URL}server/${server_id}/`, {data: {force: true}});
+    return this.delete(`${REST_URL}server/${server_id}/`, {data: {force: true}});
   },
   reinstall(server_id) {
-    return axios.post(`${REST_URL}server/${server_id}/ `);
+    return this.post(`${REST_URL}server/${server_id}/ `);
   },
   updateConfig(server_id, config) {
-    return axios.post(`${REST_URL}server/${server_id}/config/`, {config: config});
+    return this.post(`${REST_URL}server/${server_id}/config/`, {config: config});
   },
   createServer(server) {
-    return axios.post(`${REST_URL}servers/`, server);
+    return this.post(`${REST_URL}servers/`, server);
   },
   createDedic(dedic) {
-    return axios.post(`${REST_URL}dedics/`, dedic);
+    return this.post(`${REST_URL}dedics/`, dedic);
   },
   reboot(dedic_id) {
-    return axios.patch(`${REST_URL}server/${dedic_id}/`);
+    return this.patch(`${REST_URL}server/${dedic_id}/`);
   },
   removeDedic(dedic_id) {
-    return axios.delete(`${REST_URL}dedic/${dedic_id}/`);
+    return this.delete(`${REST_URL}dedic/${dedic_id}/`);
     //throw new Error("Non implemented");
   },
   getTasks() {
-    return axios.get(`${REST_URL}task/`);
+    return this.get(`${REST_URL}task/`);
   },
   getMasterPackages() {
-    return axios.get(`${REST_URL}m_package/`);
+    return this.get(`${REST_URL}m_package/`);
   },
   getSpawnerPackages() {
-    return axios.get(`${REST_URL}sr_package/`);
+    return this.get(`${REST_URL}sr_package/`);
   },
   installMasterPackage(package_id) {
-    return axios.post(`${REST_URL}m_package/${package_id}/install/`);
+    return this.post(`${REST_URL}m_package/${package_id}/install/`);
   },
   installSpawnerPackage(package_id) {
-    return axios.post(`${REST_URL}sr_package/${package_id}/install/`);
+    return this.post(`${REST_URL}sr_package/${package_id}/install/`);
   },
   removeMasterPackage(package_id) {
-    return axios.delete(`${REST_URL}m_package/${package_id}/`);
+    return this.delete(`${REST_URL}m_package/${package_id}/`);
   },
   removeSpawnerPackage(package_id) {
-    return axios.delete(`${REST_URL}sr_package/${package_id}/`);
+    return this.delete(`${REST_URL}sr_package/${package_id}/`);
   },
   uploadMasterPackage(name, master, progressCallback) {
     let formData = new FormData();
@@ -89,7 +96,7 @@ export default {
     return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
   },
   uploadFiles(url, formData, progressCallback) {
-    return axios.post(url, formData,
+    return this.post(url, formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -97,6 +104,10 @@ export default {
           onUploadProgress: progressCallback
         }
     );
+  },
+  withAuth(e) {
+    window.location = "/#/login";
+    Vue.$toast.error(e.response.data.message);
   },
   login(user) {
     axios.post(`${SERVER_URL}auth/telegram/login/`, user).then(resp => {
@@ -117,7 +128,7 @@ export default {
       'DL': {'code': 'DL', 'message': 'Удалён', 'badge': 'danger'},
       'RB': {'code': 'RB', 'message': 'Ребут', 'badge': 'warning'},
     }[status];
-  },
+  },//todo: парсеры перенести в другой файл
   parseLog(log) {
     let codes = {
       "&0": "#607d8b",
@@ -205,6 +216,27 @@ export default {
     });
 
     return servers;
-  }
+  },
+  get(url) {
+    return axios.get(url).catch(this.withAuth);
+  },
+  head(url) {
+    return axios.head(url).catch(this.withAuth);
+  },
+  options(url) {
+    return axios.options(url).catch(this.withAuth);
+  },
+  post(url, data) {
+    return axios.post(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+  },
+  put(url, data) {
+    return axios.put(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+  },
+  delete(url) {
+    return axios.delete(url, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+  },
+  patch(url, data) {
+    return axios.patch(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+  },
 }
 </script>
