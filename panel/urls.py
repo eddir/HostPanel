@@ -7,6 +7,7 @@ from .views.server import *
 app_name = 'panel'
 
 urlpatterns = [
+
     # Основные ссылки
     path('', ServerListView.as_view(), name='index'),
     path('m_packages/', MPackageListView.as_view(), name='m_packages'),

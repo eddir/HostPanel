@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from packaging import version
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -48,7 +49,6 @@ class DedicView(APIView):
         })
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class DedicInstanceView(APIView):
     # Переподключение и удаление дедика
     @staticmethod
@@ -117,7 +117,6 @@ class ServerView(APIView):
         })
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class ServerInstanceView(APIView):
     # Запуск, остановка, старт ребут и получение данных о сервере
 
@@ -227,6 +226,8 @@ class ServerInstanceView(APIView):
 class StatusView(APIView):
     # Состояния сервера в моменте времени и информация о нагрузке
 
+    permission_classes = (AllowAny,)
+
     @staticmethod
     def get(request):
         stats = Status.objects.all()
@@ -263,6 +264,9 @@ class StatusView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class OnlineView(APIView):
+    # Информация об онлайне на серверах
+
+    permission_classes = (AllowAny,)
 
     @staticmethod
     def post(request):
@@ -306,7 +310,6 @@ class MPackageView(APIView):
         return Response({"success": "Сборка загружена"})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class MPackageInstanceView(APIView):
 
     # Получение информации о сборке
@@ -341,7 +344,6 @@ class MPackageInstanceView(APIView):
         return Response({"success": "Сборка удалена"})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class SRPackageInstanceView(APIView):
 
     # Установка сборки во все сервера
