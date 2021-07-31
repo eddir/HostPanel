@@ -5,7 +5,7 @@ import Utils from "@/services/Utils";
 
 let debugMode = window.location.href.indexOf("localhost") >= 0;
 
-const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "http://45.80.71.86:8000/";
+const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "https://hp.linksss.ru:8443/";
 const REST_URL = `${SERVER_URL}api/`;
 
 axios.defaults.withCredentials = true;
