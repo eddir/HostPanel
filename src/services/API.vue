@@ -227,16 +227,16 @@ export default {
     return axios.options(url).catch(this.withAuth);
   },
   post(url, data) {
-    return axios.post(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+    return axios.post(url, data).catch(this.withAuth);
   },
   put(url, data) {
-    return axios.put(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+    return axios.put(url, data).catch(this.withAuth);
   },
   delete(url) {
-    return axios.delete(url, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+    return axios.delete(url).catch(this.withAuth);
   },
   patch(url, data) {
-    return axios.patch(url, data, {headers: {'X-CSRFToken': Utils.getCookie('CSRF-TOKEN')}}).catch(this.withAuth);
+    return axios.patch(url, data).catch(this.withAuth);
   },
 }
 </script>

@@ -10,7 +10,7 @@ export default {
   telegramLogin(user, redirectUrl = "/") {
     API.post(`${API.SERVER_URL}auth/telegram/login/`, user).then(resp => {
       if (resp.data.success) {
-        Utils.setCookie("CSRF-TOKEN", resp.data.data.csrf, 14);
+        Utils.setCookie("XCSRF-TOKEN", resp.data.data.csrf, 14);
         Vue.$toast.success("Авторизация пройдена!");
         window.location.href = redirectUrl;
       } else {
