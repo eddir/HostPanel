@@ -1,7 +1,6 @@
 <script>
 import Vue from "vue";
 import axios from 'axios';
-import Utils from "@/services/Utils";
 
 let debugMode = window.location.href.indexOf("localhost") >= 0;
 
