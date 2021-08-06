@@ -40,6 +40,9 @@ export default {
   reinstall(server_id) {
     return this.post(`${REST_URL}server/${server_id}/ `);
   },
+  update(server_id, package_id) {
+    return this.post(`${REST_URL}server/${server_id}/ `, {package: package_id});
+  },
   updateConfig(server_id, config) {
     return this.post(`${REST_URL}server/${server_id}/config/`, {config: config});
   },

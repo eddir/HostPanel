@@ -71,6 +71,8 @@ export default {
     switch (action) {
       case "update_config":
         return this.action(ServersAPI.updateConfig(server_id, formData), callback);
+      case "update":
+        return this.action(ServersAPI.update(server_id, formData['package']), callback);
     }
   },
   formAction(action, formData, callback) {

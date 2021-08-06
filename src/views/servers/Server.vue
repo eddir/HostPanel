@@ -20,7 +20,14 @@
         <CCard>
           <CCardHeader>Конфиг</CCardHeader>
           <CCardBody>
-            <ServerConfig :rawConfig="server.server.config" :serverId="server.server.id" @update:config="updateConfig"></ServerConfig>
+            <ServerConfig :rawConfig="server.server.config" :serverId="server.server.id"
+                          @update:config="updateConfig"></ServerConfig>
+          </CCardBody>
+        </CCard>
+        <CCard>
+          <CCardHeader>Сборка</CCardHeader>
+          <CCardBody>
+            <ServerPackage :server="server.server"></ServerPackage>
           </CCardBody>
         </CCard>
       </CCol>
@@ -77,7 +84,8 @@
     <CModal title="Убирание сервера" color="danger" :show.sync="forgetModal" @update:show="updateForgetModal">
       Сервер {{ server.server.name }} будет удалён из панели, но файлы останутся на сервере. Продолжить?
     </CModal>
-    <CModal title="Переустановка сервера" color="warning" :show.sync="reinstallModal" @update:show="updateReinstallModal">
+    <CModal title="Переустановка сервера" color="warning" :show.sync="reinstallModal"
+            @update:show="updateReinstallModal">
       Сервер {{ server.server.name }} будет удалён вместе с файлами и установлен вновь. Продолжить?
     </CModal>
   </CContainer>
@@ -88,6 +96,7 @@ import ServersAPI from "@/services/API.vue";
 import Action from "@/services/Action";
 import ServerConfig from "@/views/servers/ServerConfig";
 import Vue from "vue";
+import ServerPackage from "@/views/servers/ServerPackage";
 
 /**
  * @param server.server.dedic__ip IP адрес сервера
@@ -107,7 +116,7 @@ export default {
       loadInterval: null
     }
   },
-  components: {ServerConfig},
+  components: {ServerConfig, ServerPackage},
   created() {
     this.load();
     this.loadInterval = setInterval(this.load, 10 * 1000);
