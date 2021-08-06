@@ -144,7 +144,8 @@ class ServerInstanceView(APIView):
             server_data = server.values(
                 'id', 'dedic__ip', 'log', 'name', 'dedic__password_root', 'dedic__password_single', 'dedic__ssh_key',
                 'dedic__user_root', 'dedic__user_single', 'package__mpackage__name', 'package__srpackage__name',
-                'package__mpackage__created_at', 'package__srpackage__created_at', 'config')[0]
+                'package__mpackage__created_at', 'package__srpackage__created_at',
+                'package__mpackage__id', 'package__srpackage__id', 'config')[0]
 
             online = Online.objects.filter(
                 server=pk,
@@ -157,6 +158,7 @@ class ServerInstanceView(APIView):
                 server_data['online'] = 0
 
             server_data['package'] = {
+                'id': server_data['package__mpackage__id'] or server_data['package__srpackage__id'],  # todo: переделать
                 'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
                 'created_at': server_data['package__mpackage__created_at'] or server_data[
                     'package__srpackage__created_at'],
@@ -187,7 +189,7 @@ class ServerInstanceView(APIView):
             tasks.server_task(pk, "start")
             Status(server=Server.objects.get(id=pk), condition=Status.Condition.STARTS).save()
             return Response({"success": "Сервер запущен."})
-        elif request.data['action'] == "stop": #todo: вынести в отдельный url
+        elif request.data['action'] == "stop":  # todo: вынести в отдельный url
             tasks.server_task(pk, "stop")
             Status(server=Server.objects.get(id=pk), condition=Status.Condition.STOPPED).save()
             return Response({"success": "Сервер остановлен."})
@@ -218,8 +220,15 @@ class ServerInstanceView(APIView):
         :param request:
         :return:
         """
-        tasks.server_task(pk, "reinstall")
-        return Response({"success": "Сервер переустанавливается."})
+        if 'package' in request.data:
+            server = Server.objects.get(id=pk)
+            server.package_id = request.data['package']
+            server.save()
+            tasks.server_task(pk, "update")
+            return Response({"success": "Сборка устанавливается"})
+        else:
+            tasks.server_task(pk, "reinstall")
+            return Response({"success": "Сервер переустанавливается."})
 
 
 @method_decorator(csrf_exempt, name='dispatch')

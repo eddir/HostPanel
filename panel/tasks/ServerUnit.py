@@ -79,7 +79,7 @@ class ServerUnit(Client):
 
     def update(self):
         self.stop()
-        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))
+        self.command("rm -rf /home/{0}/HostPanel/".format(self.model.dedic.user_single))  # todo: это обязательно?
 
         self.upload_package()
         self.log("Сервер обновлён успешно.")
@@ -101,7 +101,7 @@ class ServerUnit(Client):
             client.put(self.model.package.srpackage.room.path, '/home/%s/HostPanel/room_package.zip' %
                        self.model.dedic.user_single)
             unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
-                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/"\
+                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/" \
                 .format(self.model.dedic.user_single)
             rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
 
