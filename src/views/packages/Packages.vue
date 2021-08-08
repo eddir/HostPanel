@@ -18,7 +18,7 @@
         <td slot="control-danger" slot-scope="{item}" style="width: 1%">
           <CDropdown color="secondary" toggler-text="Actions">
             <CDropdownItem disabled>Edit</CDropdownItem>
-            <CDropdownItem @click="remove(item.id)">Delete</CDropdownItem>
+            <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
           </CDropdown>
         </td>
         <template slot="under-table">
@@ -31,6 +31,9 @@
         </template>
       </CDataTable>
     </CCardBody>
+    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal" v-if="selected">
+      Удалить сборку {{ selected.name }}? Архив будет удалён безвозвратно.
+    </CModal>
   </CCard>
 </template>
 
@@ -47,6 +50,8 @@ export default {
       packages: [],
       tableItems: [],
       tableFields: [],
+      removeModal: false,
+      selected: null
     }
   },
   created() {
@@ -101,7 +106,16 @@ export default {
           this.load();
         });
       }
-    }
+    },
+    showRemoveModal(pack) {
+      this.selected = pack;
+      this.removeModal = true;
+    },
+    updateRemoveModal(open, e, accept) {
+      if (!open && accept) {
+        this.remove(this.selected.id);
+      }
+    },
   }
 }
 </script>

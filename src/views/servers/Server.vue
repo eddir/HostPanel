@@ -79,10 +79,10 @@
       </CCol>
     </CRow>
     <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
-      Удалить сервер {{ server.server.name }}? Будут удалены все данные о нём, в том числе файлы на сервере.
+      Удалить сервер {{ server.server.name }}? Будут удалены все данные о нём, в том числе файлы на VPS.
     </CModal>
     <CModal title="Убирание сервера" color="danger" :show.sync="forgetModal" @update:show="updateForgetModal">
-      Сервер {{ server.server.name }} будет удалён из панели, но файлы останутся на сервере. Продолжить?
+      Сервер {{ server.server.name }} будет удалён из панели, но файлы останутся на VPS. Продолжить?
     </CModal>
     <CModal title="Переустановка сервера" color="warning" :show.sync="reinstallModal"
             @update:show="updateReinstallModal">

@@ -27,15 +27,15 @@
             </td>
             <td slot="log" slot-scope="{item}">
               <CButton v-if="item.log"
-                  type="submit" size="sm" color="primary" variant="outline" @click="selectedDedic = item">
+                       type="submit" size="sm" color="primary" variant="outline" @click="showLogsModal(item)">
                 Log
               </CButton>
             </td>
-            <td slot="control-reload" slot-scope="{item}" @click="reboot(item.id)"
+            <td slot="control-reload" slot-scope="{item}" @click="showRebootModal(item)"
                 class="text-right align-middle control-icon" style="width: 1%">
               <CIcon name="cil-reload" height="25" class="mx-2"></CIcon>
             </td>
-            <td slot="control-remove" slot-scope="{item}" @click="remove(item.id)"
+            <td slot="control-remove" slot-scope="{item}" @click="showRemoveModal(item)"
                 class="text-right align-middle control-icon" style="width: 1%">
               <CIcon name="cil-trash" height="25" class="mx-2"></CIcon>
             </td>
@@ -58,6 +58,13 @@
         </CCard>
       </CModal>
     </CCol>
+    <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
+      Во время ребута сервера будут недоступны в течении нескольких минут.
+    </CModal>
+    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal"
+            v-if="selectedDedic">
+      Удалить дедик {{ selectedDedic.name }}? Будут удалены все данные о нём, в том числе файлы на VPS.
+    </CModal>
   </CRow>
 </template>
 
@@ -86,15 +93,9 @@ export default {
       dedics: [],
       logModal: false,
       selectedDedic: null,
+      rebootModal: false,
+      removeModal: false,
       loadInterval: null
-    }
-  },
-  watch: {
-    selectedDedic() {
-      this.logModal = true;
-      if (this.selectedDedic.log !== null) {
-        this.selectedDedic.log = ServersAPI.parseLog(this.selectedDedic.log);
-      }
     }
   },
   created() {
@@ -134,6 +135,31 @@ export default {
           return item;
         });
       });
+    },
+    showLogsModal(dedic) {
+      this.selectedDedic = dedic;
+      this.logModal = true;
+      if (this.selectedDedic.log !== null) {
+        this.selectedDedic.log = ServersAPI.parseLog(this.selectedDedic.log);
+      }
+    },
+    showRebootModal(dedic) {
+      this.selectedDedic = dedic;
+      this.rebootModal = true;
+    },
+    showRemoveModal(dedic) {
+      this.selectedDedic = dedic;
+      this.removeModal = true;
+    },
+    updateRebootModal(open, e, accept) {
+      if (!open && accept) {
+        Action.quickAction('reboot', this.selectedDedic.id);
+      }
+    },
+    updateRemoveModal(open, e, accept) {
+      if (!open && accept) {
+        Action.quickAction('dedic_remove', this.selectedDedic.id);
+      }
     }
   }
 }
