@@ -65,7 +65,8 @@
         </td>
       </template>
       <template #control="{item}">
-        <td class="text-right align-middle control-icon" style="width: 1%" @click="start(item.host.id)">
+        <td class="text-right align-middle control-icon" style="width: 1%"
+            @click="item.status ? stop(item.host.id) : start(item.host.id)">
           <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
           <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
         </td>

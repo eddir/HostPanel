@@ -95,7 +95,6 @@
 import ServersAPI from "@/services/API.vue";
 import Action from "@/services/Action";
 import ServerConfig from "@/views/servers/ServerConfig";
-import Vue from "vue";
 import ServerPackage from "@/views/servers/ServerPackage";
 
 /**
@@ -138,8 +137,7 @@ export default {
     },
     updateRemoveModal(open, e, accept) {
       if (!open && accept) {
-        //Action.serverAction('remove', this.server.server.id);
-        Vue.$toast.warning("Фича временно недоступна");//todo
+        Action.serverAction('remove', this.server.server.id);
       }
     },
     updateForgetModal(open, e, accept) {
