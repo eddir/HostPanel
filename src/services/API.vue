@@ -57,7 +57,9 @@ export default {
   },
   removeDedic(dedic_id) {
     return this.delete(`${REST_URL}dedic/${dedic_id}/`);
-    //throw new Error("Non implemented");
+  },
+  reconnectDedic(dedic_id) {
+    return this.put(`${REST_URL}dedic/${dedic_id}/`);
   },
   getTasks() {
     return this.get(`${REST_URL}task/`);

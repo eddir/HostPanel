@@ -50,6 +50,9 @@ export default {
         case "dedic_remove":
           this.action(ServersAPI.removeDedic(unit_id), callback);
           break;
+        case "dedic_reconnect":
+          this.action(ServersAPI.reconnectDedic(unit_id), callback);
+          break;
         case "install_master_package":
           this.action(ServersAPI.installMasterPackage(unit_id), callback);
           break;

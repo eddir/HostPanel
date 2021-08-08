@@ -151,8 +151,7 @@
               </template>
               <template #control-details="{item}">
                 <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon"
-                             style="width: 1%"
-                             @click="window.location.href='/server/'+item.host.id">
+                             style="width: 1%" @click="window.location.href='/server/'+item.host.id">
                   <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
                 </router-link>
               </template>

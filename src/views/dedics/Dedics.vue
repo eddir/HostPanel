@@ -31,9 +31,13 @@
                 Log
               </CButton>
             </td>
-            <td slot="control-reload" slot-scope="{item}" @click="showRebootModal(item)"
+            <td slot="control-reconnect" slot-scope="{item}" @click="reconnect(item.id)"
                 class="text-right align-middle control-icon" style="width: 1%">
               <CIcon name="cil-reload" height="25" class="mx-2"></CIcon>
+            </td>
+            <td slot="control-reload" slot-scope="{item}" @click="showRebootModal(item)"
+                class="text-right align-middle control-icon" style="width: 1%">
+              <CIcon name="cil-loop" height="25" class="mx-2"></CIcon>
             </td>
             <td slot="control-remove" slot-scope="{item}" @click="showRemoveModal(item)"
                 class="text-right align-middle control-icon" style="width: 1%">
@@ -87,6 +91,7 @@ export default {
         {key: 'status'},
         {key: 'last_listen'},
         {key: 'log', label: '', sorter: false, filter: false},
+        {key: 'control-reconnect', label: '', sorter: false, filter: false},
         {key: 'control-reload', label: '', sorter: false, filter: false},
         {key: 'control-remove', label: '', sorter: false, filter: false},
       ],
@@ -111,6 +116,9 @@ export default {
     },
     remove(dedic) {
       Action.quickAction('dedic_remove', dedic);
+    },
+    reconnect(dedic) {
+      Action.quickAction('dedic_reconnect', dedic);
     },
     loadDedics() {
       ServersAPI.getDedics().then(dedics => {
