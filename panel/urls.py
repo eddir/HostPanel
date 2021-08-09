@@ -37,9 +37,13 @@ urlpatterns = [
     path('api/dedic/<int:pk>/', DedicInstanceView.as_view()),
 
     path('api/servers/', ServerView.as_view()),
+
     path('api/servers/status/', StatusView.as_view()),
     path('api/servers/online/', OnlineView.as_view()),
+
     path('api/server/<int:pk>/', ServerInstanceView.as_view()),
+    path('api/server/<int:pk>/remove/', DestroyServer.as_view()),
+    path('api/server/<int:pk>/remove/force/', ForgetServer.as_view()),
     path('api/server/<int:pk>/config/', update_config),
 
     path('api/m_package/', MPackageView.as_view()),

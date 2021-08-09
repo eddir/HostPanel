@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from packaging import version
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -200,18 +200,6 @@ class ServerInstanceView(APIView):
         return Response({"success": "Ребут начат"})
 
     @staticmethod
-    def delete(request, pk):
-        if 'force' in request.data:
-            # Удаляет сервер, но оставить файлы
-            Server.objects.get(id=pk).delete()
-            return Response({"success": "Сервер удалён."})
-        else:
-            # Удалять вместе с файлами на сервере
-            tasks.server_task(pk, "delete")
-            Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
-            return Response({"success": "Сервер удалён."})
-
-    @staticmethod
     def post(request, pk):
         """
         Переустановка сервера
@@ -229,6 +217,27 @@ class ServerInstanceView(APIView):
         else:
             tasks.server_task(pk, "reinstall")
             return Response({"success": "Сервер переустанавливается."})
+
+
+class DestroyServer(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request, pk):
+        # Удалять вместе с файлами на сервере
+        tasks.server_task(pk, "delete")
+        Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
+        return Response({"success": "Сервер удалён."})
+
+
+class ForgetServer(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def post(request, pk):
+        server = Server.objects.get(id=pk)
+        server.delete()
+        return Response({"success": "Сервер убран"})
 
 
 @method_decorator(csrf_exempt, name='dispatch')
