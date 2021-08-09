@@ -135,7 +135,7 @@
                   <strong v-else>Недоступен</strong>
                 </td>
               </template>
-              <template #control-danger>
+              <template #control-danger="{item}">
                 <td style="width: 1%">
                   <CDropdown color="secondary" toggler-text="Actions">
                     <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>

@@ -32,10 +32,10 @@ export default {
     return this.put(`${REST_URL}server/${server_id}/`, {action: "stop"});
   },
   remove(server_id) {
-    return this.delete(`${REST_URL}server/${server_id}/`);
+    return this.post(`${REST_URL}server/${server_id}/remove/`);
   },
   forget(server_id) {
-    return this.delete(`${REST_URL}server/${server_id}/`, {data: {force: true}});
+    return this.post(`${REST_URL}server/${server_id}/remove/force/`);
   },
   reinstall(server_id) {
     return this.post(`${REST_URL}server/${server_id}/ `);

@@ -137,7 +137,7 @@ export default {
     },
     updateRemoveModal(open, e, accept) {
       if (!open && accept) {
-        Action.serverAction('remove', this.server.server.id);
+        Action.quickAction('remove', this.server.server.id);
       }
     },
     updateForgetModal(open, e, accept) {
