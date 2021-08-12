@@ -9,7 +9,7 @@ from datetime import datetime
 import psutil
 import requests
 
-VERSION = "2.2.0.0"
+VERSION = "2.2.0.1"
 
 
 def watch(configuration):
@@ -22,12 +22,12 @@ def send_status(configuration):
         try:
             with open(os.path.expanduser("~/HostPanel/Master/online.txt"), "r") as json_file:
                 online = {"online": json.load(json_file), "server": configuration.server_id}
-                requests.post(configuration.panel_address + "/api/servers/online/", json=online)
+                requests.post(configuration.panel_address + "/api/servers/online/", verify=False, json=online)
 
         except IOError:
             pass
 
-    r = requests.post(configuration.panel_address + "/api/servers/status/", json={
+    r = requests.post(configuration.panel_address + "/api/servers/status/", verify=False, json={
         'server': configuration.server_id,
         'cpu_usage': int(psutil.cpu_percent()),
         'ram_usage': psutil.virtual_memory().used,
