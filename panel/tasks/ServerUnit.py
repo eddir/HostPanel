@@ -38,7 +38,7 @@ class ServerUnit(Client):
         package = "SR" if self.model.parent else "Master"
         self.command(
             "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> ~/HostPanel/Caretaker.log &".format(
-                package, self.model.id, "http://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT)))
+                package, self.model.id, "https://" + settings.ALLOWED_HOSTS[-1] + ":" + str(settings.PORT)))
         # TODO: другой способ получить адрес для прода
         self.log("&2Сервер запущен.")
 
