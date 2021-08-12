@@ -1,7 +1,6 @@
 <template>
   <div>
     <CDataTable
-        v-if="tableItems.length > 0"
         hover
         :items="tableItems"
         :fields="tableFields"

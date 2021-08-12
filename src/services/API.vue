@@ -26,10 +26,10 @@ export default {
     return this.get(`${REST_URL}server/${server_id}/`);
   },
   start(server_id) {
-    return this.put(`${REST_URL}server/${server_id}/`, {action: "start"});
+    return this.post(`${REST_URL}server/${server_id}/start/`, {action: "start"});
   },
   stop(server_id) {
-    return this.put(`${REST_URL}server/${server_id}/`, {action: "stop"});
+    return this.post(`${REST_URL}server/${server_id}/stop/`, {action: "stop"});
   },
   remove(server_id) {
     return this.post(`${REST_URL}server/${server_id}/remove/`);
@@ -38,10 +38,10 @@ export default {
     return this.post(`${REST_URL}server/${server_id}/remove/force/`);
   },
   reinstall(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/ `);
+    return this.post(`${REST_URL}server/${server_id}/`);
   },
   update(server_id, package_id) {
-    return this.post(`${REST_URL}server/${server_id}/ `, {package: package_id});
+    return this.post(`${REST_URL}server/${server_id}/`, {package: package_id});
   },
   updateConfig(server_id, config) {
     return this.post(`${REST_URL}server/${server_id}/config/`, {config: config});
@@ -53,13 +53,13 @@ export default {
     return this.post(`${REST_URL}dedics/`, dedic);
   },
   reboot(dedic_id) {
-    return this.patch(`${REST_URL}server/${dedic_id}/`);
+    return this.post(`${REST_URL}server/${dedic_id}/reboot/`);
   },
   removeDedic(dedic_id) {
     return this.delete(`${REST_URL}dedic/${dedic_id}/`);
   },
   reconnectDedic(dedic_id) {
-    return this.put(`${REST_URL}dedic/${dedic_id}/`);
+    return this.post(`${REST_URL}dedic/${dedic_id}/reconnect/`);
   },
   getTasks() {
     return this.get(`${REST_URL}task/`);
