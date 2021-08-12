@@ -1,6 +1,10 @@
 from django.urls import path
 
-from .views.api import *
+from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
+from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView
+from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
+    StopServer, UpdateConfig, RebootServer
+from .views.api.stat import OnlineView, StatusView, TaskView
 from .views.package import *
 from .views.server import *
 
@@ -35,6 +39,7 @@ urlpatterns = [
 
     path('api/dedics/', DedicView.as_view()),
     path('api/dedic/<int:pk>/', DedicInstanceView.as_view()),
+    path('api/dedic/<int:pk>/reconnect/', ReconnectDedic.as_view()),
 
     path('api/servers/', ServerView.as_view()),
 
@@ -42,9 +47,12 @@ urlpatterns = [
     path('api/servers/online/', OnlineView.as_view()),
 
     path('api/server/<int:pk>/', ServerInstanceView.as_view()),
+    path('api/server/<int:pk>/start/', StartServer.as_view()),
+    path('api/server/<int:pk>/stop/', StopServer.as_view()),
     path('api/server/<int:pk>/remove/', DestroyServer.as_view()),
     path('api/server/<int:pk>/remove/force/', ForgetServer.as_view()),
-    path('api/server/<int:pk>/config/', update_config),
+    path('api/server/<int:pk>/reboot/', RebootServer.as_view()),
+    path('api/server/<int:pk>/config/', UpdateConfig.as_view()),
 
     path('api/m_package/', MPackageView.as_view()),
     path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),
@@ -54,5 +62,5 @@ urlpatterns = [
     path('api/sr_package/<int:pk>/install/', SRPackageInstanceView.as_view()),
     path('api/sr_package/', SRPackageView.as_view()),
 
-    path('api/task/', TaskPackageView.as_view()),
+    path('api/task/', TaskView.as_view()),
 ]
