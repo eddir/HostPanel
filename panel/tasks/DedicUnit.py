@@ -100,7 +100,8 @@ class DedicUnit(Client):
         try:
             self.connect()
             self.model.condition = True
-        except:
+        except Exception as e:
+            self.model.log += "[%s] %s<br>" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), str(e))
             self.model.condition = False
 
         self.model.last_listen = timezone.now()
