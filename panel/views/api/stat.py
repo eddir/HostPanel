@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from HostPanel import settings
 from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
@@ -90,3 +91,25 @@ class TaskView(APIView):
         tasks_list = Task.objects.all()
         serializer = TaskSerializer(tasks_list, many=True)
         return Response({"tasks": serializer.data})
+
+    @staticmethod
+    def delete(request):
+        Task.objects.all().delete()
+        return Response({
+            "ok": True,
+            "success": "Задачи отменены"
+        })
+
+
+class VersionView(APIView):
+
+    @staticmethod
+    def get(request):
+        return Response({
+            "ok": True,
+            "response": {
+                "panel": settings.PANEL_VERSION,
+                "caretaker": settings.CARETAKER_VERSION,
+                "mysql": settings.MYSQL_VERSION
+            }
+        })
