@@ -25,6 +25,9 @@ const NewDedic = () => import('@/views/dedics/NewDedic');
 const Packages = () => import('@/views/packages/Packages');
 const NewPackage = () => import('@/views/packages/NewPackage');
 
+// Users
+const Users = () => import('@/views/users/Users');
+
 // Settings
 const Settings = () => import('@/views/settings/Settings');
 
@@ -160,6 +163,11 @@ function configRoutes() {
                             ]
                         },
                     ]
+                },
+                {
+                    path: 'users',
+                    name: 'Users',
+                    component: Users
                 },
                 {
                     path: 'settings',

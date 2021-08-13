@@ -108,6 +108,9 @@ export default {
   getVersion() {
     return this.get(`${REST_URL}version/`);
   },
+  getUsers() {
+    return this.get(`${REST_URL}users/`);
+  },
   uploadFiles(url, formData, progressCallback) {
     return this.post(url, formData,
         {
