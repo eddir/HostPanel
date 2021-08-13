@@ -1,4 +1,5 @@
 from background_task.models import Task
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from packaging import version
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from HostPanel import settings
-from panel.models import Status, Server
+from panel.models import Status, Server, Dedic
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
 from panel.utils import get_caretaker_version
@@ -38,6 +39,11 @@ class StatusView(APIView):
         serializer = StatusSerializer(data=stat)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+
+        server = Server.objects.get(id=request.data['server'])
+        server.dedic.last_listen = timezone.now()
+        server.dedic.connection = True
+        server.dedic.save()
 
         if 'caretaker_version' in request.data:
             client_version = version.parse(request.data['caretaker_version'])
