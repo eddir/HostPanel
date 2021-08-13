@@ -12,25 +12,25 @@ export default [
         _name: 'CSidebarNavItem',
         name: 'Дедики',
         to: '/dedics',
-        icon: 'cil-pencil'
+        icon: 'cil-memory'
       },
       {
         _name: 'CSidebarNavItem',
         name: 'Master сборки',
         to: '/packages/master',
-        icon: 'cil-pencil'
+        icon: 'cil-videogame'
       },
       {
         _name: 'CSidebarNavItem',
         name: 'Spawner сборки',
         to: '/packages/spawner',
-        icon: 'cil-pencil'
+        icon: 'cil-gamepad'
       },
       {
         _name: 'CSidebarNavItem',
         name: 'Настройки',
         to: '/settings',
-        icon: 'cil-pencil'
+        icon: 'cil-settings'
       },
     ]
   }
