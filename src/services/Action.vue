@@ -47,6 +47,9 @@ export default {
         case "reboot":
           this.action(ServersAPI.reboot(unit_id), callback);
           break;
+        case "updateCaretaker":
+          this.action(ServersAPI.updateCaretaker(unit_id), callback);
+          break;
         case "dedic_remove":
           this.action(ServersAPI.removeDedic(unit_id), callback);
           break;

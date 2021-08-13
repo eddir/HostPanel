@@ -46,6 +46,9 @@ export default {
   updateConfig(server_id, config) {
     return this.post(`${REST_URL}server/${server_id}/config/`, {config: config});
   },
+  updateCaretaker(server_id) {
+    return this.post(`${REST_URL}server/${server_id}/updateCaretaker/`);
+  },
   createServer(server) {
     return this.post(`${REST_URL}servers/`, server);
   },

@@ -59,6 +59,7 @@
         <td style="width: 1%">
           <CDropdown color="secondary" toggler-text="Actions">
             <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+            <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
             <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
           </CDropdown>
         </td>
@@ -138,6 +139,7 @@
                 <td style="width: 1%">
                   <CDropdown color="secondary" toggler-text="Actions">
                     <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+                    <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
                     <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
                   </CDropdown>
                 </td>
@@ -249,6 +251,9 @@ export default {
     },
     stop(id) {
       Action.quickAction('stop', id);
+    },
+    update(id) {
+      Action.quickAction('updateCaretaker', id);
     },
     onRowClicked(item, index, column, event) {
       if (['BUTTON', 'A'].indexOf(event.target.tagName) !== -1) {
