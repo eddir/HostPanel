@@ -202,3 +202,11 @@ class UpdateConfig(APIView):
             return Response({"success": "Конфиг обновлён"})
         else:
             return Response({"error": "Сервер не найден"})
+
+
+class UpdateCaretaker(APIView):
+
+    @staticmethod
+    def post(request, pk):
+        tasks.server_task(pk, 'update_caretaker')
+        return Response({"success": "Обновление запущено"})

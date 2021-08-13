@@ -3,7 +3,7 @@ from django.urls import path
 from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
 from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
-    StopServer, UpdateConfig, RebootServer
+    StopServer, UpdateConfig, RebootServer, UpdateCaretaker
 from .views.api.stat import OnlineView, StatusView, TaskView
 from .views.package import *
 from .views.server import *
@@ -35,7 +35,7 @@ urlpatterns = [
     path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='sr_package.delete'),
     path('sr_package/<int:pk>/edit/', SRPackageEdit.as_view(), name='sr_package.edit'),
 
-    # AJAX
+    # API
 
     path('api/dedics/', DedicView.as_view()),
     path('api/dedic/<int:pk>/', DedicInstanceView.as_view()),
@@ -53,6 +53,7 @@ urlpatterns = [
     path('api/server/<int:pk>/remove/force/', ForgetServer.as_view()),
     path('api/server/<int:pk>/reboot/', RebootServer.as_view()),
     path('api/server/<int:pk>/config/', UpdateConfig.as_view()),
+    path('api/server/<int:pk>/updateCaretaker/', UpdateCaretaker.as_view()),
 
     path('api/m_package/', MPackageView.as_view()),
     path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),
