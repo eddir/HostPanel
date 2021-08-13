@@ -5,6 +5,7 @@ from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageIns
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView
+from .views.api.users import UsersView
 from .views.package import *
 from .views.server import *
 
@@ -64,6 +65,8 @@ urlpatterns = [
     path('api/sr_package/', SRPackageView.as_view()),
 
     path('api/task/', TaskView.as_view()),
+
+    path('api/users/', UsersView.as_view()),
 
     path('api/version/', VersionView.as_view())
 ]
