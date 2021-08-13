@@ -67,6 +67,9 @@ export default {
   getTasks() {
     return this.get(`${REST_URL}task/`);
   },
+  cancelTasks() {
+    return this.delete(`${REST_URL}task/`);
+  },
   getMasterPackages() {
     return this.get(`${REST_URL}m_package/`);
   },
@@ -101,6 +104,9 @@ export default {
     formData.append("room", room);
 
     return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
+  },
+  getVersion() {
+    return this.get(`${REST_URL}version/`);
   },
   uploadFiles(url, formData, progressCallback) {
     return this.post(url, formData,

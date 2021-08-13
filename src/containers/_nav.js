@@ -26,6 +26,12 @@ export default [
         to: '/packages/spawner',
         icon: 'cil-pencil'
       },
+      {
+        _name: 'CSidebarNavItem',
+        name: 'Настройки',
+        to: '/settings',
+        icon: 'cil-pencil'
+      },
     ]
   }
 ]

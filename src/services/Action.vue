@@ -68,6 +68,12 @@ export default {
         case "remove_spawner_package":
           this.action(ServersAPI.removeSpawnerPackage(unit_id), callback);
           break;
+        case "version":
+          this.action(ServersAPI.getVersion(), callback);
+          break;
+        case "cancelTasks":
+          this.action(ServersAPI.cancelTasks(), callback);
+          break;
       }
     } catch (e) {
       Vue.$toast.error(e.message);

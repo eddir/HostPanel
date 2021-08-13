@@ -23,9 +23,12 @@ const NewDedic = () => import('@/views/dedics/NewDedic');
 
 // Packages
 const Packages = () => import('@/views/packages/Packages');
-const NewPackage = () => import('@/views/packages/NewPackage')
+const NewPackage = () => import('@/views/packages/NewPackage');
 
-Vue.use(Router)
+// Settings
+const Settings = () => import('@/views/settings/Settings');
+
+Vue.use(Router);
 
 export default new Router({
     mode: 'hash', // https://router.vuejs.org/api/#mode
@@ -157,6 +160,11 @@ function configRoutes() {
                             ]
                         },
                     ]
+                },
+                {
+                    path: 'settings',
+                    name: 'Settings',
+                    component: Settings
                 }
             ]
         },
