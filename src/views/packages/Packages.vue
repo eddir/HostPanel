@@ -11,9 +11,7 @@
           pagination
       >
         <td slot="control-install" slot-scope="{item}" style="width: 1%">
-          <CButton type="submit" color="primary" variant="outline" @click="install(item.id)">
-            Установить
-          </CButton>
+          <InstallPackage :pack="item" :type="type" :servers="servers"></InstallPackage>
         </td>
         <td slot="control-danger" slot-scope="{item}" style="width: 1%">
           <CDropdown color="secondary" toggler-text="Actions">
@@ -31,7 +29,8 @@
         </template>
       </CDataTable>
     </CCardBody>
-    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal" v-if="selected">
+    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal"
+            v-if="selected">
       Удалить сборку {{ selected.name }}? Архив будет удалён безвозвратно.
     </CModal>
   </CCard>
@@ -40,10 +39,12 @@
 <script>
 import ServersAPI from "../../services/API.vue"
 import Action from "@/services/Action";
+import InstallPackage from "@/views/packages/InstallPackage";
 
 export default {
   name: "Packages",
   mixins: [ServersAPI],
+  components: {InstallPackage},
   data() {
     return {
       type: "",
@@ -51,7 +52,8 @@ export default {
       tableItems: [],
       tableFields: [],
       removeModal: false,
-      selected: null
+      selected: null,
+      servers: []
     }
   },
   created() {
@@ -77,6 +79,10 @@ export default {
       {key: 'control-install', label: '', sorter: false, filter: false},
       {key: 'control-danger', label: '', sorter: false, filter: false},
     ]);
+
+    ServersAPI.getServers().then(response => {
+      this.servers = response.data.servers.filter(server => (server.parent === null) === (this.type === "master"));
+    });
 
     this.load();
   },
