@@ -3,7 +3,7 @@ from django.urls import path
 from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
 from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
-    StopServer, UpdateConfig, RebootServer, UpdateCaretaker
+    StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView
 from .views.package import *
 from .views.server import *
@@ -54,6 +54,7 @@ urlpatterns = [
     path('api/server/<int:pk>/reboot/', RebootServer.as_view()),
     path('api/server/<int:pk>/config/', UpdateConfig.as_view()),
     path('api/server/<int:pk>/updateCaretaker/', UpdateCaretaker.as_view()),
+    path('api/server/<int:pk>/setStatus/', SetStatus.as_view()),
 
     path('api/m_package/', MPackageView.as_view()),
     path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),

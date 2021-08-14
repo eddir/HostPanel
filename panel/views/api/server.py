@@ -210,3 +210,11 @@ class UpdateCaretaker(APIView):
     def post(request, pk):
         tasks.server_task(pk, 'update_caretaker')
         return Response({"success": "Обновление запущено"})
+
+
+class SetStatus(APIView):
+
+    @staticmethod
+    def post(request, pk):
+        Status(server=Server.objects.get(id=pk), condition=request.data['condition']).save()
+        return Response({"success": "Статус установлен"})
