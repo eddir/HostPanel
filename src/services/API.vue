@@ -49,6 +49,9 @@ export default {
   updateCaretaker(server_id) {
     return this.post(`${REST_URL}server/${server_id}/updateCaretaker/`);
   },
+  setStatus(server_id, condition) {
+    return this.post(`${REST_URL}server/${server_id}/setStatus/`, {condition: condition});
+  },
   createServer(server) {
     return this.post(`${REST_URL}servers/`, server);
   },

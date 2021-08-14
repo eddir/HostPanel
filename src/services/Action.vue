@@ -85,6 +85,8 @@ export default {
         return this.action(ServersAPI.updateConfig(server_id, formData), callback);
       case "update":
         return this.action(ServersAPI.update(server_id, formData['package']), callback);
+        case "set_status":
+          return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
     }
   },
   formAction(action, formData, callback) {

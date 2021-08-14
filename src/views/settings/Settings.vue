@@ -16,6 +16,11 @@
           <CCardHeader>Debug</CCardHeader>
           <CCardBody>
             <CButton variant="ghost" color="info" class="m-2" @click="cancelTasks">Отменить все задачи</CButton>
+            <div class="input-table">
+              <CSelect :value.sync="selectedServer" :options="servers" addInputClasses="m-2"></CSelect>
+              <CSelect :value.sync="selectedStatusType" :options="statusTypes" addInputClasses="m-2"></CSelect>
+              <CButton variant="ghost" color="info" class="m-2" @click="setStatus">Установить статус</CButton>
+            </div>
           </CCardBody>
         </CCard>
       </CCol>
@@ -35,17 +40,33 @@ export default {
         panel: null,
         caretaker: null,
         mysql: null
-      }
+      },
+      servers: [],
+      selectedServer: null,
+      statusTypes: ['IN', 'ST', 'RN', 'PS', 'SP', 'TR', 'DL', 'RB',],
+      selectedStatusType: 'RN'
     }
   },
   created() {
     ServersAPI.getVersion().then(response => {
       this.version = response.data.response;
     })
+    ServersAPI.getServers().then(response => {
+      this.servers = response.data.servers.map(server => {
+        return {
+          value: server.id,
+          label: `${server.id} - '${server.name}'`
+        }
+      });
+      this.selectedServer = this.servers[0].value;
+    })
   },
   methods: {
     cancelTasks() {
       Action.quickAction("cancelTasks");
+    },
+    setStatus() {
+      Action.serverAction("set_status", this.selectedServer, {condition: this.selectedStatusType});
     }
   }
 }
