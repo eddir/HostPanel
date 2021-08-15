@@ -242,8 +242,8 @@ export default {
   options(url) {
     return axios.options(url).catch(this.withAuth);
   },
-  post(url, data) {
-    return axios.post(url, data).catch(this.withAuth);
+  post(url, data, config) {
+    return axios.post(url, data, config).catch(this.withAuth);
   },
   put(url, data) {
     return axios.put(url, data).catch(this.withAuth);
