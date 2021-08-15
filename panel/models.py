@@ -17,12 +17,18 @@ class MPackage(Package):
     name = models.CharField(max_length=32)
     master = models.FileField(upload_to='packages')
 
+    class Meta:
+        ordering = ['-id']
+
 
 class SRPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
     spawner = models.FileField(upload_to='packages')
     room = models.FileField(upload_to='packages')
+
+    class Meta:
+        ordering = ['-id']
 
 
 @receiver(models.signals.post_delete, sender=MPackage)
@@ -58,6 +64,9 @@ class Dedic(models.Model):
     condition = models.BooleanField(default=False)
     last_listen = models.DateTimeField(null=True)
 
+    class Meta:
+        ordering = ['-id']
+
 
 @receiver(models.signals.post_delete, sender=Dedic)
 def auto_delete_tasks_on_delete_dedic(sender, instance, **kwargs):
@@ -87,6 +96,9 @@ class Server(models.Model):
 
     def is_running(self):
         return self.get_last_status().condition == Status.Condition.RUNNING
+
+    class Meta:
+        ordering = ['-id']
 
 
 @receiver(models.signals.post_delete, sender=Server)
