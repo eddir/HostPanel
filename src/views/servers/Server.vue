@@ -14,6 +14,7 @@
               <li><strong>Root пароль:</strong> {{ server.server.dedic__password_root }}</li>
               <li><strong>User:</strong> {{ server.server.dedic__user_single }}</li>
               <li><strong>User пароль:</strong> {{ server.server.dedic__password_single }}</li>
+              <li><strong>Сборка:</strong> {{ server.server.package.name }}</li>
             </ul>
           </CCardBody>
         </CCard>
