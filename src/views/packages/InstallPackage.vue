@@ -11,7 +11,7 @@
           <span class="mx-4">{{ server.name }}</span>
         </CListGroupItem>
         <CListGroupItem tag="label" class="clickable" color="secondary">
-          <CInputCheckbox :checked.sync="selected.every(e => e)" @update:checked="selectAll"></CInputCheckbox>
+          <CInputCheckbox :checked.sync="selected.length > 0 && selected.every(e => e)" @update:checked="selectAll"></CInputCheckbox>
           <span class="mx-4"><b>Выбрать все</b></span>
         </CListGroupItem>
       </CListGroup>
