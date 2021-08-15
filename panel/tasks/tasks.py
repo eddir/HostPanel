@@ -3,6 +3,7 @@ from contextlib import suppress
 from pprint import pprint
 
 from background_task import background
+from django.db import close_old_connections, reset_queries
 
 from panel.models import Server, Dedic
 from panel.tasks.DedicUnit import DedicUnit
@@ -44,9 +45,8 @@ def server_task(server_id, operation):
     :return:
     """
 
-    # Fix temporary (2006, 'MySQL server has gone away')
-    from django.db import close_old_connections
-    close_old_connections()
+    # todo: возможно нужно будет вернуть в будущем при появлении ошибок бд
+    # close_old_connections()
 
     server = ServerUnit(Server.objects.get(id=server_id))
 
@@ -111,6 +111,8 @@ def server_task(server_id, operation):
         print("Для сервера {0}: {1}".format(server_id, str(e)))
         pprint(''.join(traceback.format_tb(e.__traceback__)))
         server.log(str(e))
+    finally:
+        close_old_connections()
 
     del server
 
@@ -143,3 +145,4 @@ def package_task(package_id, operation, package_type):
 
     except Exception as e:
         print(str(e))
+

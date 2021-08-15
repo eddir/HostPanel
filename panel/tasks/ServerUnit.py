@@ -3,6 +3,8 @@ import shlex
 import tarfile
 from datetime import datetime
 
+from django.db import close_old_connections
+
 from HostPanel import settings
 from panel.models import Status
 from panel.tasks.Client import Client
@@ -118,8 +120,9 @@ class ServerUnit(Client):
             unzip = "unzip ~/HostPanel/master_package.zip -d /home/{0}/HostPanel/".format(self.model.dedic.user_single)
             rm = "~/HostPanel/master_package.zip"
 
-        self.upload_caretaker()
+        close_old_connections()
 
+        self.upload_caretaker()
         self.disconnect(sftp=True)
 
         # Анбоксиснг

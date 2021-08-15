@@ -1,7 +1,7 @@
-from contextlib import suppress
 from datetime import datetime
 
 from django.contrib.auth.models import User
+from django.db import close_old_connections
 from django.utils import timezone
 from paramiko import AuthenticationException
 
@@ -48,24 +48,26 @@ class DedicUnit(Client):
 
                 self.command((
                     # Создание пользователя
-                        'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && ' +
+                    'sudo useradd -m -d /home/{0} -s /bin/bash -c "HostPanel single user" -U {0} && ' +
 
-                        # Разрешение на вход в ssh по паролю
-                        password_auth +
+                    # Разрешение на вход в ssh по паролю
+                    password_auth +
 
-                        # Установка пароля
-                        'echo "{0}:{1}" | sudo chpasswd && '
-                        
-                        # Настройка системы на хороший лад
-                        'echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf && '
+                    # Установка пароля
+                    'echo "{0}:{1}" | sudo chpasswd && '
 
-                        # Установка зависимостей
-                        'sudo apt update && sudo apt install -y python3-psutil unzip atop && '
-                        'sudo ufw allow 5000 && sudo ufw allow 1500:1600/udp'
+                    # Настройка системы на хороший лад
+                    'echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf && '
+
+                    # Установка зависимостей
+                    'sudo apt update && sudo apt install -y python3-psutil unzip atop && '
+                    'sudo ufw allow 5000 && sudo ufw allow 1500:1600/udp'
                 ).format(
                     self.model.user_single,
                     self.model.password_single
                 ), root=True)
+
+                close_old_connections()
 
                 self.disconnect(root=True)
                 self.model.condition = True
@@ -88,8 +90,10 @@ class DedicUnit(Client):
     def delete(self, save_model=False):
         print("Удаление dedic %d" % self.model.id)
 
-        with suppress(Exception):
-            self.command("pkill -u {0} && deluser {0} && rm -rf /home/{0}/".format(self.model.user_single), root=True)
+        try:
+            self.command("pkill -u {0}; deluser {0}; rm -rf /home/{0}/".format(self.model.user_single), root=True)
+        except Exception as e:
+            print(str(e))
 
         if not save_model:
             self.model.delete()

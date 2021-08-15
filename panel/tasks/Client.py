@@ -74,6 +74,13 @@ class Client:
             self.sftp_client = None
 
     def command(self, command, root=False, output=False):
+        """
+        Выполнить команду по SSH
+        :param command: текст команды
+        :param root: нужно ли выполнить команду от имени рут пользователя
+        :param output: нужно ли возвращать результат выполнения команды
+        :return:
+        """
         client = self.root_client if root else self.client
 
         if client is None:
@@ -89,8 +96,9 @@ class Client:
             stdin, stdout, stderr = client.exec_command(command)
 
         if stdout.channel.recv_exit_status() != 0:
+            print(stdout.channel.recv_exit_status())
             err = stderr.readlines()
-            raise ServerBadCommand(' '.join(err))
+            raise ServerBadCommand("Статус " + stdout.channel.recv_exit_status() + ": " + ' '.join(err))
 
         return stdout.readlines() if output else None
 
