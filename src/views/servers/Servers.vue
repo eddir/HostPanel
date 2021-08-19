@@ -173,7 +173,9 @@
             <CIcon name="cil-plus"/>
             Создать
           </CButton>
+
         </router-link>
+        <CButton @click="refresh" class="m-2" color="success">Refresh</CButton>
       </template>
     </CDataTable>
     <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
@@ -212,7 +214,7 @@ export default {
       selected: null,
       rebootModal: false,
       removeModal: false,
-      loadInterval: null
+      loadInterval: null,
     }
   },
   created() {
@@ -255,6 +257,9 @@ export default {
     update(id) {
       Action.quickAction('updateCaretaker', id);
     },
+    refresh() {
+      ServersAPI.refresh();
+    },
     onRowClicked(item, index, column, event) {
       if (['BUTTON', 'A'].indexOf(event.target.tagName) !== -1) {
         return;
@@ -296,8 +301,8 @@ export default {
         $color = 'danger'
       }
       return $color
-    }
-  }
+    },
+  },
 }
 </script>
 

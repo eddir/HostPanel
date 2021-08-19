@@ -11,6 +11,28 @@ axios.defaults.withCredentials = true;
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
 
+let tokenRefreshing = false;
+
+axios.interceptors.response.use(response => {
+  return response;
+}, error => {
+
+  if (error.response.status === 401 && !tokenRefreshing) {
+
+    tokenRefreshing = true;
+
+    axios.post(`${SERVER_URL}auth/token/refresh/`).then(() => {
+      tokenRefreshing = false;
+    }).catch(() => {
+      tokenRefreshing = false;
+      window.location = "/#/login";
+      Vue.$toast.warning("Срок действия сессии истёк.");
+    });
+  }
+
+  return Promise.reject(error);
+});
+
 export default {
   name: "ServersAPI",
   AUTH_TELEGRAM_BOT: debugMode ? "RostkovBot" : "HostPanelRobot",
@@ -115,23 +137,32 @@ export default {
     return this.post(url, formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
           },
-          onUploadProgress: progressCallback
-        }
+          onUploadProgress: progressCallback,
+        },
     );
   },
-  withAuth(e) {
-    window.location = "/#/login";
-    Vue.$toast.error(e.response.data.message);
+  withAuth(error) {
+    console.log("wtf");
+    console.log(error.response);
+    console.log(error);
+    console.log("fck")
+    if (error.response.status === 401) {
+      console.log("withAuth");
+      window.location = "/#/login";
+    }
   },
   login(user) {
-    axios.post(`${SERVER_URL}auth/telegram/login/`, user).then(resp => {
-      let user = resp.data.user;
-      console.log(user);
-    }).catch(err => {
-      console.log(err.response);
+    axios.post(`${SERVER_URL}auth/telegram/login/`, user).then().catch(err => {
+      Vue.$toast.error(err.response);
     })
+  },
+  refresh() {//todo: remove
+    return axios.post(`${SERVER_URL}auth/token/refresh/`).catch(() => {
+      window.location = "/#/login";
+      Vue.$toast.warning("Срок действия сессии истёк.");
+    });
   },
   parseStatus(status) {
     return {
@@ -217,7 +248,7 @@ export default {
           }).name,
           package: package_name,
           new: false,
-          registered: "ok"
+          registered: "ok",
         },
         country: {name: 'USA', flag: 'cib-server-fault'}, //todo: все страны
         usage: {value: usage},
@@ -225,8 +256,8 @@ export default {
         parent: server.parent,
         activity: {
           format: activity_format,
-          time: activity_time
-        }
+          time: activity_time,
+        },
       });
 
     });

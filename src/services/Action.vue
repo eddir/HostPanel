@@ -6,25 +6,31 @@ export default {
   name: "Action",
   mixins: [ServersAPI],
   action(response, callback) {
-    return response.then(function (response) {
-      Vue.$toast.success(response.data.success);
-      try {
-        callback();
-      } catch (e) {
-        Vue.$toast.error(e);
-      }
-    }).catch(function (error) {
-      let messages = error.response.data.message;
-      if (typeof messages === 'string') {
-        Vue.$toast.error(messages);
-      } else {
-        for (const [field, values] of Object.entries(messages)) {
-          values.forEach(message => {
-            Vue.$toast.error(field + ": " + message);
-          });
-        }
-      }
-    });
+    return response
+        .then(function (response) {
+          Vue.$toast.success(response.data.success);
+          try {
+            callback();
+          } catch (e) {
+            Vue.$toast.error(e);
+          }
+        })
+        .catch(function (error) {
+          if (error.response.status === 500) {
+            console.log("Action")
+            let messages = error.response.data.message;
+            if (typeof messages === 'string') {
+              Vue.$toast.error(messages);
+            } else {
+              for (const [field, values] of Object.entries(messages)) {
+                values.forEach(message => {
+                  Vue.$toast.error(field + ": " + message);
+                });
+              }
+            }
+
+          }
+        });
   },
   quickAction(action, unit_id, callback = () => null) {
     try {
@@ -99,11 +105,11 @@ export default {
     switch (action) {
       case "upload_master_package":
         return this.action(ServersAPI.uploadMasterPackage(
-            formData.name, formData.master, progressCallback
+            formData.name, formData.master, progressCallback,
         ), successCallback);
       case "upload_spawner_package":
         return this.action(ServersAPI.uploadSpawnerPackage(
-            formData.name, formData.spawner, formData.room, progressCallback
+            formData.name, formData.spawner, formData.room, progressCallback,
         ), successCallback);
     }
   },
