@@ -48,7 +48,8 @@ def telegram_login(request):
 @authentication_classes([])
 @permission_classes([])
 def token_refresh(request):
-    serializer = TokenRefreshSerializer(data={"refresh": request.COOKIES["JWT-REFRESH"][:-1]})
+    print("token refresh")
+    serializer = TokenRefreshSerializer(data={"refresh": request.COOKIES["JWT-REFRESH"]})
 
     try:
         serializer.is_valid(raise_exception=True)

@@ -16,7 +16,7 @@ def custom_exception_handler(exc, context):
         return JsonResponse({
             "ok": False,
             "response": {
-                "code": 1,
+                "code": -1,
                 "message": "Authorization failed"
             }
         }, status=401)
