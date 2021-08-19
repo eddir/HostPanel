@@ -4,12 +4,23 @@ from pprint import pprint
 
 from django.http import JsonResponse
 from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 from HostPanel.settings import MEDIA_ROOT
 from panel.exceptions import UndefinedCaretakerVersion
 
 
 def custom_exception_handler(exc, context):
+
+    if isinstance(exc, InvalidToken):
+        return JsonResponse({
+            "ok": False,
+            "response": {
+                "code": 1,
+                "message": "Authorization failed"
+            }
+        }, status=401)
+
     pprint(''.join(traceback.format_tb(exc.__traceback__)))
     pprint(exc)
 

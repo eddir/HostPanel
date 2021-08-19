@@ -12,8 +12,12 @@ from allauth.socialaccount.helpers import (
 from allauth.socialaccount.providers.telegram.provider import TelegramProvider
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -39,6 +43,36 @@ def telegram_login(request):
     return login(request)
 
 
+@csrf_exempt
+@api_view(('POST',))
+@authentication_classes([])
+@permission_classes([])
+def token_refresh(request):
+    serializer = TokenRefreshSerializer(data={"refresh": request.COOKIES["JWT-REFRESH"][:-1]})
+
+    try:
+        serializer.is_valid(raise_exception=True)
+    except TokenError:
+        return Response({
+            "code": 1,
+            "message": "Authorization failed"
+        }, status=status.HTTP_401_UNAUTHORIZED)
+
+    res = Response({
+        "success": "Авторизация пройдена.",
+        "data": {
+            "csrf": str(csrf(request)['csrf_token'])
+        }
+    })
+
+    res.set_cookie("JWT", str(serializer.validated_data['access']), max_age=3600 * 24 * 14, httponly=True,
+                   samesite="None", secure=True)
+    res.set_cookie("JWT-REFRESH", str(serializer.validated_data['refresh']), max_age=3600 * 24 * 14, httponly=True,
+                   samesite="None", secure=True, path="/auth")
+
+    return res
+
+
 def login(request):
     user = request.user
     refresh = RefreshToken.for_user(user)
@@ -46,29 +80,14 @@ def login(request):
         {
             "success": "Авторизация пройдена.",
             "data": {
-                "csrf": str(csrf(request)['csrf_token']),
-                "jwt": {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                },
-                "user": {
-                    "username": user.username,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "email": user.email,
-                }
+                "csrf": str(csrf(request)['csrf_token'])
             }
 
         }
     )
 
-    res.set_cookie(
-        "JWT",
-        str(refresh.access_token),
-        max_age=3600*24*14,
-        httponly=True,
-        samesite="None",
-        secure=True
-    )
-
+    res.set_cookie("JWT", str(refresh.access_token), max_age=3600 * 24 * 14, httponly=True, samesite="None",
+                   secure=True)
+    res.set_cookie("JWT-REFRESH", str(refresh), max_age=3600 * 24 * 14, httponly=True, samesite="None", secure=True,
+                   path="/auth")
     return res
