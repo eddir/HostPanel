@@ -23,10 +23,23 @@ axios.interceptors.response.use(response => {
 
     axios.post(`${SERVER_URL}auth/token/refresh/`).then(() => {
       tokenRefreshing = false;
-    }).catch(() => {
-      tokenRefreshing = false;
-      window.location = "/#/login";
-      Vue.$toast.warning("Срок действия сессии истёк.");
+
+      const config = error.config;
+      return new Promise((resolve, reject) => {
+        axios.request(config).then(response => {
+          resolve(response);
+        }).catch((error) => {
+          reject(error);
+        })
+      });
+    }).catch(e => {
+      if (e.response.status === 401) {
+        tokenRefreshing = false;
+        window.location = "/#/login";
+        Vue.$toast.warning("Срок действия сессии истёк.");
+      } else {
+        Promise.reject(error);
+      }
     });
   }
 
@@ -144,14 +157,7 @@ export default {
     );
   },
   withAuth(error) {
-    console.log("wtf");
-    console.log(error.response);
-    console.log(error);
-    console.log("fck")
-    if (error.response.status === 401) {
-      console.log("withAuth");
-      window.location = "/#/login";
-    }
+    //todo: remove
   },
   login(user) {
     axios.post(`${SERVER_URL}auth/telegram/login/`, user).then().catch(err => {
