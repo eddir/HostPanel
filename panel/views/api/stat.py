@@ -10,23 +10,23 @@ from HostPanel import settings
 from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
-from panel.utils import get_caretaker_version
+from panel.utils import get_caretaker_version, api_response
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class StatusView(APIView):
-    # Состояния сервера в моменте времени и информация о нагрузке
-
     permission_classes = (AllowAny,)
 
     @staticmethod
     def get(request):
+        """Получение состояния сервера"""
         stats = Status.objects.all()
         serializer = ServerSerializer(stats, many=True)
-        return Response({"stats": serializer.data})
+        return api_response(serializer.data)
 
     @staticmethod
     def post(request):
+        """Новая запись о состоянии сервера"""
         stat = {
             'server': request.data['server'],
             'cpu_usage': request.data['cpu_usage'],
@@ -50,17 +50,16 @@ class StatusView(APIView):
         elif client_version < version.parse(get_caretaker_version()):
             tasks.server_task(request.data['server'], 'update_caretaker')
 
-        return Response({"success": "Статус сервера обновлён."})
+        return api_response("Статус сервера обновлён.")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class OnlineView(APIView):
-    # Информация об онлайне на серверах
-
     permission_classes = (AllowAny,)
 
     @staticmethod
     def post(request):
+        """Новая запись об онлайне на сервере"""
         serializer = OnlineSerializer(data={
             'server': request.data['server'],
             'online': request.data['online']['AllPlayers']
@@ -80,36 +79,32 @@ class OnlineView(APIView):
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
 
-        return Response({"success": "Онлайн сервера обновлён."})
+        return api_response("Онлайн сервера обновлён.")
 
 
 class TaskView(APIView):
-    # Получение списка текущих фоновых задач
 
     @staticmethod
     def get(request):
+        """Получение списка текущих задач"""
         tasks_list = Task.objects.all()
         serializer = TaskSerializer(tasks_list, many=True)
-        return Response({"tasks": serializer.data})
+        return api_response(serializer.data)
 
     @staticmethod
     def delete(request):
+        """Отмена всех задач"""
         Task.objects.all().delete()
-        return Response({
-            "ok": True,
-            "success": "Задачи отменены"
-        })
+        return api_response("Задачи отменены")
 
 
 class VersionView(APIView):
 
     @staticmethod
     def get(request):
-        return Response({
-            "ok": True,
-            "response": {
-                "panel": settings.PANEL_VERSION,
-                "caretaker": settings.CARETAKER_VERSION,
-                "mysql": settings.MYSQL_VERSION
-            }
+        """Версия панели, Caretaker и базы данных MySQL"""
+        return api_response({
+            "panel": settings.PANEL_VERSION,
+            "caretaker": settings.CARETAKER_VERSION,
+            "mysql": settings.MYSQL_VERSION
         })

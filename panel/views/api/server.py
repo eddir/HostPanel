@@ -2,14 +2,15 @@ import datetime
 
 from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from panel.models import Status, Dedic, SRPackage, MPackage, Server, Online
 from panel.serializers import ServerSerializer, DedicSerializer, SRPackageSerializer, MPackageSerializer, \
     StatusSerializer
 from panel.tasks import tasks
+from panel.utils import api_response
 
 
 class ServerView(APIView):
@@ -23,7 +24,7 @@ class ServerView(APIView):
         sr_packages = SRPackageSerializer(SRPackage.objects.all(), many=True)
         dedics = DedicSerializer(Dedic.objects.all(), many=True)
 
-        return Response({
+        return api_response({
             "servers": servers.data,
             "m_packages": m_packages.data,
             "sr_packages": sr_packages.data,
@@ -51,11 +52,7 @@ class ServerView(APIView):
             tasks.server_task(server_saved.id, "init")
             Status(server=server_saved, condition=Status.Condition.INSTALLED).save()
 
-        return Response({
-            "ok": True,
-            "server_id": server_saved.id,
-            "success": "Сервер '{}' добавлен.".format(server_saved.name)
-        })
+        return api_response("Сервер '{}' добавлен.".format(server_saved.name))
 
 
 class ServerInstanceView(APIView):
@@ -105,7 +102,7 @@ class ServerInstanceView(APIView):
                     'package__srpackage__created_at'],
             }
 
-            return Response({
+            return api_response({
                 "children": Server.objects.filter(parent=pk).exists(),
                 "server": server_data,
                 "status": status,
@@ -117,12 +114,13 @@ class ServerInstanceView(APIView):
                             condition=Status.Condition.RUNNING,
                             created_at__gte=(now() - datetime.timedelta(days=1))
                         ), many=True).data,
-                    "online": Online.objects.filter(server=pk,
-                                                    created_at__gte=(now() - datetime.timedelta(days=1))).values(),
+                    "online": list(Online.objects.filter(server=pk,
+                                                         created_at__gte=(
+                                                                     now() - datetime.timedelta(days=1))).values()),
                 }
             })
         except IndexError:
-            return Response({"server": None, "status": None})
+            return api_response({"server": None, "status": None})
 
     @staticmethod
     def post(request, pk):
@@ -138,19 +136,20 @@ class ServerInstanceView(APIView):
             server.package_id = request.data['package']
             server.save()
             tasks.server_task(pk, "update")
-            return Response({"success": "Сборка устанавливается"})
+            return api_response("Сборка устанавливается")
         else:
             tasks.server_task(pk, "reinstall")
-            return Response({"success": "Сервер переустанавливается."})
+            return api_response("Сервер переустанавливается.")
 
 
 class StartServer(APIView):
 
     @staticmethod
     def post(request, pk):
+        """Запуск сервера"""
         tasks.server_task(pk, "start")
         Status(server=Server.objects.get(id=pk), condition=Status.Condition.STARTS).save()
-        return Response({"success": "Сервер запущен."})
+        return api_response("Сервер запущен.")
 
 
 class StopServer(APIView):
@@ -158,55 +157,58 @@ class StopServer(APIView):
 
     @staticmethod
     def post(request, pk):
+        """Остановка сервера"""
         tasks.server_task(pk, "stop")
         Status(server=Server.objects.get(id=pk), condition=Status.Condition.STOPPED).save()
-        return Response({"success": "Сервер остановлен."})
+        return api_response("Сервер остановлен.")
 
 
 class DestroyServer(APIView):
 
     @staticmethod
     def post(request, pk):
-        # Удалять вместе с файлами на сервере
+        """Удалять вместе с файлами на сервере"""
         tasks.server_task(pk, "delete")
         Status(server=Server.objects.get(id=pk), condition=Status.Condition.PAUSED).save()
-        return Response({"success": "Сервер удалён."})
+        return api_response("Сервер удалён.")
 
 
 class ForgetServer(APIView):
 
     @staticmethod
     def post(request, pk):
+        """Удаление данных о сервере из базы"""
         server = Server.objects.get(id=pk)
         server.delete()
-        return Response({"success": "Сервер убран"})
+        return api_response("Сервер убран")
 
 
 class RebootServer(APIView):
 
     @staticmethod
     def post(request, pk):
+        """Ребут вдс"""
         tasks.server_task(pk, "reboot")
-        return Response({"success": "Ребут начат"})
+        return api_response("Ребут начат")
 
 
 class UpdateConfig(APIView):
 
     @staticmethod
     def post(request, pk):
-        server = Server.objects.filter(id=pk)
-        if server:
-            server[0].config = request.data['config']
-            server[0].save()
-            tasks.server_task(pk, "update_config")
-            return Response({"success": "Конфиг обновлён"})
-        else:
-            return Response({"error": "Сервер не найден"})
+        """Внесение изменений в конфиг сервера"""
+        server = get_object_or_404(Server, pk=pk)
+        server.config = request.data['config']
+        server.save()
+        tasks.server_task(pk, "update_config")
+
+        return api_response("Конфиг обновлён")
 
 
 class UpdateCaretaker(APIView):
 
     @staticmethod
     def post(request, pk):
+        """Обновление скрипта Caretaker"""
         tasks.server_task(pk, 'update_caretaker')
-        return Response({"success": "Обновление запущено"})
+        return api_response("Обновление запущено")

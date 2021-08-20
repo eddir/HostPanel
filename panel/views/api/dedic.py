@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from panel.models import Dedic, Server
 from panel.serializers import DedicSerializer
 from panel.tasks import tasks
+from panel.utils import api_response
 
 
 class DedicView(APIView):
@@ -12,10 +13,7 @@ class DedicView(APIView):
     def get(request):
         """Возвращает список существуюзих дедиков"""
         dedics = DedicSerializer(Dedic.objects.all(), many=True)
-
-        return Response({
-            'dedics': dedics.data
-        })
+        return api_response(dedics.data)
 
     @staticmethod
     def post(request):
@@ -27,11 +25,7 @@ class DedicView(APIView):
             dedic_saved = serializer.save()
             tasks.dedic_task(dedic_saved.id, "init")
 
-        return Response({
-            "ok": True,
-            "dedic_id": dedic_saved.id,
-            "success": "Вдс '{}' добавлен.".format(dedic_saved.name)
-        })
+        return api_response("Вдс '{}' добавлен.".format(dedic_saved.name))
 
 
 class DedicInstanceView(APIView):
@@ -41,7 +35,7 @@ class DedicInstanceView(APIView):
         """Удаление дедика из панели вместе с пользователем из сервера"""
         if not Server.objects.filter(dedic=pk).exists():
             tasks.dedic_task(pk, "delete")
-            return Response({"success": "Удаление начато"})
+            return api_response("Удаление начато")
         else:
             raise ValueError("Невозможно удалить дедик с установленными на нём серверами.")
 
@@ -52,4 +46,4 @@ class ReconnectDedic(APIView):
     def post(request, pk):
         """Попытка переподключения"""
         tasks.dedic_task(pk, "reconnect")
-        return Response({"success": "Переподключение..."})
+        return api_response("Переподключение...")
