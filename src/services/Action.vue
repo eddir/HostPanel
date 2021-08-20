@@ -5,26 +5,41 @@ import Vue from "vue";
 export default {
   name: "Action",
   mixins: [ServersAPI],
+  /**
+   * Действие не требующее особой обработки. Выполняется по общему алгоритму.
+   * @param response http запрос
+   * @param callback действие после выполнения
+   * @returns {*}
+   */
   action(response, callback) {
-    return response.then(function (response) {
-      Vue.$toast.success(response.data.success);
-      try {
-        callback();
-      } catch (e) {
-        Vue.$toast.error(e);
-      }
-    }).catch(function (error) {
-      let messages = error.response.data.message;
-      if (typeof messages === 'string') {
-        Vue.$toast.error(messages);
-      } else {
-        for (const [field, values] of Object.entries(messages)) {
-          values.forEach(message => {
-            Vue.$toast.error(field + ": " + message);
-          });
-        }
-      }
-    });
+    return response
+        .then(function (response) {
+          Vue.$toast.success(response.data.response);
+          try {
+            callback();
+          } catch (e) {
+            Vue.$toast.error(e);
+          }
+        })
+        .catch(function (error) {
+          if (error.response.status === 500) {
+            let messages = error.response.data.response;
+            if (typeof messages === 'string') {
+              Vue.$toast.error(messages);
+            } else {
+              for (const [field, values] of Object.entries(messages)) {
+                if (typeof values === 'string') {
+                  Vue.$toast.error(values);
+                } else {
+                  values.forEach(message => {
+                    Vue.$toast.error(field + ": " + message);
+                  });
+                }
+              }
+            }
+
+          }
+        });
   },
   quickAction(action, unit_id, callback = () => null) {
     try {
@@ -101,11 +116,11 @@ export default {
     switch (action) {
       case "upload_master_package":
         return this.action(ServersAPI.uploadMasterPackage(
-            formData.name, formData.master, progressCallback
+            formData.name, formData.master, progressCallback,
         ), successCallback);
       case "upload_spawner_package":
         return this.action(ServersAPI.uploadSpawnerPackage(
-            formData.name, formData.spawner, formData.room, progressCallback
+            formData.name, formData.spawner, formData.room, progressCallback,
         ), successCallback);
     }
   },

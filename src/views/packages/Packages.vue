@@ -91,8 +91,8 @@ export default {
       this.tableItems = [];
       let response = this.type === "master" ? ServersAPI.getMasterPackages() : ServersAPI.getSpawnerPackages();
       response.then(packages => {
-        this.packages = packages.data.packages;
-        this.tableItems = packages.data.packages;
+        this.packages = packages.data.response;
+        this.tableItems = packages.data.response;
       });
     },
     install(package_id) {

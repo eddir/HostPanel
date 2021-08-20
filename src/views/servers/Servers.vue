@@ -173,6 +173,7 @@
             <CIcon name="cil-plus"/>
             Создать
           </CButton>
+
         </router-link>
       </template>
     </CDataTable>
@@ -212,7 +213,7 @@ export default {
       selected: null,
       rebootModal: false,
       removeModal: false,
-      loadInterval: null
+      loadInterval: null,
     }
   },
   created() {
@@ -229,7 +230,7 @@ export default {
 
       // Обращение к данным и их обработка
       ServersAPI.getServers().then(servers => {
-        this.servers = ServersAPI.parseMasters(servers.data);
+        this.servers = ServersAPI.parseMasters(servers.data.response);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.
@@ -254,6 +255,9 @@ export default {
     },
     update(id) {
       Action.quickAction('updateCaretaker', id);
+    },
+    refresh() {
+      ServersAPI.refresh();
     },
     onRowClicked(item, index, column, event) {
       if (['BUTTON', 'A'].indexOf(event.target.tagName) !== -1) {
@@ -296,10 +300,7 @@ export default {
         $color = 'danger'
       }
       return $color
-    }
-  }
+    },
+  },
 }
 </script>
-
-<style scoped>
-</style>

@@ -28,7 +28,7 @@ export default {
         // todo: переделать после cleanup api django backend
         .then(response => {
           this.packages = [];
-          response.data.packages.forEach(p => this.packages.push({
+          response.data.response.forEach(p => this.packages.push({
             value: p.id,
             label: p.name
           }));
@@ -42,7 +42,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

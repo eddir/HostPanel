@@ -28,6 +28,12 @@ export default [
       },
       {
         _name: 'CSidebarNavItem',
+        name: 'Пользователи',
+        to: '/users',
+        icon: 'cil-user'
+      },
+      {
+        _name: 'CSidebarNavItem',
         name: 'Настройки',
         to: '/settings',
         icon: 'cil-settings'
