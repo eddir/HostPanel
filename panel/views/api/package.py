@@ -5,90 +5,77 @@ from rest_framework.views import APIView
 from panel.models import SRPackage, MPackage
 from panel.serializers import SRPackageSerializer, MPackageSerializer
 from panel.tasks import tasks
+from panel.utils import api_response
 
 
 class MPackageView(APIView):
-    # Загрузка сборки master
-
     parser_classes = (MultiPartParser,)
 
     @staticmethod
     def get(request):
+        """Получение всех сборок Master"""
         packages = MPackage.objects.all()
         serializer = MPackageSerializer(packages, many=True)
-        return Response({"packages": serializer.data})
+        return api_response(serializer.data)
 
     @staticmethod
     def post(request):
+        """Загрузка сборки Master"""
         serializer = MPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        return Response({"success": "Сборка загружена"})
+        return api_response("Сборка загружена")
 
 
 class MPackageInstanceView(APIView):
 
     @staticmethod
     def get(request, pk):
-        # Получение информации о сборке
-        try:
-            return Response({
-                "code": True,
-                "data": {
-                    "package": MPackage.objects.filter(id=pk).values()[0]
-                }
-            })
-        except IndexError:
-            return Response({
-                "ok": False,
-                "error": {
-                    "id": 404,
-                    "message": "Undefined value"
-                }
-            })
+        """Получение информации о сборке"""
+        return api_response(MPackage.objects.filter(id=pk).values()[0])
 
     @staticmethod
     def post(request, pk):
-        # Установка сборки во все сервера
+        """Установка сборки во все сервера"""
         tasks.package_task(pk, "install_package", "master")
-        return Response({"success": "Сборка установлена"})
+        return api_response("Сборка установлена")
 
-    # Удаление сборки через api
     @staticmethod
     def delete(request, pk):
+        """Удаление сборки через api"""
         MPackage.objects.get(id=pk).delete()
-        return Response({"success": "Сборка удалена"})
+        return api_response("Сборка удалена")
 
 
 class SRPackageInstanceView(APIView):
 
     @staticmethod
     def post(request, pk):
-        # Установка сборки во все сервера
+        """Установка сборки во все сервера"""
         tasks.package_task(pk, "install_package", "spawner")
-        return Response({"success": "Сборка установлена"})
+        return api_response("Сборка установлена")
 
     @staticmethod
     def delete(request, pk):
-        # Удаление сборки через api
+        """Удаление сборки через api"""
         SRPackage.objects.get(id=pk).delete()
-        return Response({"success": "Сборка удалена"})
+        return api_response("Сборка удалена")
 
 
 class SRPackageView(APIView):
-    # Загрузка сборки spawner + room
-
     parser_classes = (MultiPartParser,)
 
     @staticmethod
     def get(request):
+        """Получение всех сборок Spawner"""
         packages = SRPackage.objects.all()
         serializer = SRPackageSerializer(packages, many=True)
-        return Response({"packages": serializer.data})
+        return api_response(serializer.data)
 
     @staticmethod
     def post(request):
+        """Загрузка новой сборки Spawner"""
         serializer = SRPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        return Response({"success": "Сборка загружена"})
+        return api_response("Сборка загружена")

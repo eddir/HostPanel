@@ -1,20 +1,20 @@
 import hashlib
 import hmac
 import time
-from pprint import pprint
 
 from allauth.socialaccount import providers
 from allauth.socialaccount.helpers import (
     complete_social_login,
-    render_authentication_error,
 )
-
 from allauth.socialaccount.providers.telegram.provider import TelegramProvider
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from panel.exceptions import AUTH_FAILED, APIError, RESPONSE_OK
 
 
 @csrf_exempt
@@ -32,43 +32,42 @@ def telegram_login(request):
     auth_date = int(data.pop("auth_date"))
 
     if hashcode != expected_hash or time.time() - auth_date > 30:
-        return Response({"error": "Хэш не совпал"})
+        raise APIError(AUTH_FAILED, "Хэш не совпал")
 
     social_login = provider.sociallogin_from_response(request, data)
     complete_social_login(request, social_login)
     return login(request)
 
 
-def login(request):
-    user = request.user
-    refresh = RefreshToken.for_user(user)
-    res = Response(
-        {
-            "success": "Авторизация пройдена.",
-            "data": {
-                "csrf": str(csrf(request)['csrf_token']),
-                "jwt": {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                },
-                "user": {
-                    "username": user.username,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "email": user.email,
-                }
-            }
+@csrf_exempt
+@api_view(('POST',))
+@authentication_classes([])
+@permission_classes([])
+def token_refresh(request):
+    print("token refresh")
+    serializer = TokenRefreshSerializer(data={"refresh": request.COOKIES["JWT-REFRESH"]})
+    serializer.is_valid(raise_exception=True)
+    return jwt(request, serializer.validated_data['access'], serializer.validated_data['refresh'])
 
+
+def login(request):
+    token = RefreshToken.for_user(request.user)
+    return jwt(request, token.access_token, token)
+
+
+def jwt(request, access_token, refresh_token):
+    response = Response(
+        {
+            "code": RESPONSE_OK,
+            "response": {
+                "message": "Авторизация пройдена.",
+                "csrf": str(csrf(request)['csrf_token'])
+            }
         }
     )
 
-    res.set_cookie(
-        "JWT",
-        str(refresh.access_token),
-        max_age=3600*24*14,
-        httponly=True,
-        samesite="None",
-        secure=True
-    )
-
-    return res
+    response.set_cookie("JWT", str(access_token), max_age=3600 * 24 * 14, httponly=True, samesite="None",
+                        secure=True)
+    response.set_cookie("JWT-REFRESH", str(refresh_token), max_age=3600 * 24 * 14, httponly=True, samesite="None",
+                        secure=True, path="/auth")
+    return response
