@@ -7,18 +7,14 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework_simplejwt.exceptions import InvalidToken
 
 from HostPanel.settings import MEDIA_ROOT
-from panel.exceptions import UndefinedCaretakerVersion
+from panel.exceptions import UndefinedCaretakerVersion, AUTH_FAILED, UNEXPECTED_ERROR
 
 
 def custom_exception_handler(exc, context):
-
     if isinstance(exc, InvalidToken):
         return JsonResponse({
-            "ok": False,
-            "response": {
-                "code": -1,
-                "message": "Authorization failed"
-            }
+            "code": AUTH_FAILED,
+            "message": "Authorization failed"
         }, status=401)
 
     pprint(''.join(traceback.format_tb(exc.__traceback__)))
@@ -30,7 +26,7 @@ def custom_exception_handler(exc, context):
         message = str(exc)
 
     return JsonResponse({
-        "code": 500,
+        "code": UNEXPECTED_ERROR,
         "message": message
     }, safe=False, status=500)
 

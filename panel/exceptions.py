@@ -1,3 +1,7 @@
+UNEXPECTED_ERROR = 0
+AUTH_FAILED = 1
+
+
 class ServerAuthenticationFailed(Exception):
     """
     Создаётся при неудачной попытке авторизоваться на VPS,

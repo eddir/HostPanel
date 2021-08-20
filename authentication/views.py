@@ -20,6 +20,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from panel.exceptions import AUTH_FAILED
+
 
 @csrf_exempt
 @api_view(('POST',))
@@ -55,7 +57,7 @@ def token_refresh(request):
         serializer.is_valid(raise_exception=True)
     except TokenError:
         return Response({
-            "code": 1,
+            "code": AUTH_FAILED,
             "message": "Authorization failed"
         }, status=status.HTTP_401_UNAUTHORIZED)
 
