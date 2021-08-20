@@ -5,10 +5,16 @@ import Vue from "vue";
 export default {
   name: "Action",
   mixins: [ServersAPI],
+  /**
+   * Действие не требующее особой обработки. Выполняется по общему алгоритму.
+   * @param response http запрос
+   * @param callback действие после выполнения
+   * @returns {*}
+   */
   action(response, callback) {
     return response
         .then(function (response) {
-          Vue.$toast.success(response.data.success);
+          Vue.$toast.success(response.data.response);
           try {
             callback();
           } catch (e) {
@@ -17,15 +23,18 @@ export default {
         })
         .catch(function (error) {
           if (error.response.status === 500) {
-            console.log("Action")
-            let messages = error.response.data.message;
+            let messages = error.response.data.response;
             if (typeof messages === 'string') {
               Vue.$toast.error(messages);
             } else {
               for (const [field, values] of Object.entries(messages)) {
-                values.forEach(message => {
-                  Vue.$toast.error(field + ": " + message);
-                });
+                if (typeof values === 'string') {
+                  Vue.$toast.error(values);
+                } else {
+                  values.forEach(message => {
+                    Vue.$toast.error(field + ": " + message);
+                  });
+                }
               }
             }
 

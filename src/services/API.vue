@@ -52,76 +52,76 @@ export default {
   SERVER_URL,
   REST_URL,
   getServers() {
-    return this.get(`${REST_URL}servers/`);
+    return axios.get(`${REST_URL}servers/`);
   },
   getDedics() {
-    return this.get(`${REST_URL}dedics/`);
+    return axios.get(`${REST_URL}dedics/`);
   },
   getServer(server_id) {
-    return this.get(`${REST_URL}server/${server_id}/`);
+    return axios.get(`${REST_URL}server/${server_id}/`);
   },
   start(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/start/`, {action: "start"});
+    return axios.post(`${REST_URL}server/${server_id}/start/`, {action: "start"});
   },
   stop(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/stop/`, {action: "stop"});
+    return axios.post(`${REST_URL}server/${server_id}/stop/`, {action: "stop"});
   },
   remove(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/remove/`);
+    return axios.post(`${REST_URL}server/${server_id}/remove/`);
   },
   forget(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/remove/force/`);
+    return axios.post(`${REST_URL}server/${server_id}/remove/force/`);
   },
   reinstall(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/`);
+    return axios.post(`${REST_URL}server/${server_id}/`);
   },
   update(server_id, package_id) {
-    return this.post(`${REST_URL}server/${server_id}/`, {package: package_id});
+    return axios.post(`${REST_URL}server/${server_id}/`, {package: package_id});
   },
   updateConfig(server_id, config) {
-    return this.post(`${REST_URL}server/${server_id}/config/`, {config: config});
+    return axios.post(`${REST_URL}server/${server_id}/config/`, {config: config});
   },
   updateCaretaker(server_id) {
-    return this.post(`${REST_URL}server/${server_id}/updateCaretaker/`);
+    return axios.post(`${REST_URL}server/${server_id}/updateCaretaker/`);
   },
   createServer(server) {
-    return this.post(`${REST_URL}servers/`, server);
+    return axios.post(`${REST_URL}servers/`, server);
   },
   createDedic(dedic) {
-    return this.post(`${REST_URL}dedics/`, dedic);
+    return axios.post(`${REST_URL}dedics/`, dedic);
   },
   reboot(dedic_id) {
-    return this.post(`${REST_URL}server/${dedic_id}/reboot/`);
+    return axios.post(`${REST_URL}server/${dedic_id}/reboot/`);
   },
   removeDedic(dedic_id) {
-    return this.delete(`${REST_URL}dedic/${dedic_id}/`);
+    return axios.delete(`${REST_URL}dedic/${dedic_id}/`);
   },
   reconnectDedic(dedic_id) {
-    return this.post(`${REST_URL}dedic/${dedic_id}/reconnect/`);
+    return axios.post(`${REST_URL}dedic/${dedic_id}/reconnect/`);
   },
   getTasks() {
-    return this.get(`${REST_URL}task/`);
+    return axios.get(`${REST_URL}task/`);
   },
   cancelTasks() {
-    return this.delete(`${REST_URL}task/`);
+    return axios.delete(`${REST_URL}task/`);
   },
   getMasterPackages() {
-    return this.get(`${REST_URL}m_package/`);
+    return axios.get(`${REST_URL}m_package/`);
   },
   getSpawnerPackages() {
-    return this.get(`${REST_URL}sr_package/`);
+    return axios.get(`${REST_URL}sr_package/`);
   },
   installMasterPackage(package_id) {
-    return this.post(`${REST_URL}m_package/${package_id}/install/`);
+    return axios.post(`${REST_URL}m_package/${package_id}/install/`);
   },
   installSpawnerPackage(package_id) {
-    return this.post(`${REST_URL}sr_package/${package_id}/install/`);
+    return axios.post(`${REST_URL}sr_package/${package_id}/install/`);
   },
   removeMasterPackage(package_id) {
-    return this.delete(`${REST_URL}m_package/${package_id}/`);
+    return axios.delete(`${REST_URL}m_package/${package_id}/`);
   },
   removeSpawnerPackage(package_id) {
-    return this.delete(`${REST_URL}sr_package/${package_id}/`);
+    return axios.delete(`${REST_URL}sr_package/${package_id}/`);
   },
   uploadMasterPackage(name, master, progressCallback) {
     let formData = new FormData();
@@ -141,13 +141,13 @@ export default {
     return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
   },
   getVersion() {
-    return this.get(`${REST_URL}version/`);
+    return axios.get(`${REST_URL}version/`);
   },
   getUsers() {
-    return this.get(`${REST_URL}users/`);
+    return axios.get(`${REST_URL}users/`);
   },
   uploadFiles(url, formData, progressCallback) {
-    return this.post(url, formData,
+    return axios.post(url, formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -155,9 +155,6 @@ export default {
           onUploadProgress: progressCallback,
         },
     );
-  },
-  withAuth(error) {
-    //todo: remove
   },
   login(user) {
     axios.post(`${SERVER_URL}auth/telegram/login/`, user).then().catch(err => {
@@ -269,27 +266,6 @@ export default {
     });
 
     return servers;
-  },
-  get(url) {
-    return axios.get(url).catch(this.withAuth);
-  },
-  head(url) {
-    return axios.head(url).catch(this.withAuth);
-  },
-  options(url) {
-    return axios.options(url).catch(this.withAuth);
-  },
-  post(url, data) {
-    return axios.post(url, data).catch(this.withAuth);
-  },
-  put(url, data) {
-    return axios.put(url, data).catch(this.withAuth);
-  },
-  delete(url) {
-    return axios.delete(url).catch(this.withAuth);
-  },
-  patch(url, data) {
-    return axios.patch(url, data).catch(this.withAuth);
   },
 }
 </script>

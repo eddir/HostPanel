@@ -122,7 +122,7 @@ export default {
     },
     loadDedics() {
       ServersAPI.getDedics().then(dedics => {
-        this.dedics = dedics.data.dedics;
+        this.dedics = dedics.data.response;
         this.tableItems = this.dedics.map(item => {
           /**
            * @param item.last_listen последнее время ответа сервера
@@ -172,7 +172,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

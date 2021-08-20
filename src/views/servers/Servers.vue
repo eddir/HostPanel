@@ -175,7 +175,6 @@
           </CButton>
 
         </router-link>
-        <CButton @click="refresh" class="m-2" color="success">Refresh</CButton>
       </template>
     </CDataTable>
     <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
@@ -231,7 +230,7 @@ export default {
 
       // Обращение к данным и их обработка
       ServersAPI.getServers().then(servers => {
-        this.servers = ServersAPI.parseMasters(servers.data);
+        this.servers = ServersAPI.parseMasters(servers.data.response);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.
@@ -305,6 +304,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-</style>

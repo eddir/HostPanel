@@ -57,9 +57,10 @@ export default {
       this.input.parent = parseInt(this.$route.params.id);
     }
     ServersAPI.getServers().then((response) => {
+      let data = response.data.response;
       this.dedics = [];
       this.packages = [];
-      this.dedics_data = response.data.dedics;
+      this.dedics_data = data.dedics;
 
       this.dedics_data.forEach(dedic => this.dedics.push({
         value: dedic.id,
@@ -68,15 +69,15 @@ export default {
       this.input.dedic = this.dedics_data[0].id;
 
       if (this.input.type === "master") {
-        this.input.package = response.data.m_packages[0].id;
+        this.input.package = data.m_packages[0].id;
 
-        response.data.m_packages.forEach(pack => this.packages.push({
+        data.m_packages.forEach(pack => this.packages.push({
           value: pack.id,
           label: pack.name
         }));
 
       } else {
-        let parent = response.data.servers.find(s => s.id === this.input.parent);
+        let parent = data.servers.find(s => s.id === this.input.parent);
 
         if (parent) {
           this.parentName = parent.name;
@@ -84,8 +85,8 @@ export default {
           Vue.$toast.error("Неизвестный мастер");
         }
 
-        this.input.package = response.data.sr_packages[0].id;
-        response.data.sr_packages.forEach(pack => this.packages.push({
+        this.input.package = data.sr_packages[0].id;
+        data.sr_packages.forEach(pack => this.packages.push({
           value: pack.id,
           label: pack.name
         }));

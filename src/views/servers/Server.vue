@@ -126,7 +126,7 @@ export default {
   methods: {
     load() {
       ServersAPI.getServer(this.$route.params.id).then((server) => {
-        let server_data = server.data;
+        let server_data = server.data.response;
         server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
         server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
         this.server = server_data;

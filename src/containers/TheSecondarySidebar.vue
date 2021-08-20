@@ -43,7 +43,7 @@ export default {
   methods: {
     update() {
       ServersAPI.getTasks().then(tasks => {
-        this.tasks = tasks.data.tasks.map(task => {
+        this.tasks = tasks.data.response.map(task => {
           let actions = {
             "init": "Установка",
             "start": "Запуск",
