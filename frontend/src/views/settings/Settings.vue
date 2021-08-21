@@ -52,7 +52,7 @@ export default {
       this.version = response.data.response;
     })
     ServersAPI.getServers().then(response => {
-      this.servers = response.data.servers.map(server => {
+      this.servers = response.data.response.servers.map(server => {
         return {
           value: server.id,
           label: `${server.id} - '${server.name}'`
