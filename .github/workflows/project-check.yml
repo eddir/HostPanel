@@ -50,17 +50,17 @@ jobs:
       env:
         CI: true
 
-  back:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [ 14.x ]
-        os: [ ubuntu-latest ]
-
-    steps:
-      - name: project check
-        run: python3 manage.py test panel --keepdb
+#  back:
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        node-version: [ 14.x ]
+#        os: [ ubuntu-latest ]
+#
+#    steps:
+#      - name: project check
+#        run: python3 manage.py test panel --keepdb
 
   # e2e-chrome:
 
