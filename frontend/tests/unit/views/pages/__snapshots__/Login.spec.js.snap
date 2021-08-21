@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login.vue renders correctly 1`] = `
+<div
+  class="c-app flex-row align-items-center"
+>
+  <ccontainer-stub
+    tag="div"
+  >
+    <crow-stub
+      class="justify-content-center"
+      gutters="true"
+      tag="div"
+    >
+      <ccol-stub
+        md="6"
+        tag="div"
+      >
+        <ccard-stub
+          class="p-4"
+        >
+          <ccardheader-stub>
+            <h1>
+              Login
+            </h1>
+          </ccardheader-stub>
+           
+          <ccardbody-stub>
+            <calert-stub
+              color="primary"
+              fade="true"
+              show="true"
+            >
+              Требуется авторизация - @RostkovBot.
+            </calert-stub>
+             
+            <vue-telegram-login-stub
+              mode="callback"
+              redirecturl=""
+              requestaccess="read"
+              size="large"
+              telegramlogin="RostkovBot"
+              userpic="true"
+            />
+          </ccardbody-stub>
+        </ccard-stub>
+      </ccol-stub>
+    </crow-stub>
+  </ccontainer-stub>
+</div>
+`;

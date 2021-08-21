@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dashboard.vue renders correctly 1`] = `
+<div>
+  <crow-stub
+    gutters="true"
+    tag="div"
+  >
+    <ccol-stub
+      md="12"
+      tag="div"
+    >
+      <ccard-stub>
+        <ccardheader-stub>
+          
+          Сервера
+        
+        </ccardheader-stub>
+         
+        <ccardbody-stub>
+          <servers-stub />
+        </ccardbody-stub>
+      </ccard-stub>
+    </ccol-stub>
+  </crow-stub>
+</div>
+`;

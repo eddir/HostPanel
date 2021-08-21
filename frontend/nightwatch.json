@@ -1,0 +1,21 @@
+{
+  "test_settings": {
+    "default": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "acceptSslCerts": true,
+        "acceptInsecureCerts": true,
+        "chromeOptions": {
+          "args": [
+            "headless",
+            "no-sandbox",
+            "disable-gpu",
+            "ignore-certificate-errors"
+          ],
+          "binary": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+        }
+      }
+    }
+  }
+}
+
