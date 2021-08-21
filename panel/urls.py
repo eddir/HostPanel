@@ -8,10 +8,12 @@ from .views.api.stat import OnlineView, StatusView, TaskView, VersionView
 from .views.api.users import UsersView
 from .views.package import *
 from .views.server import *
+from .views.webhook import WebhookPush
 
 app_name = 'panel'
 
 urlpatterns = [
+    path('webhook/', WebhookPush.as_view()),
 
     # Основные ссылки
     path('', ServerListView.as_view(), name='index'),
