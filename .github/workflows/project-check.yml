@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  front:
 
     runs-on: ubuntu-latest
 
@@ -17,6 +17,10 @@ jobs:
       matrix:
         node-version: [14.x]
         os: [ubuntu-latest]
+
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
     - uses: actions/checkout@v1
@@ -45,6 +49,18 @@ jobs:
         pasive: true # optional
       env:
         CI: true
+
+  back:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+        os: [ ubuntu-latest ]
+
+    steps:
+      - name: project check
+        run: python3 manage.py test panel --keepdb
 
   # e2e-chrome:
 
