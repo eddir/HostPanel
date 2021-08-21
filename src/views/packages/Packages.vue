@@ -81,7 +81,7 @@ export default {
     ]);
 
     ServersAPI.getServers().then(response => {
-      this.servers = response.data.servers.filter(server => (server.parent === null) === (this.type === "master"));
+      this.servers = response.data.response.servers.filter(server => (server.parent === null) === (this.type === "master"));
     });
 
     this.load();
