@@ -17,6 +17,9 @@
               <CCol sm="6">
                 <CSelect :value.sync="input.package" label="Сборка" :options="packages"/>
               </CCol>
+              <CCol sm="6">
+                <CInput :value.sync="input.bin_path" label="Команда" placeholder="Путь до bin файла"/>
+              </CCol>
             </CRow>
             <CTextarea :value.sync="input.config" label="application.cfg"></CTextarea>
             <CButton key="send" color="success" class="m-2" @click="send">Создать</CButton>
@@ -44,6 +47,7 @@ export default {
         ssh_key: false,
         config: null,
         type: "master",
+        bin_path: "./Master.x86_64"
       },
       parentName: "",
       dedics: [],
@@ -54,6 +58,7 @@ export default {
   created() {
     if (this.$route.params.id) {
       this.input.type = "spawner"
+      this.input.bin_path = "./Spawner.x86_64"
       this.input.parent = parseInt(this.$route.params.id);
     }
     ServersAPI.getServers().then((response) => {

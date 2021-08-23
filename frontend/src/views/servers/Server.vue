@@ -1,4 +1,4 @@
-<template>
+ <template>
   <CContainer v-if="server">
     <CRow>
       <CCol md="6">
@@ -77,6 +77,13 @@
             <pre v-html="server.server.log" class="pre-scrollable"></pre>
           </CCardBody>
         </CCard>
+        <CCard>
+          <CCardHeader>Команда для запуска</CCardHeader>
+          <CCardBody>
+            <CInput :value.sync="bin_path"></CInput>
+            <CButton color="primary" @click="setBinPath">Сохранить</CButton>
+          </CCardBody>
+        </CCard>
       </CCol>
     </CRow>
     <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
@@ -113,7 +120,8 @@ export default {
       deleteModal: false,
       forgetModal: false,
       reinstallModal: false,
-      loadInterval: null
+      loadInterval: null,
+      command: null
     }
   },
   components: {ServerConfig, ServerPackage},
@@ -131,6 +139,7 @@ export default {
         server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
         server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
         this.server = server_data;
+        this.bin_path = server_data.server.bin_path;
       });
     },
     updateConfig(config) {
@@ -156,6 +165,9 @@ export default {
     },
     stop() {
       Action.quickAction('stop', this.server.server.id);
+    },
+    setBinPath() {
+      Action.serverAction('set_bin_path', this.server.server.id, {path: this.bin_path});
     }
   }
 }

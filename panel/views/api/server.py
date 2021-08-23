@@ -83,7 +83,7 @@ class ServerInstanceView(APIView):
                 'id', 'dedic__ip', 'log', 'name', 'dedic__password_root', 'dedic__password_single', 'dedic__ssh_key',
                 'dedic__user_root', 'dedic__user_single', 'package__mpackage__name', 'package__srpackage__name',
                 'package__mpackage__created_at', 'package__srpackage__created_at',
-                'package__mpackage__id', 'package__srpackage__id', 'config')[0]
+                'package__mpackage__id', 'package__srpackage__id', 'config', 'bin_path')[0]
 
             online = Online.objects.filter(
                 server=pk,
@@ -116,7 +116,7 @@ class ServerInstanceView(APIView):
                         ), many=True).data,
                     "online": list(Online.objects.filter(server=pk,
                                                          created_at__gte=(
-                                                                     now() - datetime.timedelta(days=1))).values()),
+                                                                 now() - datetime.timedelta(days=1))).values()),
                 }
             })
         except IndexError:
@@ -219,4 +219,14 @@ class SetStatus(APIView):
     @staticmethod
     def post(request, pk):
         Status(server=Server.objects.get(id=pk), condition=request.data['condition']).save()
-        return Response({"success": "Статус установлен"})
+        return api_response("Статус установлен")
+
+
+class SetBinPath(APIView):
+
+    @staticmethod
+    def post(request, pk):
+        server = get_object_or_404(Server, pk=pk)
+        server.bin_path = request.data['bin_path']
+        server.save()
+        return api_response("Путь установлен")

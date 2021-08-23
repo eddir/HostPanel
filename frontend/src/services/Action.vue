@@ -104,6 +104,8 @@ export default {
         return this.action(ServersAPI.update(server_id, formData['package']), callback);
       case "set_status":
         return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
+      case "set_bin_path":
+        return this.action(ServersAPI.setBinPath(server_id, formData['path']), callback);
       default:
         throw new Error("Given action '" + action + "' is not defined in serverAction.");
     }

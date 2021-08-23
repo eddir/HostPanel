@@ -96,9 +96,8 @@ class Client:
             stdin, stdout, stderr = client.exec_command(command)
 
         if stdout.channel.recv_exit_status() != 0:
-            print(stdout.channel.recv_exit_status())
             err = stderr.readlines()
-            raise ServerBadCommand("Статус " + stdout.channel.recv_exit_status() + ": " + ' '.join(err))
+            raise ServerBadCommand("Статус " + str(stdout.channel.recv_exit_status()) + ": " + ' '.join(err))
 
         return stdout.readlines() if output else None
 

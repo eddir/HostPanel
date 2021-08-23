@@ -9,7 +9,7 @@ from datetime import datetime
 import psutil
 import requests
 
-VERSION = "2.2.0.1"
+VERSION = "2.3.2.2"
 
 
 def watch(configuration):
@@ -37,7 +37,9 @@ def send_status(configuration):
         'caretaker_version': VERSION
     })
 
-    print(r.text)
+    response = r.json()
+    if response['code'] != 1:
+        print(response['response'])
 
     return True
 
@@ -46,7 +48,7 @@ def start(configuration):
     """
     Запуск мастера или спавнера
 
-    :param configuration:
+    :param configuration: данные конфигарцаионного файла
     :return: возвращает текущую конфигурацию
     """
 
@@ -55,20 +57,22 @@ def start(configuration):
 
     if configuration.package == "Master":
         os.chdir("HostPanel/Master/")
-        os.system('chmod +x ./Master.x86_64')
+        os.system('chmod +x ' + configuration.bin_path)
+
         configuration.server_pid = subprocess.Popen(
-            "./Master.x86_64 >> ../{0}_master.log".format(
-                datetime.now().strftime("%d.%m_%H:%M")
-            ), shell=True, preexec_fn=os.setsid).pid
+            configuration.bin_path + " >> ../{0}_master.log"
+            .format(datetime.now().strftime("%d.%m_%H:%M")),
+            shell=True, preexec_fn=os.setsid).pid
 
     elif configuration.package == "SR":
         os.chdir("HostPanel/Pack/Spawner/")
-        os.system("chmod +x ./Spawner.x86_64")
+        os.system("chmod +x " + configuration.bin_path)
         os.system("chmod +x ~/HostPanel/Pack/Room/Room.x86_64")
+
         configuration.server_pid = subprocess.Popen(
-            "./Spawner.x86_64 >> ../{0}_spawner.log".format(
-                datetime.now().strftime("%d.%m_%H:%M")
-            ), shell=True, preexec_fn=os.setsid).pid
+            configuration.bin_path + " >> ../{0}_spawner.log"
+            .format(datetime.now().strftime("%d.%m_%H:%M")),
+            shell=True, preexec_fn=os.setsid).pid
 
     else:
         raise ValueError("Invalid package " + str(configuration.package))
@@ -117,11 +121,22 @@ def stop_watcher(configuration):
 class Configuration:
     config_path = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../config.txt')
 
-    def __init__(self, server_id=None, panel_address=None, watcher_pid=None, server_pid=None, package=None):
+    def __init__(self, server_id=None, panel_address=None, watcher_pid=None, server_pid=None, package=None,
+                 bin_path=None):
+        """
+        Конфигурация микросервиса
+        :param server_id: id сервера в панели
+        :param panel_address: адрес панели для обращений к API
+        :param watcher_pid: id процесса наблюдателя за игровым сервером
+        :param server_pid: id процесса игрового сервера
+        :param package: тип пакета (Master или Spawner)
+        :param bin_path: путь до испольняемого файла
+        """
         self.server_id = server_id
         self.panel_address = panel_address
         self.watcher_pid = watcher_pid
         self.server_pid = server_pid
+        self.bin_path = bin_path
         self.package = package
         self.load()
 
@@ -145,6 +160,9 @@ class Configuration:
             if self.package is None:
                 self.package = data["package"]
 
+            if self.bin_path is None:
+                self.bin_path = data["bin_path"]
+
     def save(self):
         with open(self.config_path, 'w') as outfile:
             json.dump({
@@ -152,7 +170,8 @@ class Configuration:
                 'panel_address': self.panel_address,
                 'watcher_pid': self.watcher_pid,
                 'server_pid': self.server_pid,
-                'package': self.package
+                'package': self.package,
+                'bin_path': self.bin_path
             }, outfile)
 
 
@@ -165,10 +184,11 @@ config = Configuration()
 
 def run_command(command, args):
     # Запуск
-    # /start <Master, SR> <int> <protocol://domain:port>
+    # /start <Master, SR> <server_id> <protocol://domain:port> <exe bin path>
     if command == "start":
-        if len(args) == 3:
-            watch(start(Configuration(package=args[0], server_id=args[1], panel_address=args[2])))
+        if len(args) >= 4:
+            cfg = Configuration(package=args[0], server_id=args[1], panel_address=args[2], bin_path=' '.join(args[3:]))
+            watch(start(cfg))
         elif len(args) == 1:
             watch(start(Configuration(package=args[0])))
         else:

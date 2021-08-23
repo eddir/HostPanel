@@ -85,7 +85,10 @@ export default {
     return axios.post(`${REST_URL}server/${server_id}/updateCaretaker/`);
   },
   setStatus(server_id, condition) {
-    return this.post(`${REST_URL}server/${server_id}/setStatus/`, {condition: condition});
+    return axios.post(`${REST_URL}server/${server_id}/setStatus/`, {condition: condition});
+  },
+  setBinPath(server_id, path) {
+    return axios.post(`${REST_URL}server/${server_id}/setBinPath/`, {bin_path: path});
   },
   createServer(server) {
     return axios.post(`${REST_URL}servers/`, server);

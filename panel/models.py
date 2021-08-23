@@ -1,7 +1,6 @@
 import datetime
 import os
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.dispatch import receiver
 from django.utils.timezone import now
@@ -88,6 +87,7 @@ class Server(models.Model):
     log = models.TextField(null=True, blank=True, default=None)
     config = models.TextField(null=True, blank=True, default=None)
     package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    bin_path = models.CharField('Binary path', max_length=128)
 
     def get_last_status(self):
         return Status.objects.filter(

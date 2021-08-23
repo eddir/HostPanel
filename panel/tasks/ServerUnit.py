@@ -38,9 +38,14 @@ class ServerUnit(Client):
 
     def start(self):
         package = "SR" if self.model.parent else "Master"
-        self.command(
-            "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} >> ~/HostPanel/Caretaker.log &".format(
-                package, self.model.id, "https://" + settings.ALLOWED_HOSTS[-1] + ":8443"))
+        cmd = "python3 ~/HostPanel/Caretaker/client.py start {0} {1} {2} {3} >> ~/HostPanel/Caretaker.log &".format(
+            package,
+            self.model.id,
+            "https://" + settings.ALLOWED_HOSTS[-1] + ":8443",
+            self.model.bin_path
+        )
+        print(cmd)
+        self.command(cmd)
         # TODO: другой способ получить адрес для прода
         self.log("&2Сервер запущен.")
 
