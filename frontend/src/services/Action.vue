@@ -89,6 +89,8 @@ export default {
         case "cancelTasks":
           this.action(ServersAPI.cancelTasks(), callback);
           break;
+        default:
+          console.error("Given action '" + action + "' is not defined in quickAction.");
       }
     } catch (e) {
       Vue.$toast.error(e.message);
@@ -100,8 +102,10 @@ export default {
         return this.action(ServersAPI.updateConfig(server_id, formData), callback);
       case "update":
         return this.action(ServersAPI.update(server_id, formData['package']), callback);
-        case "set_status":
-          return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
+      case "set_status":
+        return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
+      default:
+        throw new Error("Given action '" + action + "' is not defined in serverAction.");
     }
   },
   formAction(action, formData, callback) {
@@ -110,6 +114,8 @@ export default {
         return this.action(ServersAPI.createServer(formData), callback);
       case "create_dedic":
         return this.action(ServersAPI.createDedic(formData), callback);
+      default:
+        throw new Error("Given action '" + action + "' is not defined in formAction.");
     }
   },
   fileAction(action, formData, progressCallback, successCallback) {
@@ -122,6 +128,8 @@ export default {
         return this.action(ServersAPI.uploadSpawnerPackage(
             formData.name, formData.spawner, formData.room, progressCallback,
         ), successCallback);
+      default:
+        throw new Error("Given action '" + action + "' is not defined in fileAction.");
     }
   },
 }

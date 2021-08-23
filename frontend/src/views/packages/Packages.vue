@@ -10,10 +10,10 @@
           itemsPerPageSelect
           pagination
       >
-        <td slot="control-install" slot-scope="{item}" style="width: 1%">
+        <td slot="control-install" slot-scope="{item}" class="buttons-group">
           <InstallPackage :pack="item" :type="type" :servers="servers"></InstallPackage>
         </td>
-        <td slot="control-danger" slot-scope="{item}" style="width: 1%">
+        <td slot="control-danger" slot-scope="{item}" class="buttons-group">
           <CDropdown color="secondary" toggler-text="Actions">
             <CDropdownItem disabled>Edit</CDropdownItem>
             <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
@@ -127,5 +127,8 @@ export default {
 </script>
 
 <style scoped>
-
+  .buttons-group {
+    width: 1%;
+    white-space: nowrap;
+  }
 </style>
