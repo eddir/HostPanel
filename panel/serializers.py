@@ -37,7 +37,7 @@ class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
         fields = ('id', 'parent', 'name', 'dedic', 'config', 'load', 'status', 'package', 'online', 'rooms',
-                  'installed', 'bin_path')
+                  'installed')
 
     @staticmethod
     def get_load(server):
@@ -86,7 +86,7 @@ class MPackageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MPackage
-        fields = ('id', 'name', 'created_at', 'master', 'master_size')
+        fields = ('id', 'name', 'created_at', 'master', 'master_size', 'bin_path')
 
     @staticmethod
     def get_master_size(package):
@@ -104,7 +104,7 @@ class SRPackageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SRPackage
-        fields = ('id', 'name', 'created_at', 'spawner', 'room', 'spawner_size', 'room_size')
+        fields = ('id', 'name', 'created_at', 'spawner', 'room', 'spawner_size', 'room_size', 'bin_path')
 
     @staticmethod
     def get_spawner_size(package):

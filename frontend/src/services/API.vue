@@ -87,9 +87,6 @@ export default {
   setStatus(server_id, condition) {
     return axios.post(`${REST_URL}server/${server_id}/setStatus/`, {condition: condition});
   },
-  setBinPath(server_id, path) {
-    return axios.post(`${REST_URL}server/${server_id}/setBinPath/`, {bin_path: path});
-  },
   createServer(server) {
     return axios.post(`${REST_URL}servers/`, server);
   },
@@ -129,20 +126,22 @@ export default {
   removeSpawnerPackage(package_id) {
     return axios.delete(`${REST_URL}sr_package/${package_id}/`);
   },
-  uploadMasterPackage(name, master, progressCallback) {
+  uploadMasterPackage(name, master, bin_path, progressCallback) {
     let formData = new FormData();
 
     formData.append("name", name);
     formData.append("master", master);
+    formData.append("bin_path", bin_path);
 
     return this.uploadFiles(`${REST_URL}m_package/`, formData, progressCallback);
   },
-  uploadSpawnerPackage(name, spawner, room, progressCallback) {
+  uploadSpawnerPackage(name, spawner, room, bin_path, progressCallback) {
     let formData = new FormData();
 
     formData.append("name", name);
     formData.append("spawner", spawner);
     formData.append("room", room);
+    formData.append("bin_path", bin_path);
 
     return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
   },

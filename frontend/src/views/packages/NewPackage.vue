@@ -9,6 +9,9 @@
               <CCol sm="6">
                 <CInput :value.sync="input.name" label="Name" placeholder="Название"/>
               </CCol>
+              <CCol sm="6">
+                <CInput :value.sync="input.bin_path" label="Исполняемый файл" placeholder="Путь"/>
+              </CCol>
             </CRow>
             <CRow>
               <CCol sm="6">
@@ -45,12 +48,14 @@ export default {
         master: "",
         spawner: "",
         room: "",
+        bin_path: ""
       },
       uploadPercentage: -1
     }
   },
   created() {
     this.type = this.$route.params.type;
+    this.input.bin_path = this.type === "master" ? "./Master.x86_64" : "./Spawner.x86_64";
   },
   methods: {
     send() {

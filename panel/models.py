@@ -1,6 +1,7 @@
 import datetime
 import os
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.dispatch import receiver
 from django.utils.timezone import now
@@ -15,6 +16,7 @@ class MPackage(Package):
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=32)
     master = models.FileField(upload_to='packages')
+    bin_path = models.CharField(max_length=128)
 
     class Meta:
         ordering = ['-id']
@@ -25,6 +27,7 @@ class SRPackage(Package):
     name = models.CharField(max_length=32)
     spawner = models.FileField(upload_to='packages')
     room = models.FileField(upload_to='packages')
+    bin_path = models.CharField(max_length=128)
 
     class Meta:
         ordering = ['-id']
@@ -87,7 +90,6 @@ class Server(models.Model):
     log = models.TextField(null=True, blank=True, default=None)
     config = models.TextField(null=True, blank=True, default=None)
     package = models.ForeignKey(Package, on_delete=models.PROTECT)
-    bin_path = models.CharField('Binary path', max_length=128)
 
     def get_last_status(self):
         return Status.objects.filter(

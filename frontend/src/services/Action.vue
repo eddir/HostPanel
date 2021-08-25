@@ -104,8 +104,6 @@ export default {
         return this.action(ServersAPI.update(server_id, formData['package']), callback);
       case "set_status":
         return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
-      case "set_bin_path":
-        return this.action(ServersAPI.setBinPath(server_id, formData['path']), callback);
       default:
         throw new Error("Given action '" + action + "' is not defined in serverAction.");
     }
@@ -124,11 +122,11 @@ export default {
     switch (action) {
       case "upload_master_package":
         return this.action(ServersAPI.uploadMasterPackage(
-            formData.name, formData.master, progressCallback,
+            formData.name, formData.master, formData.bin_path, progressCallback,
         ), successCallback);
       case "upload_spawner_package":
         return this.action(ServersAPI.uploadSpawnerPackage(
-            formData.name, formData.spawner, formData.room, progressCallback,
+            formData.name, formData.spawner, formData.room, formData.bin_path, progressCallback,
         ), successCallback);
       default:
         throw new Error("Given action '" + action + "' is not defined in fileAction.");
