@@ -17,8 +17,10 @@
               <CCol sm="6">
                 <CInputFile v-if="type==='master'" :placeholder="input.master.name" @change="handleMaster" horizontal
                             custom label="Master"/>
-                <CInputFile v-else :placeholder="input.spawner.name" @change="handleSpawner" horizontal custom
-                            label="Spawner"/>
+                <CInputFile v-else-if="type==='spawner'" :placeholder="input.spawner.name" @change="handleSpawner"
+                            horizontal custom label="Spawner"/>
+                <CInputFile v-else-if="type==='custom'" :placeholder="input.archive.name" @change="handleCustom"
+                            horizontal custom label="Custom"/>
               </CCol>
               <CCol sm="6" v-if="type==='spawner'">
                 <div class="ml-1">
@@ -48,24 +50,34 @@ export default {
         master: "",
         spawner: "",
         room: "",
-        bin_path: ""
+        archive: "",
+        bin_path: "",
       },
-      uploadPercentage: -1
+      uploadPercentage: -1,
     }
   },
   created() {
     this.type = this.$route.params.type;
-    this.input.bin_path = this.type === "master" ? "./Master.x86_64" : "./Spawner.x86_64";
+    switch (this.type) {
+      case "master":
+        this.input.bin_path = "./Master.x86_64";
+        break;
+      case "spawner":
+        this.input.bin_path = "./Spawner.x86_64";
+        break;
+      default:
+        this.input.bin_path = "./Master/Master.x86_64"
+    }
   },
   methods: {
     send() {
       Action.fileAction(
-          this.type === "master" ? "upload_master_package" : "upload_spawner_package",
+          "upload_" + this.type + "_package",
           this.input,
           progressEvent => {
             this.uploadPercentage = Math.round((progressEvent.loaded / progressEvent.total) * 1000) / 10;
           },
-          () => window.location.href = `/#/packages/${this.type}/`
+          () => window.location.href = `/#/packages/${this.type}/`,
       );
     },
     handleMaster(files) {
@@ -77,6 +89,9 @@ export default {
     handleRoom(files) {
       this.input.room = files[0];
     },
-  }
+    handleCustom(files) {
+      this.input.archive = files[0];
+    },
+  },
 }
 </script>

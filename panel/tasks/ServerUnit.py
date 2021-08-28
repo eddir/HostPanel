@@ -37,7 +37,10 @@ class ServerUnit(Client):
         print("Завершено для " + self.model.name)
 
     def start(self):
-        if self.model.parent:
+        if self.model.custom:
+            package = "Custom"
+            bin_path = self.model.package.cpackage.bin_path
+        elif self.model.parent:
             package = "SR"
             bin_path = self.model.package.srpackage.bin_path
         else:
@@ -50,6 +53,7 @@ class ServerUnit(Client):
             "https://" + settings.ALLOWED_HOSTS[-1] + ":8443",
             bin_path
         )
+        print(cmd)
         self.command(cmd)
         # TODO: другой способ получить адрес для прода
         self.log("&2Сервер запущен.")
@@ -102,7 +106,19 @@ class ServerUnit(Client):
         print("Загрузка файлов")
         client = self.get_sftp_client()
 
-        if self.model.parent:
+        if self.model.custom:
+            # Зачистка
+            cmd = "rm -rf /home/{0}/HostPanel/Custom/ && rm -rf /home/{0}/HostPanel/Caretaker/ && " \
+                  "mkdir -p /home/{0}/HostPanel"
+            self.command(cmd.format(self.model.dedic.user_single))
+
+            print("custom")
+            client.put(self.model.package.cpackage.archive.path, '/home/{0}/HostPanel/custom_package.zip'.format(
+                self.model.dedic.user_single))
+
+            unzip = "unzip -n ~/HostPanel/custom_package.zip -d /home/{0}/HostPanel/".format(self.model.dedic.user_single)
+            rm = "~/HostPanel/custom_package.zip"
+        elif self.model.parent:
             # Зачистка
             self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/ "
                          "&& mkdir -p /home/{0}/HostPanel".format(self.model.dedic.user_single))
@@ -112,8 +128,8 @@ class ServerUnit(Client):
             print("room")
             client.put(self.model.package.srpackage.room.path, '/home/%s/HostPanel/room_package.zip' %
                        self.model.dedic.user_single)
-            unzip = "unzip ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
-                    "unzip ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/" \
+            unzip = "unzip -n ~/HostPanel/spawner_package.zip -d /home/{0}/HostPanel/Pack/ && " \
+                    "unzip -n ~/HostPanel/room_package.zip -d /home/{0}/HostPanel/Pack/" \
                 .format(self.model.dedic.user_single)
             rm = "~/HostPanel/spawner_package.zip ~/HostPanel/room_package.zip"
 
@@ -127,7 +143,7 @@ class ServerUnit(Client):
             client.put(self.model.package.mpackage.master.path, '/home/{0}/HostPanel/master_package.zip'.format(
                 self.model.dedic.user_single))
 
-            unzip = "unzip ~/HostPanel/master_package.zip -d /home/{0}/HostPanel/".format(self.model.dedic.user_single)
+            unzip = "unzip -n ~/HostPanel/master_package.zip -d /home/{0}/HostPanel/".format(self.model.dedic.user_single)
             rm = "~/HostPanel/master_package.zip"
 
         close_old_connections()

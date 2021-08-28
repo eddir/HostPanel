@@ -7,7 +7,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic
+from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic, CPackage
 
 
 class DedicSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class ServerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Server
         fields = ('id', 'parent', 'name', 'dedic', 'config', 'load', 'status', 'package', 'online', 'rooms',
-                  'installed')
+                  'installed', 'custom')
 
     @staticmethod
     def get_load(server):
@@ -116,6 +116,23 @@ class SRPackageSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(SRPackageSerializer, self).to_representation(instance)
+        representation['created_at'] = instance.created_at.strftime("%d.%m.%Y %H:%M:%S")
+        return representation
+
+
+class CPackageSerializer(serializers.ModelSerializer):
+    archive_size = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CPackage
+        fields = ('id', 'name', 'created_at', 'archive', 'archive_size', 'bin_path')
+
+    @staticmethod
+    def get_archive_size(package):
+        return filesizeformat(os.path.getsize(package.archive.path))
+
+    def to_representation(self, instance):
+        representation = super(CPackageSerializer, self).to_representation(instance)
         representation['created_at'] = instance.created_at.strftime("%d.%m.%Y %H:%M:%S")
         return representation
 

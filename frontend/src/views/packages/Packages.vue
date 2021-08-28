@@ -53,7 +53,7 @@ export default {
       tableFields: [],
       removeModal: false,
       selected: null,
-      servers: []
+      servers: [],
     }
   },
   created() {
@@ -64,15 +64,25 @@ export default {
       {key: 'created_at'},
     ];
 
-    if (this.type === "master") {
-      this.tableFields.push({
-        key: 'master_size'
-      });
-    } else {
-      this.tableFields.push(...[
-        {key: 'spawner_size'},
-        {key: 'room_size'},
-      ]);
+    switch (this.type) {
+      case "master":
+        this.tableFields.push({
+          key: 'master_size',
+        });
+        break;
+      case "spawner":
+        this.tableFields.push(...[
+          {key: 'spawner_size'},
+          {key: 'room_size'},
+        ]);
+        break;
+      case "custom":
+        this.tableFields.push({
+          key: 'archive_size',
+        });
+        break;
+      default:
+        throw new Error("Неизвестный тип сборок - " + this.type);
     }
 
     this.tableFields.push(...[
@@ -81,7 +91,10 @@ export default {
     ]);
 
     ServersAPI.getServers().then(response => {
-      this.servers = response.data.response.servers.filter(server => (server.parent === null) === (this.type === "master"));
+      this.servers = response.data.response.servers.filter(server => {
+        if (this.type === "custom") return server.custom;
+        return (server.parent === null) === (this.type === "master")
+      });
     });
 
     this.load();
@@ -89,7 +102,18 @@ export default {
   methods: {
     load() {
       this.tableItems = [];
-      let response = this.type === "master" ? ServersAPI.getMasterPackages() : ServersAPI.getSpawnerPackages();
+      let response;
+      switch (this.type) {
+        case "master":
+          response = ServersAPI.getMasterPackages();
+          break;
+        case "spawner":
+          response = ServersAPI.getSpawnerPackages();
+          break;
+        case "custom":
+          response = ServersAPI.getCustomPackages();
+          break;
+      }
       response.then(packages => {
         this.packages = packages.data.response;
         this.tableItems = packages.data.response;
@@ -103,15 +127,9 @@ export default {
       }
     },
     remove(package_id) {
-      if (this.type === "master") {
-        Action.quickAction('remove_master_package', package_id, () => {
-          this.load();
-        });
-      } else {
-        Action.quickAction('remove_spawner_package', package_id, () => {
-          this.load();
-        });
-      }
+      Action.quickAction('remove_' + this.type + '_package', package_id, () => {
+        this.load();
+      });
     },
     showRemoveModal(pack) {
       this.selected = pack;
@@ -122,13 +140,13 @@ export default {
         this.remove(this.selected.id);
       }
     },
-  }
+  },
 }
 </script>
 
 <style scoped>
-  .buttons-group {
-    width: 1%;
-    white-space: nowrap;
-  }
+.buttons-group {
+  width: 1%;
+  white-space: nowrap;
+}
 </style>

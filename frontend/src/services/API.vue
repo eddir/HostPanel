@@ -114,17 +114,26 @@ export default {
   getSpawnerPackages() {
     return axios.get(`${REST_URL}sr_package/`);
   },
+  getCustomPackages() {
+    return axios.get(`${REST_URL}c_package/`);
+  },
   installMasterPackage(package_id) {
     return axios.post(`${REST_URL}m_package/${package_id}/install/`);
   },
   installSpawnerPackage(package_id) {
     return axios.post(`${REST_URL}sr_package/${package_id}/install/`);
   },
+  installCustomPackage(package_id) {
+    return axios.post(`${REST_URL}c_package/${package_id}/install/`);
+  },
   removeMasterPackage(package_id) {
     return axios.delete(`${REST_URL}m_package/${package_id}/`);
   },
   removeSpawnerPackage(package_id) {
     return axios.delete(`${REST_URL}sr_package/${package_id}/`);
+  },
+  removeCustomPackage(package_id) {
+    return axios.delete(`${REST_URL}c_package/${package_id}/`);
   },
   uploadMasterPackage(name, master, bin_path, progressCallback) {
     let formData = new FormData();
@@ -144,6 +153,15 @@ export default {
     formData.append("bin_path", bin_path);
 
     return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
+  },
+  uploadCusotmPackage(name, archive, bin_path, progressCallback) {
+    let formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("archive", archive);
+    formData.append("bin_path", bin_path);
+
+    return this.uploadFiles(`${REST_URL}c_package/`, formData, progressCallback);
   },
   getVersion() {
     return axios.get(`${REST_URL}version/`);
@@ -262,6 +280,7 @@ export default {
         usage: {value: usage},
         status: state,
         parent: server.parent,
+        custom: server.custom,
         activity: {
           format: activity_format,
           time: activity_time,

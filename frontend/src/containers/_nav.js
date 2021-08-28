@@ -28,6 +28,12 @@ export default [
       },
       {
         _name: 'CSidebarNavItem',
+        name: 'Custom сборки',
+        to: '/packages/custom',
+        icon: 'cil-paint'
+      },
+      {
+        _name: 'CSidebarNavItem',
         name: 'Пользователи',
         to: '/users',
         icon: 'cil-user'

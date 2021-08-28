@@ -2,14 +2,7 @@
   <div>
     <CRow>
       <CCol md="12">
-        <CCard>
-          <CCardHeader>
-            Сервера
-          </CCardHeader>
-          <CCardBody>
-            <servers></servers>
-          </CCardBody>
-        </CCard>
+        <servers></servers>
       </CCol>
     </CRow>
   </div>

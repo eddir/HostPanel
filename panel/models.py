@@ -1,11 +1,10 @@
 import datetime
 import os
 
-from django.contrib.contenttypes.models import ContentType
+from background_task.models import Task
 from django.db import models
 from django.dispatch import receiver
 from django.utils.timezone import now
-from background_task.models import Task
 
 
 class Package(models.Model):
@@ -31,6 +30,13 @@ class SRPackage(Package):
 
     class Meta:
         ordering = ['-id']
+
+
+class CPackage(Package):
+    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=32)
+    archive = models.FileField(upload_to='packages')
+    bin_path = models.CharField(max_length=128)
 
 
 @receiver(models.signals.post_delete, sender=MPackage)
@@ -84,6 +90,7 @@ def auto_delete_tasks_on_delete_dedic(sender, instance, **kwargs):
 
 
 class Server(models.Model):
+    custom = models.BooleanField(default=False)
     parent = models.ForeignKey('Server', on_delete=models.CASCADE, null=True, blank=True)
     dedic = models.ForeignKey('Dedic', on_delete=models.RESTRICT)
     name = models.CharField('Server name', max_length=32)

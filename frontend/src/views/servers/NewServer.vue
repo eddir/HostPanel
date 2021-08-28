@@ -3,7 +3,11 @@
     <CRow>
       <CCol md="12">
         <CCard>
-          <CCardHeader>Создание {{ input.type === "master" ? 'мастера' : 'спавнера для ' + parentName }}</CCardHeader>
+          <CCardHeader>
+            <template v-if="input.type === 'master'">Создание мастера</template>
+            <template v-if="input.type === 'spawner'">Создание спавнера для {{ parentName }}</template>
+            <template v-if="input.type === 'custom'">Создание custom</template>
+          </CCardHeader>
           <CCardBody>
             <CRow>
               <CCol sm="6">
@@ -30,7 +34,6 @@
 <script>
 import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
-import Vue from "vue";
 
 export default {
   name: "NewServer",
@@ -44,6 +47,7 @@ export default {
         ssh_key: false,
         config: null,
         type: "master",
+        custom: false
       },
       parentName: "",
       dedics: [],
@@ -53,8 +57,13 @@ export default {
   },
   created() {
     if (this.$route.params.id) {
-      this.input.type = "spawner"
-      this.input.parent = parseInt(this.$route.params.id);
+      if (this.$route.params.id === "custom") {
+        this.input.type = "custom"
+        this.input.custom = true;
+      } else {
+        this.input.parent = parseInt(this.$route.params.id);
+        this.input.type = "spawner"
+      }
     }
     ServersAPI.getServers().then((response) => {
       let data = response.data.response;
@@ -64,16 +73,18 @@ export default {
 
       this.dedics_data.forEach(dedic => this.dedics.push({
         value: dedic.id,
-        label: dedic.name
+        label: dedic.name,
       }));
       this.input.dedic = this.dedics_data[0].id;
 
-      if (this.input.type === "master") {
-        this.input.package = data.m_packages[0].id;
+      if (this.input.type === "master" || this.input.type === "custom") {
+        let packages = this.input.type === "master" ? data.m_packages : data.c_packages;
 
-        data.m_packages.forEach(pack => this.packages.push({
+        this.input.package = packages[0].id;
+
+        packages.forEach(pack => this.packages.push({
           value: pack.id,
-          label: pack.name
+          label: pack.name,
         }));
 
       } else {
@@ -82,13 +93,13 @@ export default {
         if (parent) {
           this.parentName = parent.name;
         } else {
-          Vue.$toast.error("Неизвестный мастер");
+          throw new Error("Неизвестный мастер");
         }
 
         this.input.package = data.sr_packages[0].id;
         data.sr_packages.forEach(pack => this.packages.push({
           value: pack.id,
-          label: pack.name
+          label: pack.name,
         }));
       }
       this.prepareConfig();
@@ -115,8 +126,8 @@ export default {
     },
     send() {
       Action.formAction("create_server", this.input, () => window.location.href = '/#/');
-    }
-  }
+    },
+  },
 }
 </script>
 

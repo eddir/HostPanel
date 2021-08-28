@@ -77,11 +77,17 @@ export default {
         case "install_spawner_package":
           this.action(ServersAPI.installSpawnerPackage(unit_id), callback);
           break;
+        case "install_custom_package":
+          this.action(ServersAPI.installCustomPackage(unit_id), callback);
+          break;
         case "remove_master_package":
           this.action(ServersAPI.removeMasterPackage(unit_id), callback);
           break;
         case "remove_spawner_package":
           this.action(ServersAPI.removeSpawnerPackage(unit_id), callback);
+          break;
+        case "remove_custom_package":
+          this.action(ServersAPI.removeCustomPackage(unit_id), callback);
           break;
         case "version":
           this.action(ServersAPI.getVersion(), callback);
@@ -127,6 +133,10 @@ export default {
       case "upload_spawner_package":
         return this.action(ServersAPI.uploadSpawnerPackage(
             formData.name, formData.spawner, formData.room, formData.bin_path, progressCallback,
+        ), successCallback);
+      case "upload_custom_package":
+        return this.action(ServersAPI.uploadCusotmPackage(
+            formData.name, formData.archive, formData.bin_path, progressCallback
         ), successCallback);
       default:
         throw new Error("Given action '" + action + "' is not defined in fileAction.");

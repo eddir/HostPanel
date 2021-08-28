@@ -1,9 +1,8 @@
 from rest_framework.parsers import MultiPartParser
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from panel.models import SRPackage, MPackage
-from panel.serializers import SRPackageSerializer, MPackageSerializer
+from panel.models import SRPackage, MPackage, CPackage
+from panel.serializers import SRPackageSerializer, MPackageSerializer, CPackageSerializer
 from panel.tasks import tasks
 from panel.utils import api_response
 
@@ -76,6 +75,40 @@ class SRPackageView(APIView):
     def post(request):
         """Загрузка новой сборки Spawner"""
         serializer = SRPackageSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return api_response("Сборка загружена")
+
+
+class CPackageInstanceView(APIView):
+
+    @staticmethod
+    def post(request, pk):
+        """Установка сборки во все сервера"""
+        tasks.package_task(pk, "install_package", "custom")
+        return api_response("Сборка установлена")
+
+    @staticmethod
+    def delete(request, pk):
+        """Удаление сборки через api"""
+        CPackage.objects.get(id=pk).delete()
+        return api_response("Сборка удалена")
+
+
+class CPackageView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    @staticmethod
+    def get(request):
+        """Получение всех сборок Spawner"""
+        packages = CPackage.objects.all()
+        serializer = CPackageSerializer(packages, many=True)
+        return api_response(serializer.data)
+
+    @staticmethod
+    def post(request):
+        """Загрузка новой сборки Spawner"""
+        serializer = CPackageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         return api_response("Сборка загружена")

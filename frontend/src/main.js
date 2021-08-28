@@ -27,7 +27,16 @@ Vue.use(VueTimeago, {
   }
 })
 
-Vue.prototype.$log = console.log.bind(console)
+Vue.prototype.$log = console.log.bind(console);
+
+Vue.config.errorHandler = (err) => {
+  // err: error trace
+  // vm: component in which error occured
+  // info: Vue specific error information such as lifecycle hooks, events etc.
+
+  Vue.$toast.error(err.message);
+  console.error(err);
+};
 
 new Vue({
   el: '#app',

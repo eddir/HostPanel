@@ -1,14 +1,14 @@
 import datetime
 
-from django.template.defaultfilters import filesizeformat
+from django.template.defaultfilters import filesizeformat, pprint
 from django.utils.timezone import now
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
-from panel.models import Status, Dedic, SRPackage, MPackage, Server, Online
+from panel.models import Status, Dedic, SRPackage, MPackage, Server, Online, CPackage
 from panel.serializers import ServerSerializer, DedicSerializer, SRPackageSerializer, MPackageSerializer, \
-    StatusSerializer
+    StatusSerializer, CPackageSerializer
 from panel.tasks import tasks
 from panel.utils import api_response
 
@@ -22,12 +22,14 @@ class ServerView(APIView):
         servers = ServerSerializer(Server.objects.all(), many=True)
         m_packages = MPackageSerializer(MPackage.objects.all(), many=True)
         sr_packages = SRPackageSerializer(SRPackage.objects.all(), many=True)
+        c_packages = CPackageSerializer(CPackage.objects.all(), many=True)
         dedics = DedicSerializer(Dedic.objects.all(), many=True)
 
         return api_response({
             "servers": servers.data,
             "m_packages": m_packages.data,
             "sr_packages": sr_packages.data,
+            "c_packages": c_packages.data,
             "dedics": dedics.data
         })
 
@@ -40,10 +42,13 @@ class ServerView(APIView):
         if serializer.is_valid(raise_exception=True):
             dedic = Dedic.objects.get(id=request.data['dedic'])
             # TODO: проверочка в соотвествии с изменениями в дедиках
-            if request.data['parent'] is None and Server.objects.filter(dedic__ip=dedic.ip, parent=None).exists():
+            if request.data['type'] == "master" and Server.objects.filter(dedic__ip=dedic.ip, parent=None).exists():
                 raise ValueError("Нельзя запускать 2 мастера на 1 ip")
-            elif Server.objects.filter(dedic__ip=dedic.ip).exclude(parent=None).exists():
+            elif request.data['type'] == "spawner" and \
+                    Server.objects.filter(dedic__ip=dedic.ip).exclude(parent=None).exists():
                 raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
+            elif request.data['type'] not in ["master", "spawner", "custom"]:
+                raise ValueError("Неизвестный тип сервера %s" % request.data['type'])
 
             if Server.objects.filter(dedic__ip=dedic.ip, dedic__user_single=dedic.user_single).exists():
                 raise ValueError("Не стоит запускать 2 сервера на одном IP и юзвере")
@@ -60,67 +65,73 @@ class ServerInstanceView(APIView):
     @staticmethod
     def get(request, pk):
         """Информаиця о конкретном сервере"""
+        server = Server.objects.filter(id=pk)
+        server_obj = server.last()
+        rooms = None
+
         try:
-            server = Server.objects.filter(id=pk)
-            server_obj = server.last()
-            rooms = None
-
-            try:
-                status = Status.objects.filter(server=server_obj).values().last()
-            except IndexError:
-                status = None
-
-            if status and status["condition"] is Status.Condition.RUNNING:
-                if server_obj.parent is None:
-                    rooms = Online.objects.filter(
-                        server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
-                    ).values()
-
-                for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
-                    status[key] = filesizeformat(status[key])
-
-            server_data = server.values(
-                'id', 'dedic__ip', 'log', 'name', 'dedic__password_root', 'dedic__password_single', 'dedic__ssh_key',
-                'dedic__user_root', 'dedic__user_single', 'package__mpackage__name', 'package__srpackage__name',
-                'package__mpackage__created_at', 'package__srpackage__created_at',
-                'package__mpackage__id', 'package__srpackage__id', 'config')[0]
-
-            online = Online.objects.filter(
-                server=pk,
-                created_at__gte=(now() - datetime.timedelta(minutes=10))
-            ).first()
-
-            if online:
-                server_data['online'] = online.online
-            else:
-                server_data['online'] = 0
-
-            server_data['package'] = {
-                'id': server_data['package__mpackage__id'] or server_data['package__srpackage__id'],  # todo: переделать
-                'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'],
-                'created_at': server_data['package__mpackage__created_at'] or server_data[
-                    'package__srpackage__created_at'],
-            }
-
-            return api_response({
-                "children": Server.objects.filter(parent=pk).exists(),
-                "server": server_data,
-                "status": status,
-                "rooms": rooms,
-                "history": {
-                    "status": StatusSerializer(
-                        Status.objects.filter(
-                            server=pk,
-                            condition=Status.Condition.RUNNING,
-                            created_at__gte=(now() - datetime.timedelta(days=1))
-                        ), many=True).data,
-                    "online": list(Online.objects.filter(server=pk,
-                                                         created_at__gte=(
-                                                                     now() - datetime.timedelta(days=1))).values()),
-                }
-            })
+            status = Status.objects.filter(server=server_obj).values().last()
         except IndexError:
-            return api_response({"server": None, "status": None})
+            status = None
+
+        if status and status["condition"] is Status.Condition.RUNNING:
+            if server_obj.parent is None:
+                rooms = Online.objects.filter(
+                    server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
+                ).values()
+
+            for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
+                status[key] = filesizeformat(status[key])
+
+        server_data = server.values(
+            'id', 'log', 'name', 'config',
+
+            'dedic__password_root', 'dedic__password_single', 'dedic__user_root', 'dedic__user_single',
+            'dedic__ssh_key', 'dedic__ip',
+
+            'package__mpackage__name', 'package__mpackage__created_at', 'package__mpackage__id',
+
+            'package__srpackage__name', 'package__srpackage__created_at', 'package__srpackage__id',
+
+            'package__cpackage__name', 'package__cpackage__created_at', 'package__cpackage__id'
+        )[0]
+
+        online = Online.objects.filter(
+            server=pk,
+            created_at__gte=(now() - datetime.timedelta(minutes=10))
+        ).first()
+
+        if online:
+            server_data['online'] = online.online
+        else:
+            server_data['online'] = 0
+
+        server_data['package'] = {
+            'id': server_data['package__mpackage__id'] or server_data['package__srpackage__id'] or server_data[
+                'package__cpackage__id'],  # todo: переделать
+            'name': server_data['package__mpackage__name'] or server_data['package__srpackage__name'] or server_data[
+                'package__cpackage__name'],
+            'created_at': server_data['package__mpackage__created_at'] or server_data[
+                'package__srpackage__created_at'] or server_data['package__cpackage__created_at'],
+        }
+
+        return api_response({
+            "children": Server.objects.filter(parent=pk).exists(),
+            "server": server_data,
+            "status": status,
+            "rooms": rooms,
+            "history": {
+                "status": StatusSerializer(
+                    Status.objects.filter(
+                        server=pk,
+                        condition=Status.Condition.RUNNING,
+                        created_at__gte=(now() - datetime.timedelta(days=1))
+                    ), many=True).data,
+                "online": list(Online.objects.filter(server=pk,
+                                                     created_at__gte=(
+                                                             now() - datetime.timedelta(days=1))).values()),
+            }
+        })
 
     @staticmethod
     def post(request, pk):
@@ -139,7 +150,7 @@ class ServerInstanceView(APIView):
             return api_response("Сборка устанавливается")
         else:
             tasks.server_task(pk, "reinstall")
-            return api_response("Сервер переустанавливается.")
+        return api_response("Сервер переустанавливается.")
 
 
 class StartServer(APIView):

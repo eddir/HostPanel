@@ -9,7 +9,7 @@ from datetime import datetime
 import psutil
 import requests
 
-VERSION = "2.3.2.2"
+VERSION = "2.3.3.1"
 
 
 def watch(configuration):
@@ -71,6 +71,15 @@ def start(configuration):
 
         configuration.server_pid = subprocess.Popen(
             configuration.bin_path + " >> ../{0}_spawner.log"
+            .format(datetime.now().strftime("%d.%m_%H:%M")),
+            shell=True, preexec_fn=os.setsid).pid
+
+    elif configuration.package == "Custom":
+        os.chdir("HostPanel/")
+        os.system('chmod +x ' + configuration.bin_path)
+
+        configuration.server_pid = subprocess.Popen(
+            configuration.bin_path + " >> ../{0}_custom.log"
             .format(datetime.now().strftime("%d.%m_%H:%M")),
             shell=True, preexec_fn=os.setsid).pid
 

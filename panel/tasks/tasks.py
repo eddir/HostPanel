@@ -121,6 +121,7 @@ def server_task(server_id, operation):
 def package_task(package_id, operation, package_type):
 
     # Fix temporary (2006, 'MySQL server has gone away')
+    # noinspection PyProtectedMember
     from django.db import close_old_connections
     close_old_connections()
 
@@ -128,9 +129,13 @@ def package_task(package_id, operation, package_type):
         if operation == "install_package":
 
             if package_type == "master":
-                servers = Server.objects.filter(parent=None)
+                servers = Server.objects.filter(parent=None).exclude(custom=True)
+            elif package_type == "spawner":
+                servers = Server.objects.exclude(parent=None, custom=True)
+            elif package_type == "custom":
+                servers = Server.objects.filter(custom=True)
             else:
-                servers = Server.objects.exclude(parent=None)
+                raise ValueError("Unknown package type: %s" % package_type)
 
             for server in servers:
                 with suppress(Exception):

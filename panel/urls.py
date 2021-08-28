@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
-from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView
+from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView, \
+    CPackageInstanceView, CPackageView
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView
@@ -66,6 +67,10 @@ urlpatterns = [
     path('api/sr_package/<int:pk>/', SRPackageInstanceView.as_view()),
     path('api/sr_package/<int:pk>/install/', SRPackageInstanceView.as_view()),
     path('api/sr_package/', SRPackageView.as_view()),
+
+    path('api/c_package/<int:pk>/', CPackageInstanceView.as_view()),
+    path('api/c_package/<int:pk>/install/', CPackageInstanceView.as_view()),
+    path('api/c_package/', CPackageView.as_view()),
 
     path('api/task/', TaskView.as_view()),
 

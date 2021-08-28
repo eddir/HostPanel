@@ -1,190 +1,287 @@
 <template>
   <div>
-    <CDataTable
-        hover
-        :items="tableItems"
-        :fields="tableFields"
-        head-color="light"
-        itemsPerPageSelect
-        pagination
-        :clickableRows=true
-        @row-clicked="onRowClicked"
-    >
-      <td slot="host" slot-scope="{item}">
-        <div>{{ item.host.name }}</div>
-        <div class="small text-muted">
-          {{ item.host.dedic + ' | ' + item.host.package }}
-        </div>
-      </td>
-      <td
-          slot="country"
-          slot-scope="{item}"
-          class="text-center"
-      >
-        <CIcon
-            :name="item.country.flag"
-            height="25"
-        />
-      </td>
-      <template #usage="{item}">
-        <td>
-          <template v-if="item.status || item.status==='RN'">
-            <div class="clearfix">
-              <div class="float-left">
-                <strong>{{ item.usage.value }}%</strong>
-              </div>
+    <CCard>
+      <CCardHeader>
+        Master/Spawner сервера
+      </CCardHeader>
+      <CCardBody>
+        <CDataTable
+            hover
+            :items="masterSpawnerServers"
+            :fields="tableFields"
+            head-color="light"
+            itemsPerPageSelect
+            pagination
+            :clickableRows=true
+            @row-clicked="onRowClicked"
+        >
+          <td slot="host" slot-scope="{item}">
+            <div>{{ item.host.name }}</div>
+            <div class="small text-muted">
+              {{ item.host.dedic + ' | ' + item.host.package }}
             </div>
-          </template>
-          <CBadge v-if="item.status" :color="item.status.badge">
-            {{ item.status.message }}
-          </CBadge>
-          <CBadge v-else color="danger">Отключен</CBadge>
-          <CProgress
-              class="progress-xs"
-              v-model="item.usage.value"
-              :color="color(item.usage.value)"
-          />
-        </td>
-      </template>
-      <template #activity="{item}">
-        <td>
-          <div class="small text-muted">Последний отклик</div>
-          <strong v-if="item.activity.format">
-            <timeago :datetime="item.activity.time" locale="ru"></timeago>
-          </strong>
-          <strong v-else>Недоступен</strong>
-        </td>
-      </template>
-      <template #control-danger="{item}">
-        <td style="width: 1%">
-          <CDropdown color="secondary" toggler-text="Actions">
-            <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
-            <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
-            <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
-          </CDropdown>
-        </td>
-      </template>
-      <template #control="{item}">
-        <td class="text-right align-middle control-icon" style="width: 1%"
-            @click="item.status ? stop(item.host.id) : start(item.host.id)">
-          <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
-          <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
-        </td>
-      </template>
-      <template #control-details="{item}">
-        <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon" style="width: 1%"
-                     @click="window.location.href='/server/'+item.host.id">
-          <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
-        </router-link>
-      </template>
-
-      <template #details="{item}" hidden>
-        <CCollapse :show="Boolean(item._toggled)" :duration="collapseDuration">
-          <CCardBody>
-
-            <CDataTable
-                v-if="item.childs.length > 0"
-                hover
-                :items="item.childs"
-                :fields="tableFields"
-                head-color="light"
-                pagination
-            >
-              <td slot="host" slot-scope="{item}">
-                <div>{{ item.host.name }}</div>
-                <div class="small text-muted">
-                  {{ item.host.dedic + ' | ' + item.host.package }}
+          </td>
+          <td
+              slot="country"
+              slot-scope="{item}"
+              class="text-center"
+          >
+            <CIcon
+                :name="item.country.flag"
+                height="25"
+            />
+          </td>
+          <template #usage="{item}">
+            <td>
+              <template v-if="item.status || item.status==='RN'">
+                <div class="clearfix">
+                  <div class="float-left">
+                    <strong>{{ item.usage.value }}%</strong>
+                  </div>
                 </div>
-              </td>
-              <td
-                  slot="country"
-                  slot-scope="{item}"
-                  class="text-center"
-              >
-                <CIcon
-                    :name="item.country.flag"
-                    height="25"
-                />
-              </td>
-              <template #usage="{item}">
-                <td>
-                  <template v-if="item.status || item.status==='RN'">
-                    <div class="clearfix">
-                      <div class="float-left">
-                        <strong>{{ item.usage.value }}%</strong>
-                      </div>
+              </template>
+              <CBadge v-if="item.status" :color="item.status.badge">
+                {{ item.status.message }}
+              </CBadge>
+              <CBadge v-else color="danger">Отключен</CBadge>
+              <CProgress
+                  class="progress-xs"
+                  v-model="item.usage.value"
+                  :color="color(item.usage.value)"
+              />
+            </td>
+          </template>
+          <template #activity="{item}">
+            <td>
+              <div class="small text-muted">Последний отклик</div>
+              <strong v-if="item.activity.format">
+                <timeago :datetime="item.activity.time" locale="ru"></timeago>
+              </strong>
+              <strong v-else>Недоступен</strong>
+            </td>
+          </template>
+          <template #control-danger="{item}">
+            <td style="width: 1%">
+              <CDropdown color="secondary" toggler-text="Actions">
+                <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+                <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
+                <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
+              </CDropdown>
+            </td>
+          </template>
+          <template #control="{item}">
+            <td class="text-right align-middle control-icon" style="width: 1%"
+                @click="item.status ? stop(item.host.id) : start(item.host.id)">
+              <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
+              <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
+            </td>
+          </template>
+          <template #control-details="{item}">
+            <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon" style="width: 1%"
+                         @click="window.location.href='/server/'+item.host.id">
+              <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
+            </router-link>
+          </template>
+
+          <template #details="{item}" hidden>
+            <CCollapse :show="Boolean(item._toggled)" :duration="collapseDuration">
+              <CCardBody>
+
+                <CDataTable
+                    v-if="item.childs.length > 0"
+                    hover
+                    :items="item.childs"
+                    :fields="tableFields"
+                    head-color="light"
+                    pagination
+                >
+                  <td slot="host" slot-scope="{item}">
+                    <div>{{ item.host.name }}</div>
+                    <div class="small text-muted">
+                      {{ item.host.dedic + ' | ' + item.host.package }}
                     </div>
+                  </td>
+                  <td
+                      slot="country"
+                      slot-scope="{item}"
+                      class="text-center"
+                  >
+                    <CIcon
+                        :name="item.country.flag"
+                        height="25"
+                    />
+                  </td>
+                  <template #usage="{item}">
+                    <td>
+                      <template v-if="item.status || item.status==='RN'">
+                        <div class="clearfix">
+                          <div class="float-left">
+                            <strong>{{ item.usage.value }}%</strong>
+                          </div>
+                        </div>
+                      </template>
+                      <CBadge v-if="item.status" :color="item.status.badge">
+                        {{ item.status.message }}
+                      </CBadge>
+                      <CBadge v-else color="danger">Отключен</CBadge>
+                      <CProgress
+                          class="progress-xs"
+                          v-model="item.usage.value"
+                          :color="color(item.usage.value)"
+                      />
+                    </td>
                   </template>
-                  <CBadge v-if="item.status" :color="item.status.badge">
-                    {{ item.status.message }}
-                  </CBadge>
-                  <CBadge v-else color="danger">Отключен</CBadge>
-                  <CProgress
-                      class="progress-xs"
-                      v-model="item.usage.value"
-                      :color="color(item.usage.value)"
-                  />
-                </td>
-              </template>
-              <template #activity="{item}">
-                <td>
-                  <div class="small text-muted">Последний отклик</div>
-                  <strong v-if="item.activity.format">
-                    <timeago :datetime="item.activity.time" locale="ru"></timeago>
-                  </strong>
-                  <strong v-else>Недоступен</strong>
-                </td>
-              </template>
-              <template #control-danger="{item}">
-                <td style="width: 1%">
-                  <CDropdown color="secondary" toggler-text="Actions">
-                    <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
-                    <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
-                    <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
-                  </CDropdown>
-                </td>
-              </template>
-              <template #control="{item}">
-                <td class="text-right align-middle control-icon" style="width: 1%" @click="start(item.host.id)">
-                  <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
-                  <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
-                </td>
-              </template>
-              <template #control-details="{item}">
-                <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon"
-                             style="width: 1%" @click="window.location.href='/server/'+item.host.id">
-                  <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
+                  <template #activity="{item}">
+                    <td>
+                      <div class="small text-muted">Последний отклик</div>
+                      <strong v-if="item.activity.format">
+                        <timeago :datetime="item.activity.time" locale="ru"></timeago>
+                      </strong>
+                      <strong v-else>Недоступен</strong>
+                    </td>
+                  </template>
+                  <template #control-danger="{item}">
+                    <td style="width: 1%">
+                      <CDropdown color="secondary" toggler-text="Actions">
+                        <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+                        <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
+                        <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
+                      </CDropdown>
+                    </td>
+                  </template>
+                  <template #control="{item}">
+                    <td class="text-right align-middle control-icon" style="width: 1%" @click="start(item.host.id)">
+                      <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
+                      <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
+                    </td>
+                  </template>
+                  <template #control-details="{item}">
+                    <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon"
+                                 style="width: 1%" @click="window.location.href='/server/'+item.host.id">
+                      <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
+                    </router-link>
+                  </template>
+                </CDataTable>
+                <router-link :to="'/servers/create/' + item.host.id">
+                  <CButton type="submit" size="sm" color="primary">
+                    <CIcon name="cil-plus"/>
+                    Создать
+                  </CButton>
                 </router-link>
-              </template>
-            </CDataTable>
-            <router-link :to="'/servers/create/' + item.host.id">
+
+              </CCardBody>
+            </CCollapse>
+          </template>
+          <template slot="under-table">
+            <router-link :to="'/servers/create/'">
               <CButton type="submit" size="sm" color="primary">
                 <CIcon name="cil-plus"/>
                 Создать
               </CButton>
+
             </router-link>
+          </template>
+        </CDataTable>
+        <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
+          Во время ребута сервера будут недоступны в течении нескольких минут.
+        </CModal>
+        <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal"
+                v-if="selected !== null">
+          Удалить сервер? Будут удалены все данные о нём, в том числе файлы на VPS.
+        </CModal>
 
-          </CCardBody>
-        </CCollapse>
-      </template>
-      <template slot="under-table">
-        <router-link :to="'/servers/create/'">
-          <CButton type="submit" size="sm" color="primary">
-            <CIcon name="cil-plus"/>
-            Создать
-          </CButton>
 
-        </router-link>
-      </template>
-    </CDataTable>
-    <CModal title="Ребут сервера" color="warning" :show.sync="rebootModal" @update:show="updateRebootModal">
-      Во время ребута сервера будут недоступны в течении нескольких минут.
-    </CModal>
-    <CModal title="Удаление сервера" color="danger" :show.sync="removeModal" @update:show="updateRemoveModal"
-            v-if="selected !== null">
-      Удалить сервер? Будут удалены все данные о нём, в том числе файлы на VPS.
-    </CModal>
+      </CCardBody>
+    </CCard>
 
+    <CCard>
+      <CCardHeader>Custom сервера</CCardHeader>
+      <CCardBody>
+        <CDataTable
+            hover
+            :items="customServers"
+            :fields="tableFields"
+            head-color="light"
+            pagination
+        >
+          <td slot="host" slot-scope="{item}">
+            <div>{{ item.host.name }}</div>
+            <div class="small text-muted">
+              {{ item.host.dedic + ' | ' + item.host.package }}
+            </div>
+          </td>
+          <td
+              slot="country"
+              slot-scope="{item}"
+              class="text-center"
+          >
+            <CIcon
+                :name="item.country.flag"
+                height="25"
+            />
+          </td>
+          <template #usage="{item}">
+            <td>
+              <template v-if="item.status || item.status==='RN'">
+                <div class="clearfix">
+                  <div class="float-left">
+                    <strong>{{ item.usage.value }}%</strong>
+                  </div>
+                </div>
+              </template>
+              <CBadge v-if="item.status" :color="item.status.badge">
+                {{ item.status.message }}
+              </CBadge>
+              <CBadge v-else color="danger">Отключен</CBadge>
+              <CProgress
+                  class="progress-xs"
+                  v-model="item.usage.value"
+                  :color="color(item.usage.value)"
+              />
+            </td>
+          </template>
+          <template #activity="{item}">
+            <td>
+              <div class="small text-muted">Последний отклик</div>
+              <strong v-if="item.activity.format">
+                <timeago :datetime="item.activity.time" locale="ru"></timeago>
+              </strong>
+              <strong v-else>Недоступен</strong>
+            </td>
+          </template>
+          <template #control-danger="{item}">
+            <td style="width: 1%">
+              <CDropdown color="secondary" toggler-text="Actions">
+                <CDropdownItem @click="showRebootModal(item)">Reboot</CDropdownItem>
+                <CDropdownItem @click="update(item.host.id)">Update</CDropdownItem>
+                <CDropdownItem @click="showRemoveModal(item)">Delete</CDropdownItem>
+              </CDropdown>
+            </td>
+          </template>
+          <template #control="{item}">
+            <td class="text-right align-middle control-icon" style="width: 1%" @click="start(item.host.id)">
+              <CIcon v-if="item.status" name="cil-media-stop" height="25" role="stop" class="mx-2"></CIcon>
+              <CIcon v-else name="cil-media-play" height="25" role="start" class="mx-2"></CIcon>
+            </td>
+          </template>
+          <template #control-details="{item}">
+            <router-link tag="td" :to="'/servers/' + item.host.id" class="align-middle control-icon"
+                         style="width: 1%" @click="window.location.href='/server/'+item.host.id">
+              <CIcon name="cil-input" height="25" role="details" href="/theme/typography"></CIcon>
+            </router-link>
+          </template>
+          <template slot="under-table">
+            <router-link :to="'/servers/create/custom/'">
+              <CButton type="submit" size="sm" color="primary">
+                <CIcon name="cil-plus"/>
+                Создать
+              </CButton>
+
+            </router-link>
+          </template>
+        </CDataTable>
+      </CCardBody>
+    </CCard>
   </div>
 </template>
 
@@ -199,12 +296,13 @@ export default {
   data() {
     return {
       servers: [],
-      tableItems: [],
+      masterSpawnerServers: [],
+      customServers: [],
       tableFields: [
-        {key: 'host', label: 'Hostname'},
+        {key: 'host', label: 'Хост'},
         //{key: 'country', _classes: 'text-center'}, //todo: вычислять страну по IP адресу
-        {key: 'usage'},
-        {key: 'activity'},
+        {key: 'usage', label: 'Нагрузка'},
+        {key: 'activity', label: 'Доступность'},
         {key: 'control-danger', label: '', sorter: false, filter: false},
         {key: 'control', label: '', sorter: false, filter: false},
         {key: 'control-details', label: '', sorter: false, filter: false},
@@ -226,7 +324,7 @@ export default {
   methods: {
     loadServers() {
       // Сохраняем предыдущие данные, чтобы знать их и предостеречь закрытия collapse.
-      let oldTableItems = this.tableItems;
+      let oldTableItems = this.masterSpawnerServers;
 
       // Обращение к данным и их обработка
       ServersAPI.getServers().then(servers => {
@@ -234,7 +332,7 @@ export default {
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.
-        this.tableItems = this.servers.filter(server => server.parent === null).map(item => {
+        this.masterSpawnerServers = this.servers.filter(server => server.parent === null && !server.custom).map(item => {
 
           // Для этого нужна узнать была ли строчка расскрыта пользователем до этого
           let old = oldTableItems.find(s => s.host.id === item.host.id);
@@ -245,6 +343,10 @@ export default {
 
           return item;
         });
+
+        this.customServers = this.servers.filter(server => server.custom);
+        console.log(this.masterSpawnerServers);
+        console.log(this.customServers)
       });
     },
     start(id) {
@@ -264,7 +366,7 @@ export default {
         return;
       }
 
-      this.tableItems[index]._toggled = !this.tableItems[index]._toggled;
+      this.masterSpawnerServers[index]._toggled = !this.masterSpawnerServers[index]._toggled;
       this.collapseDuration = 300;
       this.$nextTick(() => {
         this.collapseDuration = 0;

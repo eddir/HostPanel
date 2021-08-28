@@ -33,7 +33,7 @@ import {
     cilFire,
     cilPlus,
     cilClock,
-    cilTerminal, cilMemory, cilGamepad, cilVideogame
+    cilTerminal, cilMemory, cilGamepad, cilVideogame, cilPaint,
 } from '@coreui/icons'
 import {
     cifUs,
@@ -41,7 +41,7 @@ import {
     cifIn,
     cifFr,
     cifEs,
-    cifPl
+    cifPl,
 } from '@coreui/icons'
 import {
     cilArrowRight,
@@ -142,7 +142,7 @@ export const iconsSet = Object.assign(
         cilUser,
         cilUserFemale,
         cilUserFollow,
-        cilXCircle
+        cilXCircle,
     },
     {
         cifUs,
@@ -150,7 +150,7 @@ export const iconsSet = Object.assign(
         cifIn,
         cifFr,
         cifEs,
-        cifPl
+        cifPl,
     },
     {
         cibFacebook,
@@ -192,5 +192,6 @@ export const iconsSet = Object.assign(
         cilMemory,
         cilVideogame,
         cilGamepad,
-    }
+        cilPaint
+    },
 )
