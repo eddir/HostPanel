@@ -6,6 +6,7 @@ from datetime import datetime
 from django.db import close_old_connections
 
 from HostPanel import settings
+from panel.exceptions import ServerBadCommand
 from panel.models import Status
 from panel.tasks.Client import Client
 
@@ -173,7 +174,12 @@ class ServerUnit(Client):
 
     def update_caretaker(self):
         self.log("&eНачинается обновление Caretaker...")
-        self.stop_watcher()
+
+        try:
+            self.stop_watcher()
+        except ServerBadCommand:
+            pass
+
         self.command("rm -rf ~/HostPanel/Caretaker")
         self.upload_caretaker()
         self.start_watcher()
