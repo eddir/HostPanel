@@ -10,17 +10,7 @@ exports[`Dashboard.vue renders correctly 1`] = `
       md="12"
       tag="div"
     >
-      <ccard-stub>
-        <ccardheader-stub>
-          
-          Сервера
-        
-        </ccardheader-stub>
-         
-        <ccardbody-stub>
-          <servers-stub />
-        </ccardbody-stub>
-      </ccard-stub>
+      <servers-stub />
     </ccol-stub>
   </crow-stub>
 </div>
