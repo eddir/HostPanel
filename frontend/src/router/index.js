@@ -14,7 +14,7 @@ const Login = () => import('@/views/Login')
 
 // Servers
 const Servers = () => import('@/views/servers/Servers');
-const Server = () => import('@/views/servers/Server');
+const Server = () => import('@/views/servers/details/Server');
 const NewServer = () => import('@/views/servers/NewServer');
 
 // Dedicated servers
