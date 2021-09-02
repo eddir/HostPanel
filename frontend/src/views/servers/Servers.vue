@@ -1,16 +1,6 @@
 <template>
   <div>
     <CCard>
-      <CCardHeader>Vuetable test</CCardHeader>
-      <CCardBody>
-        <vuetable ref="vuetable"
-                  :api-mode="false"
-                  :fields="fields"
-                  :data="masterSpawnerServers"
-        ></vuetable>
-      </CCardBody>
-    </CCard>
-<!--    <CCard>
       <CCardHeader>
         Master/Spawner сервера
       </CCardHeader>
@@ -291,25 +281,20 @@
           </template>
         </CDataTable>
       </CCardBody>
-    </CCard>-->
+    </CCard>
   </div>
 </template>
 
 <script>
-import Vuetable from 'vuetable-2/src/components/Vuetable'
 
 import ServersAPI from "../../services/API.vue"
 import Action from "../../services/Action.vue"
-import fieldDefs from './ServerFieldDefs'
 
 export default {
   name: "Servers",
   mixins: [ServersAPI],
-  components: {Vuetable},
   data() {
     return {
-      fields: fieldDefs,
-
       servers: [],
       masterSpawnerServers: [],
       customServers: [],
@@ -343,20 +328,11 @@ export default {
 
       // Обращение к данным и их обработка
       ServersAPI.getServers().then(servers => {
-
-        let servers = [];
-
-        servers.forEach(server => {
-          
-        })
-
-
-
         this.servers = ServersAPI.parseMasters(servers.data.response);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.
-        let mss = this.servers.filter(server => server.parent === null && !server.custom).map(item => {
+        this.masterSpawnerServers = this.servers.filter(server => server.parent === null && !server.custom).map(item => {
 
           // Для этого нужна узнать была ли строчка расскрыта пользователем до этого
           let old = oldTableItems.find(s => s.host.id === item.host.id);
@@ -368,9 +344,9 @@ export default {
           return item;
         });
 
-        this.masterSpawnerServers = {data: mss};
-        console.log(this.masterSpawnerServers)
         this.customServers = this.servers.filter(server => server.custom);
+        console.log(this.masterSpawnerServers);
+        console.log(this.customServers)
       });
     },
     start(id) {
