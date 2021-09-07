@@ -72,6 +72,54 @@
             </div>
           </CCardBody>
         </CCard>
+
+        <CCard v-if="server.status.cpu_usage">
+          <CRow class="text-center">
+            <CCol md sm="12" class="m-sm-2 m-0">
+              <div class="text-muted">CPU</div>
+              <strong>{{ server.status.cpu_usage }}%</strong>
+              <CProgress
+                  class="progress-xs mt-2"
+                  :precision="1"
+                  color="success"
+                  :value="server.status.cpu_usage"
+              />
+            </CCol>
+          </CRow>
+        </CCard>
+
+        <CCard v-if="server.status.mem_total">
+          <CRow class="text-center">
+            <CCol md sm="12" class="m-sm-2 m-0">
+              <div class="text-muted">Memory</div>
+              <strong>{{ server.status.mem_usage }}MB
+                ({{ server.status.mem_percent }}%)</strong>
+              <CProgress
+                  class="progress-xs mt-2"
+                  :precision="1"
+                  :color="color(server.status.mem_percent)"
+                  :value="server.status.mem_percent"
+              />
+            </CCol>
+          </CRow>
+        </CCard>
+
+        <CCard v-if="server.status.disk_total">
+          <CRow class="text-center">
+            <CCol md sm="12" class="m-sm-2 m-0">
+              <div class="text-muted">Диск</div>
+              <strong>{{ server.status.disk_usage }}MB
+                ({{ server.status.disk_percent }}%)</strong>
+              <CProgress
+                  class="progress-xs mt-2"
+                  :precision="1"
+                  :color="color(server.status.disk_percent)"
+                  :value="server.status.disk_percent"
+              />
+            </CCol>
+          </CRow>
+        </CCard>
+
         <CCard class="bg-dark">
           <CCardBody>
             <pre v-html="server.server.log" class="pre-scrollable"></pre>
@@ -97,6 +145,7 @@ import ServersAPI from "@/services/API.vue";
 import Action from "@/services/Action";
 import ServerConfig from "@/views/servers/ServerConfig";
 import ServerPackage from "@/views/servers/ServerPackage";
+import Utils from "@/services/Utils";
 
 /**
  * @param server.server.dedic__ip IP адрес сервера
@@ -107,6 +156,7 @@ import ServerPackage from "@/views/servers/ServerPackage";
  */
 export default {
   name: "Server",
+  mixins: [Utils],
   data() {
     return {
       server: null,
@@ -130,6 +180,12 @@ export default {
         let server_data = server.data.response;
         server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
         server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
+        if (server_data.status) {
+          server_data.status.mem_usage = server_data.status.mem_total - server_data.status.mem_available;
+          server_data.status.mem_percent = Math.round(server_data.status.mem_usage / server_data.status.mem_total * 100)
+          server_data.status.disk_usage = server_data.status.disk_total - server_data.status.disk_available;
+          server_data.status.disk_percent = Math.round(server_data.status.disk_usage / server_data.status.disk_total * 100)
+        }
         this.server = server_data;
       });
     },

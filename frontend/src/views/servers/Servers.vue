@@ -289,10 +289,11 @@
 
 import ServersAPI from "../../services/API.vue"
 import Action from "../../services/Action.vue"
+import Utils from "@/services/Utils";
 
 export default {
   name: "Servers",
-  mixins: [ServersAPI],
+  mixins: [ServersAPI, Utils],
   data() {
     return {
       servers: [],
@@ -389,19 +390,6 @@ export default {
       if (!open && accept) {
         Action.quickAction('remove', this.selected.host.id);
       }
-    },
-    color(value) {
-      let $color
-      if (value <= 25) {
-        $color = 'info'
-      } else if (value > 25 && value <= 50) {
-        $color = 'success'
-      } else if (value > 50 && value <= 75) {
-        $color = 'warning'
-      } else if (value > 75 && value <= 100) {
-        $color = 'danger'
-      }
-      return $color
     },
   },
 }

@@ -1,17 +1,36 @@
+from contextlib import suppress
+
 from background_task.models import Task
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from packaging import version
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from HostPanel import settings
-from panel.models import Status, Server, Dedic
+from panel.exceptions import APIError
+from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
 from panel.utils import get_caretaker_version, api_response
+
+
+# to be removed
+# todo: remove in feature major release
+@method_decorator(csrf_exempt, name='dispatch')
+class LegacyStatusView(APIView):
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def get(request):
+        raise APIError("Метод больше не поддерживается (устарел, совсем).")
+
+    @staticmethod
+    def post(request):
+        tasks.server_task(request.data['server'], "update_caretaker")
+        return api_response("Статус сервера обновлён.")
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -28,22 +47,26 @@ class StatusView(APIView):
     @staticmethod
     def post(request):
         """Новая запись о состоянии сервера"""
-        stat = {
-            'server': request.data['server'],
-            'cpu_usage': request.data['cpu_usage'],
-            'ram_usage': request.data['ram_usage'],
-            'ram_available': request.data['ram_available'],
-            'hdd_usage': request.data['hdd_usage'],
-            'hdd_available': request.data['hdd_available']
-        }
-        serializer = StatusSerializer(data=stat)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        with suppress(ValidationError):
+            stat = {
+                'server': request.data['server'],
 
-        server = Server.objects.get(id=request.data['server'])
-        server.dedic.last_listen = timezone.now()
-        server.dedic.connection = True
-        server.dedic.save()
+                'cpu_usage': request.data['cpu_usage'],
+
+                'mem_total': request.data['mem_total'],
+                'mem_available': request.data['mem_available'],
+
+                'disk_total': request.data['disk_total'],
+                'disk_available': request.data['disk_available'],
+            }
+            serializer = StatusSerializer(data=stat)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+
+            server = Server.objects.get(id=request.data['server'])
+            server.dedic.last_listen = timezone.now()
+            server.dedic.connection = True
+            server.dedic.save()
 
         if 'caretaker_version' in request.data:
             client_version = version.parse(request.data['caretaker_version'])
@@ -56,7 +79,7 @@ class StatusView(APIView):
         elif client_version < version.parse(get_caretaker_version()):
             tasks.server_task(request.data['server'], 'update_caretaker')
 
-        return api_response("Статус сервера обновлён.")
+        return api_response("ok")
 
 
 @method_decorator(csrf_exempt, name='dispatch')

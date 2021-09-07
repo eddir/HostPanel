@@ -143,10 +143,12 @@ class Status(models.Model):
         default=Condition.RUNNING,
     )
     cpu_usage = models.SmallIntegerField(null=True)
-    ram_usage = models.BigIntegerField(null=True)
-    ram_available = models.BigIntegerField(null=True)
-    hdd_usage = models.BigIntegerField(null=True)
-    hdd_available = models.BigIntegerField(null=True)
+
+    mem_total = models.IntegerField(null=True)
+    mem_available = models.IntegerField(null=True)
+
+    disk_total = models.IntegerField(null=True)
+    disk_available = models.IntegerField(null=True)
 
     class Meta:
         verbose_name_plural = "Server status"

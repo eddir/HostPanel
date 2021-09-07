@@ -246,7 +246,10 @@ export default {
       let usage, state, activity_time, activity_format;
       /**
        * @param server.status.cpu_usage использование CPU в процентах
-       * @param server.status.created_at дата последнего отклика
+       * @param server.status.mem_total объём всей оперативной памяти
+       * @param server.status.mem_available количество свободной оперативной памяти
+       * @param server.status.disk_total объём всего диска
+       * @param server.status.disk_available количество свободного пространства на диске
        */
       if (server.status) {
         state = this.parseStatus(server.status.condition);

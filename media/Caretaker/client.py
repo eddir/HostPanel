@@ -9,12 +9,12 @@ from datetime import datetime
 import psutil
 import requests
 
-VERSION = "2.3.3.1"
+VERSION = "2.4.3"
 
 
 def watch(configuration):
     send_status(configuration)
-    threading.Timer(60 * 5, watch, [configuration]).start()
+    threading.Timer(60, watch, [configuration]).start()
 
 
 def send_status(configuration):
@@ -27,13 +27,13 @@ def send_status(configuration):
         except IOError:
             pass
 
-    r = requests.post(configuration.panel_address + "/api/servers/status/", verify=False, json={
+    r = requests.post(configuration.panel_address + "/api/v2/servers/status/", verify=False, json={
         'server': configuration.server_id,
         'cpu_usage': int(psutil.cpu_percent()),
-        'ram_usage': psutil.virtual_memory().used,
-        'ram_available': psutil.virtual_memory().total,
-        'hdd_usage': psutil.disk_usage('/').used,
-        'hdd_available': psutil.disk_usage('/').total,
+        'mem_total': int(psutil.virtual_memory().total / 1024 / 1024),
+        'mem_available': int(psutil.virtual_memory().available / 1024 / 1024),
+        'disk_total': int(psutil.disk_usage('/').total / 1024 / 1024),
+        'disk_available': int(psutil.disk_usage('/').free / 1024 / 1024),
         'caretaker_version': VERSION
     })
 
