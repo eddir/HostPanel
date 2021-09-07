@@ -73,7 +73,7 @@
           </CCardBody>
         </CCard>
 
-        <CCard v-if="server.status.cpu_usage">
+        <CCard v-if="server.status.cpu_usage !== null">
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">CPU</div>
