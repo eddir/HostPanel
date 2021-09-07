@@ -346,8 +346,6 @@ export default {
         });
 
         this.customServers = this.servers.filter(server => server.custom);
-        console.log(this.masterSpawnerServers);
-        console.log(this.customServers)
       });
     },
     start(id) {

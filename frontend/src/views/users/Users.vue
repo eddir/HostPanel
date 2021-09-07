@@ -39,7 +39,6 @@ export default {
   created() {
     ServersAPI.getUsers().then(response => {
       this.users = response.data.response;
-      console.log(this.users);
     })
   }
 }
