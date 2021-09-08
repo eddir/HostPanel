@@ -84,7 +84,7 @@ class ServerInstanceView(APIView):
                 status[key] = filesizeformat(status[key])
 
         server_data = server.values(
-            'id', 'log', 'name', 'config',
+            'id', 'log', 'name', 'config', 'processes',
 
             'dedic__password_root', 'dedic__password_single', 'dedic__user_root', 'dedic__user_single',
             'dedic__ssh_key', 'dedic__ip',

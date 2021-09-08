@@ -1,12 +1,13 @@
 <template>
-  <CContainer v-if="server">
-    <CRow>
+  <CContainer>
+    <CRow v-if="server && server.status">
       <CCol md="6">
         <CCard>
           <CCardHeader>{{ server.server.name }}</CCardHeader>
           <CCardBody>
             <ul class="list-unstyled">
-              <li><strong>Статус: </strong>
+              <li>
+                <strong>Статус: </strong>
                 <CBadge :color="server.status.condition.badge">{{ server.status.condition.message }}</CBadge>
               </li>
               <li><strong>IP:</strong> {{ server.server.dedic__ip }}</li>
@@ -29,6 +30,12 @@
           <CCardHeader>Сборка</CCardHeader>
           <CCardBody>
             <ServerPackage :server="server.server"></ServerPackage>
+          </CCardBody>
+        </CCard>
+
+        <CCard class="bg-dark">
+          <CCardBody>
+            <pre v-html="server.server.log" class="pre-scrollable" id="console"></pre>
           </CCardBody>
         </CCard>
       </CCol>
@@ -120,23 +127,39 @@
           </CRow>
         </CCard>
 
-        <CCard class="bg-dark">
+        <CCard v-if="server.server.processes">
+          <CCardHeader>Процессы</CCardHeader>
           <CCardBody>
-            <pre v-html="server.server.log" class="pre-scrollable"></pre>
+            <CDataTable
+                :items="server.server.processes"
+                :fields="processesFields"
+                column-filter
+                table-filter
+                items-per-page-select
+                :items-per-page="20"
+                hover
+                sorter
+                :sorterValue="{ column: 'memory_percent', asc: false }"
+                pagination
+            >
+
+            </CDataTable>
           </CCardBody>
         </CCard>
+
+
       </CCol>
+      <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
+        Удалить сервер {{ server.server.name }}? Будут удалены все данные о нём, в том числе файлы на VPS.
+      </CModal>
+      <CModal title="Убирание сервера" color="danger" :show.sync="forgetModal" @update:show="updateForgetModal">
+        Сервер {{ server.server.name }} будет удалён из панели, но файлы останутся на VPS. Продолжить?
+      </CModal>
+      <CModal title="Переустановка сервера" color="warning" :show.sync="reinstallModal"
+              @update:show="updateReinstallModal">
+        Сервер {{ server.server.name }} будет удалён вместе с файлами и установлен вновь. Продолжить?
+      </CModal>
     </CRow>
-    <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
-      Удалить сервер {{ server.server.name }}? Будут удалены все данные о нём, в том числе файлы на VPS.
-    </CModal>
-    <CModal title="Убирание сервера" color="danger" :show.sync="forgetModal" @update:show="updateForgetModal">
-      Сервер {{ server.server.name }} будет удалён из панели, но файлы останутся на VPS. Продолжить?
-    </CModal>
-    <CModal title="Переустановка сервера" color="warning" :show.sync="reinstallModal"
-            @update:show="updateReinstallModal">
-      Сервер {{ server.server.name }} будет удалён вместе с файлами и установлен вновь. Продолжить?
-    </CModal>
   </CContainer>
 </template>
 
@@ -153,6 +176,7 @@ import Utils from "@/services/Utils";
  * @param server.server.dedic__user_single Пользователь из под которого запущен сервер
  * @param server.server.dedic__password_root Пароль от рут пользователя
  * @param server.server.dedic__password_single Пароль от простого пользователя
+ * @param server.server.processes Список запущенных программ на вдс
  */
 export default {
   name: "Server",
@@ -160,6 +184,13 @@ export default {
   data() {
     return {
       server: null,
+      processesFields: [
+        {key: 'pid', label: 'PID'},
+        {key: 'name', label: 'Процесс'},
+        {key: 'username'},
+        {key: 'cpu_percent', label: 'CPU'},
+        {key: 'memory_percent', label: 'Mem, %'},
+      ],
       deleteModal: false,
       forgetModal: false,
       reinstallModal: false,
@@ -174,17 +205,24 @@ export default {
   destroyed() {
     clearInterval(this.loadInterval);
   },
+  updated() {
+    let console_element = document.getElementById('console');
+    console_element.scrollTop = console_element.scrollHeight;
+  },
   methods: {
     load() {
       ServersAPI.getServer(this.$route.params.id).then((server) => {
         let server_data = server.data.response;
-        server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
         server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
         if (server_data.status) {
+          server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
           server_data.status.mem_usage = server_data.status.mem_total - server_data.status.mem_available;
           server_data.status.mem_percent = Math.round(server_data.status.mem_usage / server_data.status.mem_total * 100)
           server_data.status.disk_usage = server_data.status.disk_total - server_data.status.disk_available;
           server_data.status.disk_percent = Math.round(server_data.status.disk_usage / server_data.status.disk_total * 100)
+        }
+        if (server_data.server.processes) {
+          server_data.server.processes = JSON.parse(server_data.server.processes);
         }
         this.server = server_data;
       });

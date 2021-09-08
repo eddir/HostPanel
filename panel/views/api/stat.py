@@ -68,6 +68,9 @@ class StatusView(APIView):
             server.dedic.connection = True
             server.dedic.save()
 
+            server.processes = request.data['processes']
+            server.save()
+
         if 'caretaker_version' in request.data:
             client_version = version.parse(request.data['caretaker_version'])
         else:

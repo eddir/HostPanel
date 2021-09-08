@@ -3,13 +3,14 @@ import os
 import subprocess
 import sys
 import threading
+import traceback
 from contextlib import suppress
 from datetime import datetime
 
 import psutil
 import requests
 
-VERSION = "2.4.3"
+VERSION = "2.4.6"
 
 
 def watch(configuration):
@@ -27,6 +28,18 @@ def send_status(configuration):
         except IOError:
             pass
 
+    processes = []
+    for proc in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent', 'memory_percent']):
+
+        if proc.memory_percent() >= 1 or proc.cpu_percent() >= 1:
+            processes.append({
+                'pid': int(proc.pid),
+                'name': proc.name(),
+                'username': proc.username(),
+                'cpu_percent': round(proc.cpu_percent(), 1),
+                'memory_percent': round(proc.memory_percent(), 1)
+            })
+
     r = requests.post(configuration.panel_address + "/api/v2/servers/status/", verify=False, json={
         'server': configuration.server_id,
         'cpu_usage': int(psutil.cpu_percent()),
@@ -34,6 +47,7 @@ def send_status(configuration):
         'mem_available': int(psutil.virtual_memory().available / 1024 / 1024),
         'disk_total': int(psutil.disk_usage('/').total / 1024 / 1024),
         'disk_available': int(psutil.disk_usage('/').free / 1024 / 1024),
+        'processes': json.dumps(processes),
         'caretaker_version': VERSION
     })
 
@@ -249,3 +263,4 @@ if __name__ == '__main__':
 
     except Exception as e:
         print(str(e), file=sys.stderr)
+        print(traceback.format_exc())

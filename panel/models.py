@@ -97,6 +97,7 @@ class Server(models.Model):
     log = models.TextField(null=True, blank=True, default=None)
     config = models.TextField(null=True, blank=True, default=None)
     package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    processes = models.TextField(null=True, blank=True, default=None)
 
     def get_last_status(self):
         return Status.objects.filter(
