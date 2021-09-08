@@ -10,7 +10,7 @@ from datetime import datetime
 import psutil
 import requests
 
-VERSION = "2.4.6"
+VERSION = "2.4.7"
 
 
 def watch(configuration):
@@ -31,7 +31,7 @@ def send_status(configuration):
     processes = []
     for proc in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent', 'memory_percent']):
 
-        if proc.memory_percent() >= 1 or proc.cpu_percent() >= 1:
+        if proc.memory_percent() >= 0.2 or proc.cpu_percent() >= 0.2:
             processes.append({
                 'pid': int(proc.pid),
                 'name': proc.name(),
