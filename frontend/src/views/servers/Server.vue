@@ -136,7 +136,6 @@
                 column-filter
                 table-filter
                 items-per-page-select
-                :items-per-page="20"
                 hover
                 sorter
                 :sorterValue="{ column: 'memory_percent', asc: false }"
