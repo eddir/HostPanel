@@ -138,10 +138,12 @@
                 items-per-page-select
                 hover
                 sorter
-                :sorterValue="{ column: 'memory_percent', asc: false }"
+                :sorterValue="{column: 'memory_percent', asc: false}"
+                :columnFilterValue="{username: username}"
+                cleaner
                 pagination
+                @update:column-filter-value="saveFilterValue"
             >
-
             </CDataTable>
           </CCardBody>
         </CCard>
@@ -193,7 +195,9 @@ export default {
       deleteModal: false,
       forgetModal: false,
       reinstallModal: false,
-      loadInterval: null
+      loadInterval: null,
+
+      username: undefined
     }
   },
   components: {ServerConfig, ServerPackage},
@@ -224,6 +228,10 @@ export default {
           server_data.server.processes = JSON.parse(server_data.server.processes);
         }
         this.server = server_data;
+
+        if (this.username === undefined) {
+          this.username = this.server.server.dedic__user_single;
+        }
       });
     },
     updateConfig(config) {
@@ -242,6 +250,11 @@ export default {
     updateReinstallModal(open, e, accept) {
       if (!open && accept) {
         Action.quickAction('reinstall', this.server.server.id);
+      }
+    },
+    saveFilterValue(value) {
+      if ('username' in value) {
+        this.username = value.username;
       }
     },
     start() {
