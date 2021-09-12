@@ -11,7 +11,7 @@ from time import sleep
 import psutil
 import requests
 
-VERSION = "2.4.9"
+VERSION = "2.4.10.2"
 
 
 def watch(configuration):
@@ -70,7 +70,8 @@ def get_processes():
                     'name': proc.name(),
                     'username': proc.username(),
                     'cpu_percent': cpu_percent,
-                    'memory_percent': round(memory_percent, 1)
+                    'memory_percent': round(memory_percent, 1),
+                    'memory_usage': int(proc.memory_info().rss / 1024 / 1024)
                 })
 
     return result

@@ -144,6 +144,9 @@
                 pagination
                 @update:column-filter-value="saveFilterValue"
             >
+              <template #cpu_percent="{item}"><td>{{item.cpu_percent}}%</td></template>
+              <template #memory_percent="{item}"><td>{{item.memory_percent}}%</td></template>
+              <template #memory_usage="{item}"><td>{{item.memory_usage}} MB</td></template>
             </CDataTable>
           </CCardBody>
         </CCard>
@@ -191,6 +194,7 @@ export default {
         {key: 'username'},
         {key: 'cpu_percent', label: 'CPU'},
         {key: 'memory_percent', label: 'Mem, %'},
+        {key: 'memory_usage', label: 'Mem, MB'},
       ],
       deleteModal: false,
       forgetModal: false,
