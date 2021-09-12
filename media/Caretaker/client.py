@@ -11,7 +11,7 @@ from time import sleep
 import psutil
 import requests
 
-VERSION = "2.4.8"
+VERSION = "2.4.9"
 
 
 def watch(configuration):
@@ -29,6 +29,8 @@ def send_status(configuration):
         except IOError:
             pass
 
+    processes = get_processes()
+
     r = requests.post(configuration.panel_address + "/api/v2/servers/status/", verify=False, json={
         'server': configuration.server_id,
         'cpu_usage': int(psutil.cpu_percent()),
@@ -36,7 +38,7 @@ def send_status(configuration):
         'mem_available': int(psutil.virtual_memory().available / 1024 / 1024),
         'disk_total': int(psutil.disk_usage('/').total / 1024 / 1024),
         'disk_available': int(psutil.disk_usage('/').free / 1024 / 1024),
-        'processes': json.dumps(get_processes()),
+        'processes': json.dumps(processes),
         'caretaker_version': VERSION
     })
 

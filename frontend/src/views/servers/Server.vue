@@ -99,7 +99,7 @@
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">Memory</div>
-              <strong>{{ server.status.mem_usage }}MB
+              <strong>{{ server.status.mem_usage }} MB
                 ({{ server.status.mem_percent }}%)</strong>
               <CProgress
                   class="progress-xs mt-2"
@@ -115,7 +115,7 @@
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">Диск</div>
-              <strong>{{ server.status.disk_usage }}MB
+              <strong>{{ server.status.disk_usage }} MB
                 ({{ server.status.disk_percent }}%)</strong>
               <CProgress
                   class="progress-xs mt-2"
