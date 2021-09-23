@@ -16,7 +16,7 @@ import 'vue-toast-notification/dist/theme-sugar.css';
 Vue.config.performance = true
 
 Vue.use(CoreuiVue)
-Vue.use(VueToast, {position: 'top-right', duration: 4000});
+Vue.use(VueToast, {position: 'top-right', duration: 5000});
 Vue.use(VueTimeago, {
   name: 'Timeago', // Component name, `Timeago` by default
   locale: 'en', // Default locale
