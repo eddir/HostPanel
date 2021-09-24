@@ -184,12 +184,6 @@ export default {
       Vue.$toast.error(err.response);
     })
   },
-  refresh() {//todo: remove
-    return axios.post(`${SERVER_URL}auth/token/refresh/`).catch(() => {
-      window.location = "/#/login";
-      Vue.$toast.warning("Срок действия сессии истёк.");
-    });
-  },
   parseStatus(status) {
     return {
       'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},

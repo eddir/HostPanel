@@ -170,8 +170,8 @@
 <script>
 import ServersAPI from "@/services/API.vue";
 import Action from "@/services/Action";
-import ServerConfig from "@/views/servers/ServerConfig";
-import ServerPackage from "@/views/servers/ServerPackage";
+import ServerConfig from "@/views/servers/details/ServerConfig";
+import ServerPackage from "@/views/servers/details/ServerPackage";
 import Utils from "@/services/Utils";
 
 /**
@@ -213,8 +213,10 @@ export default {
     clearInterval(this.loadInterval);
   },
   updated() {
-    let console_element = document.getElementById('console');
-    console_element.scrollTop = console_element.scrollHeight;
+    if (this.server && this.server.status) {
+      let console_element = document.getElementById('console');
+      console_element.scrollTop = console_element.scrollHeight;
+    }
   },
   methods: {
     load() {
