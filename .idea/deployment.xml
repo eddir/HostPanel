@@ -14,6 +14,7 @@
             <excludedPath path="/venv" />
             <excludedPath local="true" path="$PROJECT_DIR$/frontend" />
             <excludedPath local="true" path="/frontend" />
+            <excludedPath path="/Caretaker/venv" />
           </excludedPaths>
         </serverdata>
       </paths>

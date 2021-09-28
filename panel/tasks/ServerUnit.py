@@ -211,18 +211,22 @@ class ServerUnit(Client):
         client = self.get_sftp_client()
         # Упаковка файлов
         tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
-        os.chdir(settings.MEDIA_ROOT + 'Caretaker/')
+        os.chdir(str(settings.BASE_DIR) + '/Caretaker/')
 
         for name in os.listdir("."):
             tar.add(name)
         tar.close()
 
-        print("package.tar.gz")
+        print("Загрузка package.tar.gz для обновления скрипта")
         self.command("mkdir -p /home/{0}/HostPanel/Caretaker".format(self.model.dedic.user_single))
         client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/HostPanel/Caretaker.tar.gz'
                    % self.model.dedic.user_single)
 
         self.command("tar -xzvf /home/{0}/HostPanel/Caretaker.tar.gz --directory /home/{0}/HostPanel/Caretaker".format(
+            self.model.dedic.user_single
+        ))
+
+        self.command("python3 -m pip install -r /home/{0}/HostPanel/Caretaker/requirements.txt".format(
             self.model.dedic.user_single
         ))
 
