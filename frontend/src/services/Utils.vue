@@ -28,11 +28,11 @@ export default {
       let $color
       if (value <= 25) {
         $color = 'info'
-      } else if (value > 25 && value <= 50) {
+      } else if (value > 25 && value <= 65) {
         $color = 'success'
-      } else if (value > 50 && value <= 75) {
+      } else if (value > 65 && value <= 90) {
         $color = 'warning'
-      } else if (value > 75 && value <= 100) {
+      } else if (value > 90) {
         $color = 'danger'
       }
       return $color
