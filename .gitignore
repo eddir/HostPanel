@@ -207,6 +207,7 @@ media/
 .idea/HostPanel.iml
 
 front
-
 stunnel
 /HostPanel/settings_local.py
+
+HostPanel/settings_local.py

@@ -104,13 +104,6 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-SOCIALACCOUNT_PROVIDERS = {
-    'telegram': {
-        'TOKEN': '1878917881:AAH9E3yiupeaddOAS9Rnk7RZK4DblinttoQ' if PRODUCTION
-        else '934256256:AAEdXXSDc-oqK5UIJh4oYmbCwTKKm-6uw1k'
-    }
-}
-
 REST_USE_JWT = True
 
 # Password validation
@@ -160,7 +153,7 @@ SIMPLE_JWT = {
 
 from panel.utils import get_caretaker_version
 
-VERSION = "1.0-dev"
+VERSION = "2.0-dev"
 PANEL_VERSION = VERSION + str(int(subprocess.check_output(["git", "rev-list", "--count", "HEAD"]).strip()))
 CARETAKER_VERSION = get_caretaker_version()
 with connection.cursor() as cursor:
