@@ -41,13 +41,8 @@ class ServerView(APIView):
 
         if serializer.is_valid(raise_exception=True):
             dedic = Dedic.objects.get(id=request.data['dedic'])
-            # TODO: проверочка в соотвествии с изменениями в дедиках
-            if request.data['type'] == "master" and Server.objects.filter(dedic__ip=dedic.ip, parent=None).exists():
-                raise ValueError("Нельзя запускать 2 мастера на 1 ip")
-            elif request.data['type'] == "spawner" and \
-                    Server.objects.filter(dedic__ip=dedic.ip).exclude(parent=None).exists():
-                raise ValueError("Нельзя запускать 2 спавнера на 1 ip")
-            elif request.data['type'] not in ["master", "spawner", "custom"]:
+
+            if request.data['type'] not in ["master", "spawner", "custom"]:
                 raise ValueError("Неизвестный тип сервера %s" % request.data['type'])
 
             if Server.objects.filter(dedic__ip=dedic.ip, dedic__user_single=dedic.user_single).exists():
