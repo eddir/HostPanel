@@ -120,7 +120,7 @@ export default {
       } else {
         this.input.config = "-mstStartMaster=true\n" +
             "-mstStartClientConnection=true\n" +
-            "-mstMasterIp=127.0.0.1\n" +
+            "-mstMasterIp=0.0.0.0\n" +
             "-mstMasterPort=5000";
       }
     },
