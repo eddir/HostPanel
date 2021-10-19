@@ -2,7 +2,10 @@ import json
 import os
 import subprocess
 import threading
+from contextlib import suppress
 from datetime import datetime
+from pathlib import Path
+from time import sleep
 
 import psutil
 import requests
@@ -13,7 +16,6 @@ from api.app import run_flask
 
 
 def watch(configuration):
-
     configuration.watcher_pid = os.getpid()
     configuration.save()
 
@@ -32,19 +34,52 @@ def send_status(configuration):
         except IOError:
             pass
 
-    r = requests.post(configuration.panel_address + "/api/servers/status/", verify=False, json={
+    processes = get_processes()
+
+    r = requests.post(configuration.panel_address + "/api/v2/servers/status/", verify=False, json={
         'server': configuration.server_id,
         'cpu_usage': int(psutil.cpu_percent()),
-        'ram_usage': psutil.virtual_memory().used,
-        'ram_available': psutil.virtual_memory().total,
-        'hdd_usage': psutil.disk_usage('/').used,
-        'hdd_available': psutil.disk_usage('/').total,
+        'mem_total': int(psutil.virtual_memory().total / 1024 / 1024),
+        'mem_available': int(psutil.virtual_memory().available / 1024 / 1024),
+        'disk_total': int(psutil.disk_usage('/').total / 1024 / 1024),
+        'disk_available': int(psutil.disk_usage('/').free / 1024 / 1024),
+        'processes': json.dumps(processes),
         'caretaker_version': VERSION
     })
 
-    print(r.text)
+    response = r.json()
+    if response['code'] != 1:
+        print(response['response'])
 
     return True
+
+
+def get_processes():
+    processes = []
+    result = []
+
+    for proc in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent', 'memory_percent']):
+        proc.cpu_percent()
+        processes.append(proc)
+
+    sleep(10)
+
+    for proc in processes:
+
+        with suppress(Exception):
+            cpu_percent = proc.cpu_percent()
+            memory_percent = proc.memory_percent()
+            if memory_percent >= 0.2 or cpu_percent >= 0.2:
+                result.append({
+                    'pid': int(proc.pid),
+                    'name': proc.name(),
+                    'username': proc.username(),
+                    'cpu_percent': cpu_percent,
+                    'memory_percent': round(memory_percent, 1),
+                    'memory_usage': int(proc.memory_info().rss / 1024 / 1024)
+                })
+
+    return result
 
 
 def start(configuration):
@@ -59,7 +94,7 @@ def start(configuration):
         raise ValueError("Server already running")
 
     if configuration.package == "Master":
-        os.chdir("HostPanel/Master/")
+        os.chdir(str(Path.home()) + "/HostPanel/Master/")
         os.system('chmod +x ./Master.x86_64')
         configuration.server_pid = subprocess.Popen(
             "./Master.x86_64 >> ../{0}_master.log".format(
@@ -67,7 +102,7 @@ def start(configuration):
             ), shell=True, preexec_fn=os.setsid).pid
 
     elif configuration.package == "SR":
-        os.chdir("HostPanel/Pack/Spawner/")
+        os.chdir(str(Path.home()) + "/HostPanel/Pack/Spawner/")
         os.system("chmod +x ./Spawner.x86_64")
         os.system("chmod +x ~/HostPanel/Pack/Room/Room.x86_64")
         configuration.server_pid = subprocess.Popen(

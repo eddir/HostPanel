@@ -6,11 +6,22 @@ from contextlib import suppress
 class Configuration:
     config_path = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/../config.txt')
 
-    def __init__(self, server_id=None, panel_address=None, watcher_pid=None, server_pid=None, package=None):
+    def __init__(self, server_id=None, panel_address=None, watcher_pid=None, server_pid=None, package=None,
+                 bin_path=None):
+        """
+        Конфигурация микросервиса
+        :param server_id: id сервера в панели
+        :param panel_address: адрес панели для обращений к API
+        :param watcher_pid: id процесса наблюдателя за игровым сервером
+        :param server_pid: id процесса игрового сервера
+        :param package: тип пакета (Master или Spawner)
+        :param bin_path: путь до испольняемого файла
+        """
         self.server_id = server_id
         self.panel_address = panel_address
         self.watcher_pid = watcher_pid
         self.server_pid = server_pid
+        self.bin_path = bin_path
         self.package = package
         self.load()
 
@@ -34,6 +45,9 @@ class Configuration:
             if self.package is None:
                 self.package = data["package"]
 
+            if self.bin_path is None:
+                self.bin_path = data["bin_path"]
+
     def save(self):
         with open(self.config_path, 'w') as outfile:
             json.dump({
@@ -41,7 +55,8 @@ class Configuration:
                 'panel_address': self.panel_address,
                 'watcher_pid': self.watcher_pid,
                 'server_pid': self.server_pid,
-                'package': self.package
+                'package': self.package,
+                'bin_path': self.bin_path
             }, outfile)
 
 

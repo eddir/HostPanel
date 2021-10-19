@@ -73,12 +73,13 @@ class Client:
             self.sftp_client.close()
             self.sftp_client = None
 
-    def command(self, command, root=False, output=False):
+    def command(self, command, root=False, output=False, debug=False):
         """
         Выполнить команду по SSH
         :param command: текст команды
         :param root: нужно ли выполнить команду от имени рут пользователя
         :param output: нужно ли возвращать результат выполнения команды
+        :param debug: нужно ли выводить ответ на экран
         :return:
         """
         client = self.root_client if root else self.client
@@ -97,9 +98,17 @@ class Client:
 
         if stdout.channel.recv_exit_status() != 0:
             err = stderr.readlines()
+            if debug:
+                print(command)
             raise ServerBadCommand("Статус " + str(stdout.channel.recv_exit_status()) + ": " + ' '.join(err))
 
-        return stdout.readlines() if output else None
+        if output or debug:
+            lines = stdout.readlines()
+
+            if debug:
+                print(lines)
+            if output:
+                return lines
 
     def get_sftp_client(self):
         if self.sftp_client is None:
