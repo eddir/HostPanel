@@ -13,7 +13,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return str(getpass.getuser())
+    return {
+        'user': str(getpass.getuser()),
+        'version': '1.0'
+    }
 
 
 @app.route('/logs/')
