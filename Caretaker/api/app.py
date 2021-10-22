@@ -73,7 +73,7 @@ def get_log(log_file):
         output_path = os.path.join(output_dir, log_file)
 
         if not isfile(log_path):
-            raise AssertionError("Указанный файл не найжен.")
+            raise AssertionError("Указанный файл не найден - {0}.".format(log_path))
 
         os.system("mkdir -p {3} && "
                   "split --bytes {0}M --numeric-suffixes --suffix-length=3 {1} {2}.".

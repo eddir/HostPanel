@@ -28,9 +28,11 @@ class LogsDownloadView(APIView):
     def get(request, pk, file):
         size = request.query_params.get('size')
         number = request.query_params.get('number')
+        server = Server.objects.get(pk=pk)
 
         response = HttpResponse(
-            requests.get('http://51.195.97.80:8001/logs/download/' + file + '/?size=' + size + '&number=' + number),
+            requests.get('http://' + server.dedic.ip + ':' + str(server.watchdog_port) + '/logs/download/' + file +
+                         '/?size=' + size + '&number=' + number),
             content_type='text/plain; charset=UTF-8')
         response['Content-Disposition'] = ('attachment; filename={0}'.format(file))
 
