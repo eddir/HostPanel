@@ -59,13 +59,6 @@ class DedicUnit(Client):
                     # Решить проблемы со свапом, которые тормозят систему.
                     'grep -qxF "vm.swappiness=0" /etc/sysctl.conf || echo "vm.swappiness=0" >> /etc/sysctl.conf && '
                     
-                    # ulimit - разрешить открывать много файлов (дескрипторов) для работы с большим потоком клиентов.
-                    'grep -qxF "fs.file-max = 100001" /etc/sysctl.conf || '
-                    'echo "fs.file-max = 100001" >> /etc/sysctl.conf && '
-                    
-                    'grep -qxF "* - nofile 1000001" /etc/security/limits.conf || '
-                    'echo "* - nofile 1000001" >> /etc/security/limits.conf && '
-                    
                     # Применить настройки sysctl.conf
                     'sysctl -p && '
 

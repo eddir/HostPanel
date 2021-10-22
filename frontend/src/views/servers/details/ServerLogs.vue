@@ -22,11 +22,13 @@
           </td>
         </template>
       </CDataTable>
-      <a href="#" @click="load">Обновить</a>
+      <CButton color="link" @click="load">Обновить</CButton>
     </CCardBody>
     <CModal title="Скачивание логов" color="primary" :show.sync="downloadModal" v-if="selected">
-      <CInput :value.sync="requested_size" label="Размер" placeholder="Размер в МБ"/>
-      <CButton v-for="chunk in " :key="chunk" variant="outline" @click="download(chunk)">Часть {{ chunk }}</CButton>
+      <CInput :value.sync="requested_size" label="Размер" placeholder="Размер в МБ" append="MB"/>
+      <CButton v-for="chunk in Math.ceil(selected.size / (requested_size * 2**20))" :key="chunk"
+               color="link" @click="download(chunk)">Часть {{ chunk }}
+      </CButton>
     </CModal>
   </CCard>
 </template>
@@ -81,7 +83,7 @@ export default {
     },
     download(part) {
       console.log(part);
-      ServersAPI.downloadLog(this.server.server.id, this.selected, this.requested_size, part);
+      ServersAPI.downloadLog(this.server.server.id, this.selected.name, this.requested_size, part);
     },
   },
 }
