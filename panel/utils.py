@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
 from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed, TokenError
 
-from HostPanel.settings import MEDIA_ROOT
+from HostPanel.settings import MEDIA_ROOT, BASE_DIR
 from panel.exceptions import UndefinedCaretakerVersion, AUTH_FAILED, UNEXPECTED_ERROR, APIError, AuthorizationFailed, \
     RESPONSE_OK
 
@@ -50,7 +50,7 @@ def custom_exception_handler(exc, context):
 
 def get_caretaker_version():
     try:
-        with open(MEDIA_ROOT + "Caretaker/client.py", 'r') as infile:
+        with open(str(BASE_DIR) + "/Caretaker/client.py", 'r') as infile:
             file = infile.read()
             version = re.search(r'VERSION = \"(.*)\"(.*)', file).group(1)
             return version

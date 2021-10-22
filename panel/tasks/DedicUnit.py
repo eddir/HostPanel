@@ -55,13 +55,23 @@ class DedicUnit(Client):
 
                     # Установка пароля
                     'echo "{0}:{1}" | sudo chpasswd && '
-
-                    # Настройка системы на хороший лад
-                    'echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf && '
+                    
+                    # Решить проблемы со свапом, которые тормозят систему.
+                    'grep -qxF "vm.swappiness=0" /etc/sysctl.conf || echo "vm.swappiness=0" >> /etc/sysctl.conf && '
+                    
+                    # Применить настройки sysctl.conf
+                    'sysctl -p && '
 
                     # Установка зависимостей
-                    'sudo apt update && sudo apt install -y python3-psutil unzip atop && '
-                    'sudo ufw allow 5000 && sudo ufw allow 1500:1600/udp'
+                    'sudo apt update && sudo apt install -y python3-virtualenv unzip atop && '
+                    
+                    # Настройка сети, открытие портов
+                    'sudo ufw allow 1500:1600/udp comment "MST spawner" && '
+                    'sudo ufw allow 2323,5000,5056/tcp comment "MST master" && '
+                    'sudo ufw allow 2323,5000,5056/udp comment "MST master" && '
+                    'sudo ufw allow 8080 comment "MST web interface" && '
+                    'sudo ufw allow 8000 comment "Watchdog"'
+
                 ).format(
                     self.model.user_single,
                     self.model.password_single

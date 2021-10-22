@@ -110,6 +110,8 @@ export default {
         return this.action(ServersAPI.update(server_id, formData['package']), callback);
       case "set_status":
         return this.action(ServersAPI.setStatus(server_id, formData['condition']), callback);
+      case "remove_log":
+        return this.action(ServersAPI.removeLog(server_id, formData['log_file']), callback);
       default:
         throw new Error("Given action '" + action + "' is not defined in serverAction.");
     }
