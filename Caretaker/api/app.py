@@ -1,3 +1,4 @@
+import getpass
 import json
 import os
 import uuid
@@ -12,7 +13,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return 'Hello, World!'
+    return str(getpass.getuser())
 
 
 @app.route('/logs/')
