@@ -29,6 +29,8 @@ class ServerUnit(Client):
 
         self.upload_package()
 
+        self.command("ufw allow {0} comment 'Watchdog web flask'".format(self.model.watchdog_port), root=True)
+
         print("Запуск клиента...")
         self.start()
 
@@ -48,10 +50,11 @@ class ServerUnit(Client):
             package = "Master"
             bin_path = self.model.package.mpackage.bin_path
 
-        cmd = "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} >> ~/HostPanel/caretaker.log &".format(
+        cmd = "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
             package,
             self.model.id,
             "https://" + settings.ALLOWED_HOSTS[-1] + ":8443",
+            self.model.watchdog_port,
             bin_path
         )
         print(cmd)
@@ -60,7 +63,7 @@ class ServerUnit(Client):
         self.log("&2Сервер запущен.")
 
     def stop(self):
-        self.command("python ~/HostPanel/Caretaker/client.py stop")
+        self.command("cd ~/HostPanel/Caretaker/ && ./client.py stop")
 
         self.log("Сервер остановлен.")
         Status(server=self.model, condition=Status.Condition.STOPPED).save()
@@ -69,14 +72,16 @@ class ServerUnit(Client):
         """
         Запустить скрипт отслеживания
         """
-        self.command("python3 ~/HostPanel/Caretaker/client.py start_watcher &")
+        print("cd ~/HostPanel/Caretaker/ && ./client.py start_watcher &")
+        self.command("cd ~/HostPanel/Caretaker/ && ./client.py start_watcher >> ~/HostPanel/caretaker.log &")
+        print("All right")
         self.log("Отслеживание возобновлено.")
 
     def stop_watcher(self):
         """
         Остановить работу скрипта без остановки игрового сервера
         """
-        self.command("python3 ~/HostPanel/Caretaker/client.py stop_watcher")
+        self.command("cd ~/HostPanel/Caretaker/ && ./client.py stop_watcher")
         self.log("Отслеживание приостановлено.")
 
     def reboot(self):

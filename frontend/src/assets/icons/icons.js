@@ -33,7 +33,7 @@ import {
     cilFire,
     cilPlus,
     cilClock,
-    cilTerminal, cilMemory, cilGamepad, cilVideogame, cilPaint,
+    cilTerminal, cilMemory, cilGamepad, cilVideogame, cilPaint, cilSave
 } from '@coreui/icons'
 import {
     cifUs,
@@ -192,6 +192,7 @@ export const iconsSet = Object.assign(
         cilMemory,
         cilVideogame,
         cilGamepad,
-        cilPaint
+        cilPaint,
+        cilSave
     },
 )

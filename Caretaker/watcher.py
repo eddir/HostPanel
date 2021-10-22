@@ -21,7 +21,8 @@ def watch(configuration):
 
     send_status(configuration)
     threading.Timer(60 * 5, watch, [configuration]).start()
-    run_flask()
+    print(configuration.watchdog_port)
+    run_flask(configuration.watchdog_port)
 
 
 def send_status(configuration):

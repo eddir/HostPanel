@@ -36,6 +36,8 @@ class ServerView(APIView):
     @staticmethod
     def post(request):
         """Инициализация сервера"""
+        request.data['watchdog_port'] = 8000
+
         serializer = ServerSerializer(data=request.data)
         server_saved = None
 
@@ -47,6 +49,12 @@ class ServerView(APIView):
 
             if Server.objects.filter(dedic__ip=dedic.ip, dedic__user_single=dedic.user_single).exists():
                 raise ValueError("Не стоит запускать 2 сервера на одном IP и юзвере")
+
+            while Server.objects.filter(
+                    dedic__ip=dedic.ip,
+                    watchdog_port=serializer.validated_data['watchdog_port']
+            ).exists():
+                serializer.validated_data['watchdog_port'] += 1
 
             server_saved = serializer.save()
             tasks.server_task(server_saved.id, "init")
@@ -79,10 +87,10 @@ class ServerInstanceView(APIView):
                 status[key] = filesizeformat(status[key])
 
         server_data = server.values(
-            'id', 'log', 'name', 'config', 'processes',
+            'id', 'log', 'name', 'config', 'processes', 'watchdog_port',
 
             'dedic__password_root', 'dedic__password_single', 'dedic__user_root', 'dedic__user_single',
-            'dedic__ssh_key', 'dedic__ip',
+            'dedic__ssh_key', 'dedic__ip', 'dedic__name',
 
             'package__mpackage__name', 'package__mpackage__created_at', 'package__mpackage__id',
 

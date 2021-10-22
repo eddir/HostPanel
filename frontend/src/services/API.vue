@@ -184,6 +184,15 @@ export default {
       Vue.$toast.error(err.response);
     })
   },
+  getLogs(server_id) {
+    return axios.get(`${REST_URL}watchdog/logs/${server_id}/`);
+  },
+  downloadLog(server_id, log_file, size, part) {
+    window.open(`${REST_URL}watchdog/logs/${server_id}/download/${log_file}?size=${size}&number=${part}`);
+  },
+  removeLog(server_id, log_file) {
+    return axios.post(`${REST_URL}watchdog/logs/${server_id}/remove/${log_file}/`);
+  },
   parseStatus(status) {
     return {
       'IN': {'code': 'IN', 'message': 'Устанавливается', 'badge': 'primary'},

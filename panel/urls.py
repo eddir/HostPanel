@@ -7,6 +7,7 @@ from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerIns
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView
 from .views.api.users import UsersView
+from .views.api.watchdog import LogsView, LogsDownloadView, LogsRemoveView
 from .views.package import *
 from .views.server import *
 from .views.webhook import WebhookPush
@@ -77,5 +78,9 @@ urlpatterns = [
 
     path('api/users/', UsersView.as_view()),
 
-    path('api/version/', VersionView.as_view())
+    path('api/version/', VersionView.as_view()),
+
+    path('api/watchdog/logs/<int:pk>/', LogsView.as_view()),
+    path('api/watchdog/logs/<int:pk>/download/<str:file>/', LogsDownloadView.as_view()),
+    path('api/watchdog/logs/<int:pk>/remove/<str:file>/', LogsRemoveView.as_view())
 ]

@@ -55,13 +55,24 @@ class DedicUnit(Client):
 
                     # Установка пароля
                     'echo "{0}:{1}" | sudo chpasswd && '
-
-                    # Настройка системы на хороший лад
-                    'echo vm.swappiness=0 | sudo tee -a /etc/sysctl.conf && '
+                    
+                    # Решить проблемы со свапом, которые тормозят систему.
+                    'grep -qxF "vm.swappiness=0" /etc/sysctl.conf || echo "vm.swappiness=0" >> /etc/sysctl.conf && '
+                    
+                    # ulimit - разрешить открывать много файлов (дескрипторов) для работы с большим потоком клиентов.
+                    'grep -qxF "fs.file-max = 100001" /etc/sysctl.conf || '
+                    'echo "fs.file-max = 100001" >> /etc/sysctl.conf && '
+                    
+                    'grep -qxF "* - nofile 1000001" /etc/security/limits.conf || '
+                    'echo "* - nofile 1000001" >> /etc/security/limits.conf && '
+                    
+                    # Применить настройки sysctl.conf
+                    'sysctl -p && '
 
                     # Установка зависимостей
                     'sudo apt update && sudo apt install -y python3-virtualenv unzip atop && '
                     
+                    # Настройка сети, открытие портов
                     'sudo ufw allow 1500:1600/udp comment "MST spawner" && '
                     'sudo ufw allow 2323,5000,5056/tcp comment "MST master" && '
                     'sudo ufw allow 2323,5000,5056/udp comment "MST master" && '

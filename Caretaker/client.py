@@ -4,17 +4,23 @@ import sys
 from Configuration import Configuration
 from watcher import *
 
-VERSION = "3.1.0.0"
+VERSION = "3.2.0.1"
 
 config = Configuration()
 
 
 def run_command(command, args):
     # Запуск
-    # /start <Master, SR> <server_id> <protocol://domain:port> <exe bin path>
+    # /start <Master, SR> <server_id> <protocol://domain:port> <port> <exe bin path>
     if command == "start":
         if len(args) >= 4:
-            cfg = Configuration(package=args[0], server_id=args[1], panel_address=args[2], bin_path=' '.join(args[3:]))
+            cfg = Configuration(
+                package=args[0],
+                server_id=args[1],
+                panel_address=args[2],
+                watchdog_port=args[3],
+                bin_path=' '.join(args[4:])
+            )
             watch(start(cfg))
         elif len(args) == 1:
             watch(start(Configuration(package=args[0])))

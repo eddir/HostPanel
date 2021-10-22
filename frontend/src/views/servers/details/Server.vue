@@ -11,11 +11,13 @@
                 <CBadge :color="server.status.condition.badge">{{ server.status.condition.message }}</CBadge>
               </li>
               <li><strong>IP:</strong> {{ server.server.dedic__ip }}</li>
+              <li><strong>Dedic:</strong> {{ server.server.dedic__name }}</li>
               <li><strong>Root:</strong> {{ server.server.dedic__user_root }}</li>
               <li><strong>Root пароль:</strong> {{ server.server.dedic__password_root }}</li>
               <li><strong>User:</strong> {{ server.server.dedic__user_single }}</li>
               <li><strong>User пароль:</strong> {{ server.server.dedic__password_single }}</li>
               <li><strong>Сборка:</strong> {{ server.server.package.name }}</li>
+              <li><strong><a :href="'http://' + server.server.dedic__ip + ':' + server.server.watchdog_port">Watchdog</a></strong></li>
             </ul>
           </CCardBody>
         </CCard>
@@ -151,6 +153,7 @@
           </CCardBody>
         </CCard>
 
+        <ServerLogs :server="server"></ServerLogs>
 
       </CCol>
       <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
@@ -173,6 +176,7 @@ import Action from "@/services/Action";
 import ServerConfig from "@/views/servers/details/ServerConfig";
 import ServerPackage from "@/views/servers/details/ServerPackage";
 import Utils from "@/services/Utils";
+import ServerLogs from "@/views/servers/details/ServerLogs";
 
 /**
  * @param server.server.dedic__ip IP адрес сервера
@@ -180,6 +184,7 @@ import Utils from "@/services/Utils";
  * @param server.server.dedic__user_single Пользователь из под которого запущен сервер
  * @param server.server.dedic__password_root Пароль от рут пользователя
  * @param server.server.dedic__password_single Пароль от простого пользователя
+ * @param server.server.watchdog_port Порт веб интерфейса скрипта Watchdog
  * @param server.server.processes Список запущенных программ на вдс
  */
 export default {
@@ -204,7 +209,7 @@ export default {
       username: undefined
     }
   },
-  components: {ServerConfig, ServerPackage},
+  components: {ServerConfig, ServerPackage, ServerLogs},
   created() {
     this.load();
     this.loadInterval = setInterval(this.load, 10 * 1000);
