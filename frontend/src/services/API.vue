@@ -4,7 +4,7 @@ import axios from 'axios';
 
 let debugMode = window.location.href.indexOf("localhost") >= 0;
 
-const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "https://hp.linksss.ru:8443/";
+const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "https://hp.linksss.ru/";
 const REST_URL = `${SERVER_URL}api/`;
 
 axios.defaults.withCredentials = true;
