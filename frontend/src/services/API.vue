@@ -17,30 +17,50 @@ axios.interceptors.response.use(response => {
   return response;
 }, error => {
 
-  if (error.response && error.response.status === 401 && !tokenRefreshing) {
+  if (error.response) {
 
-    tokenRefreshing = true;
+    if (error.response.status === 401 && !tokenRefreshing) {
 
-    axios.post(`${SERVER_URL}auth/token/refresh/`).then(() => {
-      tokenRefreshing = false;
+      tokenRefreshing = true;
 
-      const config = error.config;
-      return new Promise((resolve, reject) => {
-        axios.request(config).then(response => {
-          resolve(response);
-        }).catch((error) => {
-          reject(error);
-        })
-      });
-    }).catch(e => {
-      if (e.response.status === 401) {
+      axios.post(`${SERVER_URL}auth/token/refresh/`).then(() => {
         tokenRefreshing = false;
-        window.location = "/#/login";
-        Vue.$toast.warning("Срок действия сессии истёк.");
-      } else {
-        Promise.reject(error);
+
+        const config = error.config;
+        return new Promise((resolve, reject) => {
+          axios.request(config).then(response => {
+            resolve(response);
+          }).catch((error) => {
+            reject(error);
+          })
+        });
+      }).catch(e => {
+        if (e.response.status === 401) {
+          tokenRefreshing = false;
+          window.location = "/#/login";
+          Vue.$toast.warning("Срок действия сессии истёк.");
+        } else {
+          Promise.reject(error);
+        }
+      });
+    } else {
+      switch (error.response.data.code) {
+        case 1:
+          window.location = "/#/login";
+          Vue.$toast.warning("Сессия обнулилась.");
+          break;
+        case 2:
+          Vue.$toast.error("Ошибка авторизации #2.")
+          break;
+        case 100:
+          Vue.$toast.error("Ошиюка авторизации #100.")
+          break;
+        default:
+          Vue.$toast.warning("Не удалось выполнить запрос. Подробности смотри в консоли.");
+          console.log(error.response.data);
+          break;
       }
-    });
+    }
   }
 
   return Promise.reject(error);
