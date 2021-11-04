@@ -4,7 +4,7 @@ from pprint import pprint
 
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
-from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED, HTTP_200_OK
 from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed, TokenError
 
 from HostPanel.settings import MEDIA_ROOT, BASE_DIR
@@ -25,7 +25,7 @@ def custom_exception_handler(exc, context):
     api_code = UNEXPECTED_ERROR
 
     if isinstance(exc, (AuthorizationFailed, AuthenticationFailed, TokenError)):
-        http_code = HTTP_401_UNAUTHORIZED
+        http_code = HTTP_200_OK
 
     if http_code == HTTP_500_INTERNAL_SERVER_ERROR:
         pprint(''.join(traceback.format_tb(exc.__traceback__)))

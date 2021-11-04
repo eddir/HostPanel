@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from HostPanel import settings
-from panel.exceptions import APIError
+from panel.exceptions import APIError, AuthorizationFailed
 from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
@@ -140,3 +140,11 @@ class VersionView(APIView):
             "caretaker": settings.CARETAKER_VERSION,
             "mysql": settings.MYSQL_VERSION
         })
+
+
+class PingView(APIView):
+
+    @staticmethod
+    def get(request):
+        raise AuthorizationFailed("Error")
+        # return api_response("Pong")

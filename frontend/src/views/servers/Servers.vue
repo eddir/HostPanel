@@ -11,10 +11,11 @@ import ServersAPI from "../../services/API.vue"
 import Utils from "@/services/Utils";
 import ServersMasterSpawner from "@/views/servers/ServersMasterSpawner";
 import ServersCustom from "@/views/servers/ServersCustom";
+import Parsers from "@/services/Parsers";
 
 export default {
   name: "Servers",
-  mixins: [ServersAPI, Utils],
+  mixins: [ServersAPI, Parsers, Utils],
   components: {ServersMasterSpawner, ServersCustom},
   data() {
     return {
@@ -38,7 +39,7 @@ export default {
 
       // Обращение к данным и их обработка
       ServersAPI.getServers().then(servers => {
-        this.servers = ServersAPI.parseMasters(servers.data.response);
+        this.servers = Parsers.parseMasters(servers.data.response);
 
         // Для отображения необходима построение древовидной структуры, где во главе мастер сервера, а их потомки
         // спавнеры.

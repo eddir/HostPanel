@@ -137,7 +137,7 @@ export default {
             formData.name, formData.spawner, formData.room, formData.bin_path, progressCallback,
         ), successCallback);
       case "upload_custom_package":
-        return this.action(ServersAPI.uploadCusotmPackage(
+        return this.action(ServersAPI.uploadCustomPackage(
             formData.name, formData.archive, formData.bin_path, progressCallback
         ), successCallback);
       default:

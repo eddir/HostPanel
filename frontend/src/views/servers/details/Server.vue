@@ -177,6 +177,7 @@ import ServerConfig from "@/views/servers/details/ServerConfig";
 import ServerPackage from "@/views/servers/details/ServerPackage";
 import Utils from "@/services/Utils";
 import ServerLogs from "@/views/servers/details/ServerLogs";
+import Parsers from "@/services/Parsers";
 
 /**
  * @param server.server.dedic__ip IP адрес сервера
@@ -189,7 +190,7 @@ import ServerLogs from "@/views/servers/details/ServerLogs";
  */
 export default {
   name: "Server",
-  mixins: [Utils],
+  mixins: [Utils, Parsers],
   data() {
     return {
       server: null,
@@ -227,9 +228,9 @@ export default {
     load() {
       ServersAPI.getServer(this.$route.params.id).then((server) => {
         let server_data = server.data.response;
-        server_data.server.log = server_data.server.log ? ServersAPI.parseLog(server_data.server.log) : "Нет данных";
+        server_data.server.log = server_data.server.log ? Parsers.parseLog(server_data.server.log) : "Нет данных";
         if (server_data.status) {
-          server_data.status.condition = ServersAPI.parseStatus(server_data.status.condition);
+          server_data.status.condition = Parsers.parseStatus(server_data.status.condition);
           server_data.status.mem_usage = server_data.status.mem_total - server_data.status.mem_available;
           server_data.status.mem_percent = Math.round(server_data.status.mem_usage / server_data.status.mem_total * 100)
           server_data.status.disk_usage = server_data.status.disk_total - server_data.status.disk_available;

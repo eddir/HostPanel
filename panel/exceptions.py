@@ -1,6 +1,10 @@
+# Успешный запрос
 RESPONSE_OK = 0
+# Что-то пошло не так
 UNEXPECTED_ERROR = 1
+# возникает в том случае, если пользователь не предоставил токен авторизации
 UNAUTHORIZED_ERROR = 2
+# сообщает о проблемах с предоставленным токеном авторизации. Токен устарел, либо недействительный.
 AUTH_FAILED = 100
 
 
@@ -8,6 +12,8 @@ class APIError(Exception):
     """
     Ошибка API.
     """
+    code = UNEXPECTED_ERROR
+    message = None
 
     def __init__(self, code=None, message=None):
         if code is not None:

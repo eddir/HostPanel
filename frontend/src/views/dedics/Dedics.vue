@@ -75,10 +75,11 @@
 <script>
 import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
+import Parsers from "@/services/Parsers";
 
 export default {
   name: "Dedics",
-  mixins: [ServersAPI],
+  mixins: [ServersAPI, Parsers],
   data() {
     return {
       tableItems: [],
@@ -148,7 +149,7 @@ export default {
       this.selectedDedic = dedic;
       this.logModal = true;
       if (this.selectedDedic.log !== null) {
-        this.selectedDedic.log = ServersAPI.parseLog(this.selectedDedic.log);
+        this.selectedDedic.log = Parsers.parseLog(this.selectedDedic.log);
       }
     },
     showRebootModal(dedic) {

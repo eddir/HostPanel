@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import subprocess
 import sys
+from datetime import timedelta
 from pathlib import Path
 from django.db import connection
 import pathlib
@@ -148,8 +149,12 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     'ROTATE_REFRESH_TOKENS': True
 }
+
+# Всё, что идёт ниже, лучше не трогать, иначе работать не будет. Вот как оно лежит там, так пусть оно и будет.
 
 from panel.utils import get_caretaker_version
 

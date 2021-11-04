@@ -5,7 +5,7 @@ from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageIns
     CPackageInstanceView, CPackageView
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
-from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView
+from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
 from .views.api.users import UsersView
 from .views.api.watchdog import LogsView, LogsDownloadView, LogsRemoveView
 from .views.package import *
@@ -79,6 +79,8 @@ urlpatterns = [
     path('api/users/', UsersView.as_view()),
 
     path('api/version/', VersionView.as_view()),
+
+    path('api/ping/', PingView.as_view()),
 
     path('api/watchdog/logs/<int:pk>/', LogsView.as_view()),
     path('api/watchdog/logs/<int:pk>/download/<str:file>/', LogsDownloadView.as_view()),

@@ -21,6 +21,7 @@
               <CSelect :value.sync="selectedStatusType" :options="statusTypes" addInputClasses="m-2"></CSelect>
               <CButton variant="ghost" color="info" class="m-2" @click="setStatus">Установить статус</CButton>
             </div>
+            <CButton variant="ghost" color="success" class="m-2" @click="ping">Ping</CButton>
           </CCardBody>
         </CCard>
       </CCol>
@@ -31,6 +32,7 @@
 <script>
 import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
+import Vue from "vue";
 
 export default {
   name: "Settings",
@@ -39,12 +41,12 @@ export default {
       version: {
         panel: null,
         caretaker: null,
-        mysql: null
+        mysql: null,
       },
       servers: [],
       selectedServer: null,
-      statusTypes: ['IN', 'ST', 'RN', 'PS', 'SP', 'TR', 'DL', 'RB',],
-      selectedStatusType: 'RN'
+      statusTypes: ['IN', 'ST', 'RN', 'PS', 'SP', 'TR', 'DL', 'RB'],
+      selectedStatusType: 'RN',
     }
   },
   created() {
@@ -55,7 +57,7 @@ export default {
       this.servers = response.data.response.servers.map(server => {
         return {
           value: server.id,
-          label: `${server.id} - '${server.name}'`
+          label: `${server.id} - '${server.name}'`,
         }
       });
       this.selectedServer = this.servers[0].value;
@@ -67,8 +69,11 @@ export default {
     },
     setStatus() {
       Action.serverAction("set_status", this.selectedServer, {condition: this.selectedStatusType});
+    },
+    ping() {
+      ServersAPI.ping().then(response => Vue.$toast.success(response.data.response));
     }
-  }
+  },
 }
 </script>
 
