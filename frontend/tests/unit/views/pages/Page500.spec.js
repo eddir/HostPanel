@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Page500 from '@/views/Page500'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Page500.vue', () => {

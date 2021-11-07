@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount, mount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Carousels from '@/views/base/Carousels'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Carousels.vue', () => {

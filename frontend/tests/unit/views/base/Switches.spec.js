@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { mount, shallowMount } from '@vue/test-utils';
 import CoreuiVue from '@coreui/vue'
 import Switches from '@/views/base/Switches'
 
 Vue.use(CoreuiVue)
+Vue.use(regeneratorRuntime)
 
 describe('Switches.vue', () => {
   it('has a name', () => {

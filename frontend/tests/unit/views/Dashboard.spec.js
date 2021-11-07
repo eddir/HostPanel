@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Dashboard from '@/views/Dashboard'
 
 
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Dashboard.vue', () => {

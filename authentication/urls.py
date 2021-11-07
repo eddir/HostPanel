@@ -1,7 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
-    TokenRefreshView,
 )
 
 from authentication.views import telegram_login, token_refresh

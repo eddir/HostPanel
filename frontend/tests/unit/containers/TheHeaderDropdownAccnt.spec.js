@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import CoreuiVue from '@coreui/vue'
 import TheHeaderDropdownAccnt from '@/containers/TheHeaderDropdownAccnt'
 import { shallowMount } from '@vue/test-utils';
 
 Vue.use(CoreuiVue)
+Vue.use(regeneratorRuntime);
 
 describe('TheHeaderDropdownAccnt.vue', () => {
   it('has a name', () => {

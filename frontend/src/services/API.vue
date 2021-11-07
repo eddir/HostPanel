@@ -1,71 +1,12 @@
 <script>
 import Vue from "vue";
 import axios from 'axios';
+import './AuthInterceptor';
 
 let debugMode = window.location.href.indexOf("localhost") >= 0;
 
 const SERVER_URL = debugMode ? "https://p.rostkov.pro:8443/" : "https://hp.linksss.ru/";
 const REST_URL = `${SERVER_URL}api/`;
-
-axios.defaults.withCredentials = true;
-axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
-
-let tokenRefreshing = false;
-
-axios.interceptors.response.use(response => {
-  if (response.data.code === 0) {
-    return response;
-  } else if (response.data.code === 100 && !tokenRefreshing) {
-    tokenRefreshing = true;
-
-    axios.post(`${SERVER_URL}auth/token/refresh/`).then(() => {
-      tokenRefreshing = false;
-
-      const config = response.config;
-      return new Promise((resolve, reject) => {
-        axios.request(config).then(response => {
-          resolve(response);
-        }).catch((error) => {
-          reject(error);
-        })
-      });
-    }).catch(e => {
-      if (e.response.data.response === 100) {
-        tokenRefreshing = false;
-        window.location = "/#/login";
-        Vue.$toast.warning("Срок действия сессии истёк.");
-      } else {
-        Promise.reject(response);
-      }
-    });
-
-  } else {
-    return handleErrors(response)
-  }
-}, error => {
-
-  if (error.response) {
-    return handleErrors(error.response);
-  }
-
-  return Promise.reject(error);
-});
-
-function handleErrors(response) {
-  if (response.data.code === 2) {
-    Vue.$toast.error("Ошибка авторизации #2.");
-    window.location = "/#/login";
-  } else {
-    if (response.data.response) {
-      response.data.response.forEach(m => Vue.$toast.warning(m));
-    } else {
-      Vue.$toast.warning("Не удалось выполнить запрос. Подробнее в консоли.");
-    }
-    console.log(response.data);
-  }
-  return null;
-}
 
 export default {
   name: "ServersAPI",
@@ -130,31 +71,31 @@ export default {
     return axios.delete(`${REST_URL}task/`);
   },
   getMasterPackages() {
-    return axios.get(`${REST_URL}m_package/`);
+    return axios.get(`${REST_URL}package/master/`);
   },
   getSpawnerPackages() {
-    return axios.get(`${REST_URL}sr_package/`);
+    return axios.get(`${REST_URL}package/spawner/`);
   },
   getCustomPackages() {
-    return axios.get(`${REST_URL}c_package/`);
+    return axios.get(`${REST_URL}package/custom/`);
   },
   installMasterPackage(package_id) {
-    return axios.post(`${REST_URL}m_package/${package_id}/install/`);
+    return axios.post(`${REST_URL}package/master/${package_id}/install/`);
   },
   installSpawnerPackage(package_id) {
-    return axios.post(`${REST_URL}sr_package/${package_id}/install/`);
+    return axios.post(`${REST_URL}package/spawner/${package_id}/install/`);
   },
   installCustomPackage(package_id) {
-    return axios.post(`${REST_URL}c_package/${package_id}/install/`);
+    return axios.post(`${REST_URL}package/custom/${package_id}/install/`);
   },
   removeMasterPackage(package_id) {
-    return axios.delete(`${REST_URL}m_package/${package_id}/`);
+    return axios.delete(`${REST_URL}package/master/${package_id}/`);
   },
   removeSpawnerPackage(package_id) {
-    return axios.delete(`${REST_URL}sr_package/${package_id}/`);
+    return axios.delete(`${REST_URL}package/spawner/${package_id}/`);
   },
   removeCustomPackage(package_id) {
-    return axios.delete(`${REST_URL}c_package/${package_id}/`);
+    return axios.delete(`${REST_URL}package/custom/${package_id}/`);
   },
   uploadMasterPackage(name, master, bin_path, progressCallback) {
     let formData = new FormData();
@@ -163,7 +104,7 @@ export default {
     formData.append("master", master);
     formData.append("bin_path", bin_path);
 
-    return this.uploadFiles(`${REST_URL}m_package/`, formData, progressCallback);
+    return this.uploadFiles(`${REST_URL}package/master/`, formData, progressCallback);
   },
   uploadSpawnerPackage(name, spawner, room, bin_path, progressCallback) {
     let formData = new FormData();
@@ -173,7 +114,7 @@ export default {
     formData.append("room", room);
     formData.append("bin_path", bin_path);
 
-    return this.uploadFiles(`${REST_URL}sr_package/`, formData, progressCallback);
+    return this.uploadFiles(`${REST_URL}package/spawner/`, formData, progressCallback);
   },
   uploadCustomPackage(name, archive, bin_path, progressCallback) {
     let formData = new FormData();
@@ -182,7 +123,7 @@ export default {
     formData.append("archive", archive);
     formData.append("bin_path", bin_path);
 
-    return this.uploadFiles(`${REST_URL}c_package/`, formData, progressCallback);
+    return this.uploadFiles(`${REST_URL}package/custom/`, formData, progressCallback);
   },
   getVersion() {
     return axios.get(`${REST_URL}version/`);

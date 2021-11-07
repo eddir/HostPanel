@@ -1,5 +1,6 @@
 import 'core-js/stable'
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import App from './App'
 import router from './router'
 import CoreuiVue from '@coreui/vue'
@@ -13,8 +14,13 @@ import VueToast from 'vue-toast-notification';
 //import 'vue-toast-notification/dist/theme-default.css';
 import 'vue-toast-notification/dist/theme-sugar.css';
 
+
 Vue.config.performance = true
 
+Vue.use(regeneratorRuntime);
+
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 Vue.use(VueToast, {position: 'top-right', duration: 5000});
 Vue.use(VueTimeago, {

@@ -1,3 +1,4 @@
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import CoreuiVue from '@coreui/vue'
@@ -7,6 +8,7 @@ const localVue = createLocalVue()
 localVue.use(VueRouter)
 const router = new VueRouter()
 
+localVue.use(regeneratorRuntime);
 
 localVue.use(CoreuiVue)
 

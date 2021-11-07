@@ -1,3 +1,4 @@
+import regeneratorRuntime from "regenerator-runtime";
 import CoreuiVue from '@coreui/vue'
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueRouter from 'vue-router'
@@ -8,6 +9,7 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueRouter)
 localVue.use(CoreuiVue)
+localVue.use(regeneratorRuntime);
 const store = new Vuex.Store({
   state: {
     darkMode: false,

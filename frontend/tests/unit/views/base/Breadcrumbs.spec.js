@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount, mount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Breadcrumbs from '@/views/base/Breadcrumbs'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Breadcrumbs.vue', () => {

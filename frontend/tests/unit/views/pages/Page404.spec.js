@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Page404 from '@/views/Page404'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Page404.vue', () => {

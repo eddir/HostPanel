@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Login from '@/views/Login'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Login.vue', () => {

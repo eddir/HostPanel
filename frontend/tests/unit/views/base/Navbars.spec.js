@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Navbars from '@/views/base/Navbars'
 
 Vue.use(CoreuiVue)
+Vue.use(regeneratorRuntime)
 
 describe('Navbars.vue', () => {
   it('has a name', () => {

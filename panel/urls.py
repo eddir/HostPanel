@@ -1,8 +1,7 @@
 from django.urls import path
 
 from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
-from .views.api.package import SRPackageView, SRPackageInstanceView, MPackageInstanceView, MPackageView, \
-    CPackageInstanceView, CPackageView
+from .views.api.package import PackageView, PackageInstanceView
 from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
@@ -62,17 +61,9 @@ urlpatterns = [
     path('api/server/<int:pk>/updateCaretaker/', UpdateCaretaker.as_view()),
     path('api/server/<int:pk>/setStatus/', SetStatus.as_view()),
 
-    path('api/m_package/', MPackageView.as_view()),
-    path('api/m_package/<int:pk>/', MPackageInstanceView.as_view()),
-    path('api/m_package/<int:pk>/install/', MPackageInstanceView.as_view()),
-
-    path('api/sr_package/<int:pk>/', SRPackageInstanceView.as_view()),
-    path('api/sr_package/<int:pk>/install/', SRPackageInstanceView.as_view()),
-    path('api/sr_package/', SRPackageView.as_view()),
-
-    path('api/c_package/<int:pk>/', CPackageInstanceView.as_view()),
-    path('api/c_package/<int:pk>/install/', CPackageInstanceView.as_view()),
-    path('api/c_package/', CPackageView.as_view()),
+    path('api/package/<str:package_type>/', PackageView.as_view()),
+    path('api/package/<str:package_type>/<int:pk>/', PackageInstanceView.as_view()),
+    path('api/package/<str:package_type>/<int:pk>/install/', PackageInstanceView.as_view()),
 
     path('api/task/', TaskView.as_view()),
 

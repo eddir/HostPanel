@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { mount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Forms from '@/views/base/Forms'
 
+
+Vue.use(regeneratorRuntime)
 Vue.use(CoreuiVue)
 
 describe('Forms.vue', () => {

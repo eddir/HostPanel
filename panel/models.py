@@ -38,6 +38,9 @@ class CPackage(Package):
     archive = models.FileField(upload_to='packages')
     bin_path = models.CharField(max_length=128)
 
+    class Meta:
+        ordering = ['-id']
+
 
 @receiver(models.signals.post_delete, sender=MPackage)
 def auto_delete_file_on_delete_package(sender, instance, **kwargs):

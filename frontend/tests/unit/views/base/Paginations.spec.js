@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import regeneratorRuntime from "regenerator-runtime";
 import { shallowMount } from '@vue/test-utils'
 import CoreuiVue from '@coreui/vue'
 import Paginations from '@/views/base/Paginations'
 
 Vue.use(CoreuiVue)
+Vue.use(regeneratorRuntime)
 
 describe('Paginations.vue', () => {
   it('has a name', () => {
