@@ -53,7 +53,7 @@ class ServerUnit(Client):
         cmd = "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
             package,
             self.model.id,
-            "https://" + settings.ALLOWED_HOSTS[-1] + ":8443",
+            settings.REVERSE_DNS,
             self.model.watchdog_port,
             bin_path
         )
