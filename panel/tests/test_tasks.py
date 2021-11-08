@@ -21,6 +21,7 @@ class TasksTestCase(TestCase):
         )
 
         # Создание дедика
+        # noinspection SpellCheckingInspection
         dedic = Dedic.objects.create(
             name="Dedic Master test",
             ip="5.180.138.187",

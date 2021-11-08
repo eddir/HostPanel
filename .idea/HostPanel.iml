@@ -16,6 +16,9 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/Caretaker/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend" />
+      <excludeFolder url="file://$MODULE_DIR$/panel/migrations" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -31,6 +34,7 @@
     <orderEntry type="library" name="bootstrap" level="application" />
     <orderEntry type="library" name="Chart.js" level="application" />
     <orderEntry type="library" name="a26f2e3b53" level="application" />
+    <orderEntry type="library" name="Chart.js" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="requirementsPath" value="C:\Users\eddir\PycharmProjects\HostPanel\media\Caretaker\requirements.txt" />

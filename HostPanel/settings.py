@@ -17,6 +17,8 @@ from pathlib import Path
 from django.db import connection
 import pathlib
 
+# Локальный файд настроек. Должен создаваться в ручную при установке и не входит в VCS
+# noinspection PyUnresolvedReferences
 from HostPanel.settings_local import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -156,6 +158,7 @@ SIMPLE_JWT = {
 
 # Всё, что идёт ниже, лучше не трогать, иначе работать не будет. Вот как оно лежит там, так пусть оно и будет.
 
+# noinspection PyPep8
 from panel.utils import get_caretaker_version
 
 VERSION = "2.0-dev"
@@ -182,4 +185,5 @@ if TESTING:
 
 
     MIGRATION_MODULES = DisableMigrations()
+    # noinspection PyUnresolvedReferences
     TEST_RUNNER = 'rainbowtests.test.runner.RainbowDiscoverRunner'

@@ -1,6 +1,6 @@
 import datetime
 
-from django.template.defaultfilters import filesizeformat, pprint
+from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny

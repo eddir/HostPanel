@@ -7,37 +7,15 @@ from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerIns
 from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
 from .views.api.users import UsersView
 from .views.api.watchdog import LogsView, LogsDownloadView, LogsRemoveView
-from .views.package import *
-from .views.server import *
 from .views.webhook import WebhookPush
 
 app_name = 'panel'
 
 urlpatterns = [
+
+    # GitHub webhooks
+
     path('webhook/', WebhookPush.as_view()),
-
-    # Основные ссылки
-    path('', ServerListView.as_view(), name='index'),
-    path('m_packages/', MPackageListView.as_view(), name='m_packages'),
-    path('sr_packages/', SRPackageListView.as_view(), name='sr_packages'),
-    path('dedicated/', DedicatedView.as_view(), name='dedicated'),
-    path('server/<int:pk>/', ServerDetailView.as_view(), name="server.view"),
-
-    # Действия с серверами
-    path('server/<int:pk>/update/', ServerUpdate.as_view(), name='server.update'),
-    path('server/<int:pk>/delete/', ServerDelete.as_view(), name='server.delete'),
-    path('server/<int:pk>/delete/confirm/', delete_server, name='server.delete.confirm'),
-
-    # Действия с дедиками
-    path('dedic/<int:pk>/delete/confirm/', delete_dedic, name='dedic.delete.confirm'),
-    path('dedic/<int:pk>/edit/', DedicEdit.as_view(), name='dedic.edit'),
-    path('dedic/<int:pk>/reconnect/', reconnect_dedic, name='dedic.reconnect'),
-
-    # Действия со сбокрами
-    path('m_package/<int:pk>/delete/', MPackageDelete.as_view(), name='m_package.delete'),
-    path('m_package/<int:pk>/edit/', MPackageEdit.as_view(), name='m_package.edit'),
-    path('sr_package/<int:pk>/delete/', SRPackageDelete.as_view(), name='sr_package.delete'),
-    path('sr_package/<int:pk>/edit/', SRPackageEdit.as_view(), name='sr_package.edit'),
 
     # API
 

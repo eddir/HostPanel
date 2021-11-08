@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth.models import User
+# noinspection PyProtectedMember
 from django.db import close_old_connections
 from django.utils import timezone
 from paramiko import AuthenticationException
@@ -40,6 +41,7 @@ class DedicUnit(Client):
                 print("Настройка VPS")
 
                 if self.model.ssh_key:
+                    # noinspection PyPep8
                     password_auth = 'sudo sed -i ' \
                                     '"/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" ' \
                                     '/etc/ssh/sshd_config && sudo service sshd restart && sudo service sshd restart && '

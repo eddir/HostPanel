@@ -3,7 +3,8 @@ from contextlib import suppress
 from pprint import pprint
 
 from background_task import background
-from django.db import close_old_connections, reset_queries
+# noinspection PyProtectedMember
+from django.db import close_old_connections
 
 from panel.models import Server, Dedic
 from panel.tasks.DedicUnit import DedicUnit
@@ -20,6 +21,7 @@ def dedic_task(dedic_id, operation):
     """
 
     # Fix temporary (2006, 'MySQL server has gone away')
+    # noinspection PyProtectedMember
     from django.db import close_old_connections
     close_old_connections()
 

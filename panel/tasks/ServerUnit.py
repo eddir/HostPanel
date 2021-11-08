@@ -3,6 +3,7 @@ import shlex
 import tarfile
 from datetime import datetime
 
+# noinspection PyProtectedMember
 from django.db import close_old_connections
 
 from HostPanel import settings
@@ -50,13 +51,16 @@ class ServerUnit(Client):
             package = "Master"
             bin_path = self.model.package.mpackage.bin_path
 
-        cmd = "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
-            package,
-            self.model.id,
-            settings.REVERSE_DNS,
-            self.model.watchdog_port,
-            bin_path
-        )
+        # REVERSE_DNS извлекается из локальных настроек
+        # noinspection PyUnresolvedReferences
+        cmd = \
+            "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
+                package,
+                self.model.id,
+                settings.REVERSE_DNS,
+                self.model.watchdog_port,
+                bin_path
+            )
         print(cmd)
         self.command(cmd)
         # TODO: другой способ получить адрес для прода

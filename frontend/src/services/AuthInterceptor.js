@@ -105,7 +105,7 @@ function handleError(error) {
 }
 
 function handleHttpError(error) {
-    Vue.$toast.danger("В ходе выполнения запроса на стороне сервера произошла ошибка");
+    Vue.$toast.warning("В ходе выполнения запроса на стороне сервера произошла ошибка");
     console.log(error);
 }
 
