@@ -146,5 +146,4 @@ class PingView(APIView):
 
     @staticmethod
     def get(request):
-        raise AuthorizationFailed("Error")
-        # return api_response("Pong")
+        return api_response("Pong")

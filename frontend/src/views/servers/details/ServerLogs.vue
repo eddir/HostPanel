@@ -23,6 +23,11 @@
         </template>
       </CDataTable>
       <CButton color="link" @click="load">Обновить</CButton>
+      <CLink :href="'http://' + server.server.dedic__ip + ':' + server.server.watchdog_port"
+             target="_blank"
+             class="float-right">
+        REST
+      </CLink>
     </CCardBody>
     <CModal title="Скачивание логов" color="primary" :show.sync="downloadModal" v-if="selected">
       <CInput :value.sync="requested_size" label="Размер" placeholder="Размер в МБ" append="MB"/>
@@ -42,7 +47,7 @@ export default {
   name: "ServerLogs",
   mixins: [Action, ServersAPI, Utils],
   props: {
-    server: Object
+    server: Object,
   },
   data() {
     return {
@@ -59,7 +64,7 @@ export default {
       requested_size: 100,
       requested_chunk: 1,
 
-      download_url: null
+      download_url: null,
     }
   },
   created() {

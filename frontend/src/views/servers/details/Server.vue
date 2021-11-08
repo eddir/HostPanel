@@ -10,6 +10,9 @@
                 <strong>Статус: </strong>
                 <CBadge :color="server.status.condition.badge">{{ server.status.condition.message }}</CBadge>
               </li>
+              <li>
+                <strong>Online:</strong> <timeago :datetime="server.status.created_at" locale="ru"></timeago>
+              </li>
               <li><strong>IP:</strong> {{ server.server.dedic__ip }}</li>
               <li><strong>Dedic:</strong> {{ server.server.dedic__name }}</li>
               <li><strong>Root:</strong> {{ server.server.dedic__user_root }}</li>
@@ -17,7 +20,6 @@
               <li><strong>User:</strong> {{ server.server.dedic__user_single }}</li>
               <li><strong>User пароль:</strong> {{ server.server.dedic__password_single }}</li>
               <li><strong>Сборка:</strong> {{ server.server.package.name }}</li>
-              <li><strong><a :href="'http://' + server.server.dedic__ip + ':' + server.server.watchdog_port">Watchdog</a></strong></li>
             </ul>
           </CCardBody>
         </CCard>
@@ -146,9 +148,15 @@
                 pagination
                 @update:column-filter-value="saveFilterValue"
             >
-              <template #cpu_percent="{item}"><td>{{item.cpu_percent}}%</td></template>
-              <template #memory_percent="{item}"><td>{{item.memory_percent}}%</td></template>
-              <template #memory_usage="{item}"><td>{{item.memory_usage}} MB</td></template>
+              <template #cpu_percent="{item}">
+                <td>{{ item.cpu_percent }}%</td>
+              </template>
+              <template #memory_percent="{item}">
+                <td>{{ item.memory_percent }}%</td>
+              </template>
+              <template #memory_usage="{item}">
+                <td>{{ item.memory_usage }} MB</td>
+              </template>
             </CDataTable>
           </CCardBody>
         </CCard>
@@ -207,7 +215,7 @@ export default {
       reinstallModal: false,
       loadInterval: null,
 
-      username: undefined
+      username: undefined,
     }
   },
   components: {ServerConfig, ServerPackage, ServerLogs},
@@ -274,8 +282,8 @@ export default {
     },
     stop() {
       Action.quickAction('stop', this.server.server.id);
-    }
-  }
+    },
+  },
 }
 </script>
 
