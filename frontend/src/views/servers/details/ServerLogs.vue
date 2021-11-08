@@ -22,7 +22,7 @@
           </td>
         </template>
       </CDataTable>
-      <CButton color="link" @click="load">Обновить</CButton>
+      <CLink color="link" @click="load">Обновить</CLink>
       <CLink :href="'http://' + server.server.dedic__ip + ':' + server.server.watchdog_port"
              target="_blank"
              class="float-right">
@@ -48,6 +48,7 @@ export default {
   mixins: [Action, ServersAPI, Utils],
   props: {
     server: Object,
+    status: Boolean
   },
   data() {
     return {
@@ -73,6 +74,7 @@ export default {
   methods: {
     load() {
       ServersAPI.getLogs(this.server.server.id).then(logs => {
+        this.status = true;
         this.logs = logs.data.response.map(log => {
           log['size_formatted'] = this.humanFileSize(log['size'], true);
           return log;

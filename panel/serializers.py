@@ -63,7 +63,7 @@ class ServerSerializer(serializers.ModelSerializer):
         if online:
             return online.online
         else:
-            return False
+            return 0
 
     @staticmethod
     def get_rooms(server):

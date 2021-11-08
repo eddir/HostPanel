@@ -72,20 +72,6 @@ class ServerInstanceView(APIView):
         server_obj = server.last()
         rooms = None
 
-        try:
-            status = Status.objects.filter(server=server_obj).values().last()
-        except IndexError:
-            status = None
-
-        if status and status["condition"] is Status.Condition.RUNNING:
-            if server_obj.parent is None:
-                rooms = Online.objects.filter(
-                    server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
-                ).values()
-
-            for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
-                status[key] = filesizeformat(status[key])
-
         server_data = server.values(
             'id', 'log', 'name', 'config', 'processes', 'watchdog_port',
 
@@ -117,6 +103,28 @@ class ServerInstanceView(APIView):
             'created_at': server_data['package__mpackage__created_at'] or server_data[
                 'package__srpackage__created_at'] or server_data['package__cpackage__created_at'],
         }
+
+        try:
+            status = Status.objects.filter(server=server_obj).values().last()
+        except IndexError:
+            status = None
+
+        server_data['is_active'] = False
+
+        if status and status["condition"] is Status.Condition.RUNNING:
+            # проверяем создан ли статус 10 минут назад
+            if (datetime.datetime.strptime(
+                    status["created_at"], "%Y-%m-%dT%H:%M:%S.%f%z"
+            ) - datetime.datetime.now()).seconds // 60 <= 10:
+                server_data['is_active'] = True
+
+            if server_obj.parent is None:
+                rooms = Online.objects.filter(
+                    server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
+                ).values()
+
+            for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
+                status[key] = filesizeformat(status[key])
 
         return api_response({
             "children": Server.objects.filter(parent=pk).exists(),

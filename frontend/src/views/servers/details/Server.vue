@@ -7,8 +7,10 @@
           <CCardBody>
             <ul class="list-unstyled">
               <li>
-                <strong>Статус: </strong>
-                <CBadge :color="server.status.condition.badge">{{ server.status.condition.message }}</CBadge>
+                <CBadge v-if="server.server.is_active" :color="server.status.condition.badge">
+                  {{ server.status.condition.message }}
+                </CBadge>
+                <CBadge v-else color="danger">Не в сети</CBadge>
               </li>
               <li>
                 <strong>Online:</strong> <timeago :datetime="server.status.created_at" locale="ru"></timeago>
@@ -20,6 +22,10 @@
               <li><strong>User:</strong> {{ server.server.dedic__user_single }}</li>
               <li><strong>User пароль:</strong> {{ server.server.dedic__password_single }}</li>
               <li><strong>Сборка:</strong> {{ server.server.package.name }}</li>
+              <li><strong>Watchdog:</strong>
+                <CBadge v-if="watchdog_status" color="success">Доступен</CBadge>
+                <CBadge v-else color="danger">Нет связи</CBadge>
+              </li>
             </ul>
           </CCardBody>
         </CCard>
@@ -161,7 +167,7 @@
           </CCardBody>
         </CCard>
 
-        <ServerLogs :server="server"></ServerLogs>
+        <ServerLogs :server="server" :status="watchdog_status"></ServerLogs>
 
       </CCol>
       <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
@@ -210,6 +216,8 @@ export default {
         {key: 'memory_percent', label: 'Mem, %'},
         {key: 'memory_usage', label: 'Mem, MB'},
       ],
+      watchdog_status: false,
+
       deleteModal: false,
       forgetModal: false,
       reinstallModal: false,
