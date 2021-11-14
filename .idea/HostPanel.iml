@@ -15,10 +15,10 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/Caretaker/venv" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/frontend" />
       <excludeFolder url="file://$MODULE_DIR$/panel/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/Watchdog/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

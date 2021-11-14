@@ -58,7 +58,7 @@ class TasksTestCase(TestCase):
 
         s.update_caretaker()
         master.refresh_from_db()
-        self.assertTrue("Обновление Caretaker завершено" in master.log)
+        self.assertTrue("Обновление Watchdog завершено" in master.log)
         self.assertEqual(master.get_last_status().condition, Status.Condition.STOPPED)
 
         # Создание спавнера

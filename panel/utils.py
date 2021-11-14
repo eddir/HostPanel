@@ -50,7 +50,7 @@ def custom_exception_handler(exc, context):
 
 def get_caretaker_version():
     try:
-        with open(str(BASE_DIR) + "/Caretaker/client.py", 'r') as infile:
+        with open(str(BASE_DIR) + "/Watchdog/client.py", 'r') as infile:
             file = infile.read()
             version = re.search(r'VERSION = \"(.*)\"(.*)', file).group(1)
             return version

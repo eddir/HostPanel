@@ -69,7 +69,7 @@ def get_log(log_file):
         chunk_number = str(chunk_number-1).rjust(3, "0")
 
         log_path = os.path.join(str(Path.home()), "HostPanel", log_file)
-        output_dir = os.path.join(str(Path.home()), "HostPanel", "Caretaker", "api", "static", uuid.uuid4().hex)
+        output_dir = os.path.join(str(Path.home()), "HostPanel", "Watchdog", "api", "static", uuid.uuid4().hex)
         output_path = os.path.join(output_dir, log_file)
 
         if not isfile(log_path):

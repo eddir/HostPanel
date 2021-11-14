@@ -134,7 +134,7 @@ class VersionView(APIView):
 
     @staticmethod
     def get(request):
-        """Версия панели, Caretaker и базы данных MySQL"""
+        """Версия панели, Watchdog и базы данных MySQL"""
         return api_response({
             "panel": settings.PANEL_VERSION,
             "caretaker": settings.CARETAKER_VERSION,

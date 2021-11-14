@@ -48,6 +48,6 @@ class ServerBadCommand(Exception):
 class UndefinedCaretakerVersion(Exception):
     """
     Вывзывается при ошибке во время распознавания версии
-    скрипта Caretaker.
+    скрипта Watchdog.
     """
     pass

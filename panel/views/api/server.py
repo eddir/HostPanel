@@ -231,7 +231,7 @@ class UpdateCaretaker(APIView):
 
     @staticmethod
     def post(request, pk):
-        """Обновление скрипта Caretaker"""
+        """Обновление скрипта Watchdog"""
         tasks.server_task(pk, 'update_caretaker')
         return api_response("Обновление запущено")
 

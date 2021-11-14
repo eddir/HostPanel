@@ -54,7 +54,7 @@ class ServerUnit(Client):
         # REVERSE_DNS извлекается из локальных настроек
         # noinspection PyUnresolvedReferences
         cmd = \
-            "cd ~/HostPanel/Caretaker/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
+            "cd ~/HostPanel/Watchdog/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
                 package,
                 self.model.id,
                 settings.REVERSE_DNS,
@@ -67,7 +67,7 @@ class ServerUnit(Client):
         self.log("&2Сервер запущен.")
 
     def stop(self):
-        self.command("cd ~/HostPanel/Caretaker/ && ./client.py stop")
+        self.command("cd ~/HostPanel/Watchdog/ && ./client.py stop")
 
         self.log("Сервер остановлен.")
         Status(server=self.model, condition=Status.Condition.STOPPED).save()
@@ -76,8 +76,8 @@ class ServerUnit(Client):
         """
         Запустить скрипт отслеживания
         """
-        print("cd ~/HostPanel/Caretaker/ && ./client.py start_watcher &")
-        self.command("cd ~/HostPanel/Caretaker/ && ./client.py start_watcher >> ~/HostPanel/caretaker.log &")
+        print("cd ~/HostPanel/Watchdog/ && ./client.py start_watcher &")
+        self.command("cd ~/HostPanel/Watchdog/ && ./client.py start_watcher >> ~/HostPanel/caretaker.log &")
         print("All right")
         self.log("Отслеживание возобновлено.")
 
@@ -85,7 +85,7 @@ class ServerUnit(Client):
         """
         Остановить работу скрипта без остановки игрового сервера
         """
-        self.command("cd ~/HostPanel/Caretaker/ && ./client.py stop_watcher")
+        self.command("cd ~/HostPanel/Watchdog/ && ./client.py stop_watcher")
         self.log("Отслеживание приостановлено.")
 
     def reboot(self):
@@ -121,7 +121,7 @@ class ServerUnit(Client):
 
         if self.model.custom:
             # Зачистка
-            cmd = "rm -rf /home/{0}/HostPanel/Custom/ && rm -rf /home/{0}/HostPanel/Caretaker/ && " \
+            cmd = "rm -rf /home/{0}/HostPanel/Custom/ && rm -rf /home/{0}/HostPanel/Watchdog/ && " \
                   "mkdir -p /home/{0}/HostPanel"
             self.command(cmd.format(self.model.dedic.user_single))
 
@@ -134,7 +134,7 @@ class ServerUnit(Client):
             rm = "~/HostPanel/custom_package.zip"
         elif self.model.parent:
             # Зачистка
-            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Caretaker/ "
+            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Watchdog/ "
                          "&& mkdir -p /home/{0}/HostPanel".format(self.model.dedic.user_single))
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
@@ -149,7 +149,7 @@ class ServerUnit(Client):
 
         else:
             # Зачистка
-            cmd = "rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Caretaker/ && " \
+            cmd = "rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Watchdog/ && " \
                   "mkdir -p /home/{0}/HostPanel"
             self.command(cmd.format(self.model.dedic.user_single))
 
@@ -166,8 +166,8 @@ class ServerUnit(Client):
         self.upload_caretaker()
         self.disconnect(sftp=True)
 
-        cmd = """mkdir -p /home/{0}/HostPanel/Caretaker && \
-            {1} && rm ~/HostPanel/Caretaker.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
+        cmd = """mkdir -p /home/{0}/HostPanel/Watchdog && \
+            {1} && rm ~/HostPanel/Watchdog.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
         self.command(cmd, root=False)
         self.upload_config()
         print("Распаковано")
@@ -185,27 +185,27 @@ class ServerUnit(Client):
         self.command("echo %s > %s" % (content, path))
 
     def update_caretaker(self):
-        self.log("&eНачинается обновление Caretaker...")
+        self.log("&eНачинается обновление Watchdog...")
 
         try:
             self.stop_watcher()
         except ServerBadCommand:
             pass
 
-        self.command("rm -rf ~/HostPanel/Caretaker")
+        self.command("rm -rf ~/HostPanel/Watchdog")
         self.upload_caretaker()
         self.start_watcher()
-        self.log("&eОбновление Caretaker завершено")
+        self.log("&eОбновление Watchdog завершено")
 
     def update_caretaker_legacy(self):
-        self.log("&eНачинается обновление Caretaker...")
+        self.log("&eНачинается обновление Watchdog...")
 
         is_running = self.model.is_running()
 
         if is_running:
             self.stop()
 
-        self.command("rm -rf ~/HostPanel/Caretaker")
+        self.command("rm -rf ~/HostPanel/Watchdog")
         self.upload_caretaker()
 
         if is_running:
@@ -222,36 +222,36 @@ class ServerUnit(Client):
         """
         client = self.get_sftp_client()
         # Упаковка файлов
-        tar = tarfile.open(settings.MEDIA_ROOT + 'Caretaker.tar.gz', "w:gz")
-        os.chdir(str(settings.BASE_DIR) + '/Caretaker/')
+        tar = tarfile.open(settings.MEDIA_ROOT + 'Watchdog.tar.gz', "w:gz")
+        os.chdir(str(settings.BASE_DIR) + '/Watchdog/')
 
         for name in os.listdir("."):
             tar.add(name)
         tar.close()
 
         print("Загрузка package.tar.gz для обновления скрипта")
-        self.command("mkdir -p /home/{0}/HostPanel/Caretaker".format(self.model.dedic.user_single))
-        client.put(settings.MEDIA_ROOT + 'Caretaker.tar.gz', '/home/%s/HostPanel/Caretaker.tar.gz'
+        self.command("mkdir -p /home/{0}/HostPanel/Watchdog".format(self.model.dedic.user_single))
+        client.put(settings.MEDIA_ROOT + 'Watchdog.tar.gz', '/home/%s/HostPanel/Watchdog.tar.gz'
                    % self.model.dedic.user_single)
 
         # Распаковка
-        self.command("tar -xzvf /home/{0}/HostPanel/Caretaker.tar.gz --directory /home/{0}/HostPanel/Caretaker".format(
+        self.command("tar -xzvf /home/{0}/HostPanel/Watchdog.tar.gz --directory /home/{0}/HostPanel/Watchdog".format(
             self.model.dedic.user_single
         ))
 
         print("Установка virtualenv")
-        self.command("cd /home/{0}/HostPanel/Caretaker/ && virtualenv venv".format(
+        self.command("cd /home/{0}/HostPanel/Watchdog/ && virtualenv venv".format(
             self.model.dedic.user_single
         ), debug=True)
 
         print("Установка зависимостей")
-        self.command("cd /home/{0}/HostPanel/Caretaker/ && "
+        self.command("cd /home/{0}/HostPanel/Watchdog/ && "
                      "chmod +x client.py && "
                      "source ./venv/bin/activate && "
                      "pip install -r requirements.txt && "
                      "deactivate".format(self.model.dedic.user_single))
 
-        os.remove(settings.MEDIA_ROOT + 'Caretaker.tar.gz')
+        os.remove(settings.MEDIA_ROOT + 'Watchdog.tar.gz')
 
     def warning(self, message):
         self.log("&e" + message)
