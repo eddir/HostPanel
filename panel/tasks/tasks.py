@@ -77,30 +77,7 @@ def server_task(server_id, operation):
             server.delete()
 
         elif operation == "reinstall":
-            server.log("Переустановка...")
-            with suppress(Exception):
-                server.stop()
-            server.delete(save_model=True)
-
-            server2 = None
-            query = Server.objects.filter(dedic=server.dedic).exclude(id=server_id)
-            if query.exists():
-                server2 = ServerUnit(query.get())
-                server2.log("Переустановка...")
-                with suppress(Exception):
-                    server2.stop()
-                server2.delete(save_model=True)
-
-            dedic = DedicUnit(server.model.dedic)
-            dedic.delete(save_model=True)
-            dedic.init()
-
-            if server2:
-                server2.init()
-                server2.log("Переустановка завершена.")
-
-            server.init()
-            server.log("Переустановка завершена.")
+            server.reinstall()
 
         elif operation == "update_caretaker":
             server.update_caretaker()
@@ -112,6 +89,10 @@ def server_task(server_id, operation):
         elif operation == "monitor":
             print("Monitor")
             server.monitor()
+
+        elif operation == "stop_monitor":
+            print("Stop monitor")
+            server.stop_monitoring()
 
         elif operation == "stat":
             print("status")

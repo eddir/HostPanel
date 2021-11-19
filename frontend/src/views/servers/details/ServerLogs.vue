@@ -72,13 +72,15 @@ export default {
   },
   methods: {
     load() {
-      ServersAPI.getLogs(this.server.server.id).then(logs => {
-        this.$emit('loaded', true);
-        this.logs = logs.data.response.map(log => {
-          log['size_formatted'] = this.humanFileSize(log['size'], true);
-          return log;
+      if (this.server.server.is_online) {
+        ServersAPI.getLogs(this.server.server.id).then(logs => {
+          this.$emit('loaded', true);
+          this.logs = logs.data.response.map(log => {
+            log['size_formatted'] = this.humanFileSize(log['size'], true);
+            return log;
+          });
         });
-      });
+      }
     },
     showDownloadModal(log_file) {
       this.selected = log_file;

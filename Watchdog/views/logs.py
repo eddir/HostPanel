@@ -103,7 +103,6 @@ def get_health(port: int):
     """
     try:
         req = requests.get("http://127.0.0.1:{}/health".format(port))
-        pprint(req.json())
         return req.json()['code'] == 0
     except (HTTPError, Exception) as e:
         pprint(str(e))

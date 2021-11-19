@@ -107,7 +107,7 @@ class Server(models.Model):
     def get_last_status(self):
         return Status.objects.filter(
             server=self, created_at__gte=(now() - datetime.timedelta(minutes=10))
-        ).first()
+        ).last()
 
     def is_running(self):
         return self.get_last_status().condition == Status.Condition.RUNNING

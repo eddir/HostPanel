@@ -1,22 +1,26 @@
 import os
-import re
 import shlex
 import tarfile
 from contextlib import suppress
 from datetime import datetime
+from pprint import pprint
+from time import sleep
 
 import requests
 from background_task.models import Task
 # noinspection PyProtectedMember
 from django.db import close_old_connections
 from django.utils import timezone
+from requests import RequestException
 
 from HostPanel import settings
 from panel.exceptions import ServerBadCommand
 from panel.models import Status, Server
+from panel.notifications.telegram import send_telegram_alert
 from panel.serializers import StatusSerializer
 from panel.tasks import tasks
 from panel.tasks.Client import Client
+from panel.tasks.DedicUnit import DedicUnit
 
 
 class ServerUnit(Client):
@@ -89,8 +93,13 @@ class ServerUnit(Client):
 
         self.log("Сервер остановлен.")
         Status(server=self.model, condition=Status.Condition.STOPPED).save()
+        self.stop_monitoring()
+
+    def stop_monitoring(self):
         Task.objects.filter(task_name="panel.tasks.tasks.server_task").filter(
             task_params__contains=self.model.id).delete()
+        if self.model.is_running:
+            Status(server=self.model, condition=Status.Condition.STOPPED).save()
 
     def start_watcher(self):
         """
@@ -113,6 +122,32 @@ class ServerUnit(Client):
         Status(server=self.model, condition=Status.Condition.REBOOT).save()
 
         self.command("reboot", root=True)
+
+    def reinstall(self):
+        self.log("Переустановка...")
+        with suppress(Exception):
+            self.stop()
+        self.delete(save_model=True)
+
+        server2 = None
+        query = Server.objects.filter(dedic=self.dedic).exclude(id=self.model.id)
+        if query.exists():
+            server2 = ServerUnit(query.get())
+            server2.log("Переустановка...")
+            with suppress(Exception):
+                server2.stop()
+            server2.delete(save_model=True)
+
+        dedic = DedicUnit(self.model.dedic)
+        dedic.delete(save_model=True)
+        dedic.init()
+
+        if server2:
+            server2.init()
+            server2.log("Переустановка завершена.")
+
+        self.init()
+        self.log("Переустановка завершена.")
 
     def delete(self, save_model=False):
         print("Удаление сервера %d" % self.model.id)
@@ -274,11 +309,49 @@ class ServerUnit(Client):
         os.remove(settings.MEDIA_ROOT + 'watchdog.tar.gz')
 
     def monitor(self):
-        with suppress(Exception):
-            print('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
+        if self.model.is_running():
+            send_telegram_alert("Проверяем статус сервера")
+            if not self.check_online():
+                self.troubleshooting()
+
+    def check_online(self):
+        print('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
+        try:
             req = requests.get('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
-            if req.json()['code'] == 0:
+            return req.json()['code'] == 0
+        except RequestException:
+            return False
+
+    # 5. Watchdog пытается перезапустить MST
+    # 6. Ждёт минуту
+    #     1. Ничего не вышло - докладывает в панель - панель пытается переустановить сервер и докладывает
+    #     результат в телегу
+    #     2. MST запущен - докладывает всё туда же
+    def troubleshooting(self):
+        self.stop_monitoring()
+        sleep(2)
+        if self.check_online():
+            return
+
+        self.log("Сервер не отвечает. Начинаем диагностику. Пробую перезапустить.")
+        send_telegram_alert("Сервер {} (#{}) перестал выходить на связь.".format(self.model.name, self.model.id))
+        self.stop()
+        self.start()
+
+        if not self.check_online():
+            self.log("Перезапуск заверщился неуспешно. Переустановливаю.")
+            send_telegram_alert("Не удалось перезапустить сервер {} (#{}). "
+                                "Он будет в скором времени переустановлен".format(self.model.name, self.model.id))
+
+            self.reinstall()
+
+            if not self.check_online():
+                tasks.server_task(self.model.id, "stop_monitor")
+                self.log("Переустановка завершилась неудачно. Не удалось автоматически решить проблему.")
+                send_telegram_alert("Не удалось поднять сервер {} (#{}) .".format(self.model.name, self.model.id))
                 return
+
+        self.log("Диагностика завершилась успехом.")
 
     def retrieve_stat(self):
         with suppress(Exception):

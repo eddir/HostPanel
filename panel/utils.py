@@ -8,8 +8,8 @@ from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
 from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed, TokenError
 
 from HostPanel.settings import BASE_DIR
-from panel.exceptions import UndefinedCaretakerVersion, AUTH_FAILED, UNEXPECTED_ERROR, APIError, AuthorizationFailed, \
-    RESPONSE_OK
+from panel.exceptions import AUTH_FAILED, UNEXPECTED_ERROR, APIError, AuthorizationFailed, \
+    RESPONSE_OK, UndefinedCaretakerVersion
 
 
 def api_response(response):
