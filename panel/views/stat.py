@@ -9,7 +9,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
-from HostPanel import settings
 from panel.exceptions import APIError
 from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
@@ -129,22 +128,3 @@ class TaskView(APIView):
         """Отмена всех задач"""
         Task.objects.all().delete()
         return api_response("Задачи отменены")
-
-
-class VersionView(APIView):
-
-    @staticmethod
-    def get(request):
-        """Версия панели, Watchdog и базы данных MySQL"""
-        return api_response({
-            "panel": settings.PANEL_VERSION,
-            "caretaker": settings.CARETAKER_VERSION,
-            "mysql": settings.MYSQL_VERSION
-        })
-
-
-class PingView(APIView):
-
-    @staticmethod
-    def get(request):
-        return api_response("Pong")

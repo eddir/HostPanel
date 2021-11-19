@@ -122,6 +122,12 @@ export default {
         return this.action(ServersAPI.createServer(formData), callback);
       case "create_dedic":
         return this.action(ServersAPI.createDedic(formData), callback);
+      case "add_sub":
+        this.action(ServersAPI.addSub(formData), callback);
+        break;
+      case "remove_sub":
+        this.action(ServersAPI.removeSub(formData), callback);
+        break;
       default:
         throw new Error("Given action '" + action + "' is not defined in formAction.");
     }

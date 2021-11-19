@@ -7,7 +7,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic, CPackage
+from panel.models import Server, Status, MPackage, SRPackage, Online, Dedic, CPackage, Subscriber
 
 
 class DedicSerializer(serializers.ModelSerializer):
@@ -169,3 +169,9 @@ class TaskSerializer(serializers.ModelSerializer):
         elif representation['task_name'] == "panel.tasks.tasks.package_task":
             representation['unit_name'] = params[0][0]
         return representation
+
+
+class SubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscriber
+        fields = '__all__'

@@ -10,8 +10,6 @@
             <p><b>Версия MySQL:</b> {{ version.mysql }}</p>
           </CCardBody>
         </CCard>
-      </CCol>
-      <CCol md="6">
         <CCard>
           <CCardHeader>Debug</CCardHeader>
           <CCardBody>
@@ -25,6 +23,7 @@
           </CCardBody>
         </CCard>
       </CCol>
+      <Subscribers></Subscribers>
     </CRow>
   </CContainer>
 </template>
@@ -33,9 +32,11 @@
 import ServersAPI from "@/services/API";
 import Action from "@/services/Action";
 import Vue from "vue";
+import Subscribers from "@/views/settings/Subsсribers";
 
 export default {
   name: "Settings",
+  components: {Subscribers},
   data() {
     return {
       version: {
@@ -43,8 +44,10 @@ export default {
         caretaker: null,
         mysql: null,
       },
+
       servers: [],
       selectedServer: null,
+
       statusTypes: ['IN', 'ST', 'RN', 'PS', 'SP', 'TR', 'DL', 'RB'],
       selectedStatusType: 'RN',
     }
@@ -52,7 +55,7 @@ export default {
   created() {
     ServersAPI.getVersion().then(response => {
       this.version = response.data.response;
-    })
+    });
     ServersAPI.getServers().then(response => {
       this.servers = response.data.response.servers.map(server => {
         return {
@@ -61,7 +64,7 @@ export default {
         }
       });
       this.selectedServer = this.servers[0].value;
-    })
+    });
   },
   methods: {
     cancelTasks() {

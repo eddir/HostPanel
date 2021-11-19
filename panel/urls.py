@@ -4,7 +4,8 @@ from .views.dedic import DedicView, DedicInstanceView, ReconnectDedic
 from .views.package import PackageView, PackageInstanceView
 from .views.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
-from .views.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
+from .views.settings import TelegramSubscriptionsView, TelegramSubscriberView, VersionView, PingView
+from .views.stat import OnlineView, StatusView, TaskView, LegacyStatusView
 from .views.users import UsersView
 from .views.watchdog import LogsView, LogsDownloadView, LogsRemoveView
 from .views.webhook import WebhookPush
@@ -50,6 +51,9 @@ urlpatterns = [
     path('api/version/', VersionView.as_view()),
 
     path('api/ping/', PingView.as_view()),
+
+    path('api/subscribers/', TelegramSubscriptionsView.as_view()),
+    path('api/subscribers/<int:pk>/', TelegramSubscriberView.as_view()),
 
     path('api/watchdog/logs/<int:pk>/', LogsView.as_view()),
     path('api/watchdog/logs/<int:pk>/download/<str:file>/', LogsDownloadView.as_view()),

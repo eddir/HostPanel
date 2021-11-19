@@ -158,5 +158,14 @@ export default {
   ping() {
     return axios.get(`${REST_URL}ping/`);
   },
+  getSubs() {
+    return axios.get(`${REST_URL}subscribers/`);
+  },
+  addSub(sub_data) {
+    return axios.post(`${REST_URL}subscribers/`, sub_data);
+  },
+  removeSub(sub) {
+    return axios.delete(`${REST_URL}subscribers/${sub['id']}/`);
+  }
 }
 </script>

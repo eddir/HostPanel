@@ -165,3 +165,8 @@ class Online(models.Model):
     port = models.SmallIntegerField(null=True, default=None)
     online = models.SmallIntegerField()
     max_online = models.SmallIntegerField(null=True, default=None)
+
+
+class Subscriber(models.Model):
+    name = models.CharField(max_length=32, null=True, blank=True)
+    telegram_id = models.IntegerField()
