@@ -8,6 +8,7 @@ UNAUTHORIZED_ERROR = 2
 AUTH_FAILED = 100
 AUTH_WRONG_REFRESH_TOKEN = 101
 
+
 class APIError(Exception):
     """
     Ошибка API.

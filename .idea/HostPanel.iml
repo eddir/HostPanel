@@ -19,6 +19,7 @@
       <excludeFolder url="file://$MODULE_DIR$/frontend" />
       <excludeFolder url="file://$MODULE_DIR$/panel/migrations" />
       <excludeFolder url="file://$MODULE_DIR$/watchdog/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/watchdog" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

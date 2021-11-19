@@ -1,12 +1,12 @@
 from django.urls import path
 
-from .views.api.dedic import DedicView, DedicInstanceView, ReconnectDedic
-from .views.api.package import PackageView, PackageInstanceView
-from .views.api.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
+from .views.dedic import DedicView, DedicInstanceView, ReconnectDedic
+from .views.package import PackageView, PackageInstanceView
+from .views.server import ServerView, ForgetServer, DestroyServer, ServerInstanceView, StartServer, \
     StopServer, UpdateConfig, RebootServer, UpdateCaretaker, SetStatus
-from .views.api.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
-from .views.api.users import UsersView
-from .views.api.watchdog import LogsView, LogsDownloadView, LogsRemoveView
+from .views.stat import OnlineView, StatusView, TaskView, VersionView, LegacyStatusView, PingView
+from .views.users import UsersView
+from .views.watchdog import LogsView, LogsDownloadView, LogsRemoveView
 from .views.webhook import WebhookPush
 
 app_name = 'panel'

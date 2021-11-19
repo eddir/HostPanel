@@ -7,6 +7,7 @@ from datetime import datetime
 # noinspection PyProtectedMember
 import requests
 from background_task.models import Task
+# noinspection PyProtectedMember
 from django.db import close_old_connections
 from django.utils import timezone
 
