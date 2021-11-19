@@ -5,7 +5,7 @@ import sys
 from Configuration import Configuration
 from watcher import *
 
-VERSION = "4.1"
+VERSION = "4.2"
 
 config = Configuration()
 
