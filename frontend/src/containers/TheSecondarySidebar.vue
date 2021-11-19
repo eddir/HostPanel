@@ -57,6 +57,8 @@ export default {
             "update_caretaker_legacy": "Обновление скрипта",
             "update_caretaker": "Обновление скрипта",
             "reinstall": "Переустановка",
+            "monitor": "Мониторинг",
+            "stat": "Мониторинг"
           }
           let states = {
             "queue": "cil-clock",

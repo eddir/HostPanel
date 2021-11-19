@@ -3,17 +3,19 @@
     <CRow v-if="server && server.status">
       <CCol md="6">
         <CCard>
-          <CCardHeader>{{ server.server.name }}</CCardHeader>
+          <CCardHeader>
+            {{ server.server.name }}
+
+            <CBadge v-if="server.server.is_online" :color="server.status.condition.badge">
+              {{ server.status.condition.message }}
+            </CBadge>
+            <CBadge v-else color="danger">Не в сети</CBadge>
+          </CCardHeader>
           <CCardBody>
             <ul class="list-unstyled">
               <li>
-                <CBadge v-if="server.server.is_active" :color="server.status.condition.badge">
-                  {{ server.status.condition.message }}
-                </CBadge>
-                <CBadge v-else color="danger">Не в сети</CBadge>
-              </li>
-              <li>
-                <strong>Online:</strong> <timeago :datetime="server.status.created_at" locale="ru"></timeago>
+                <strong>Online:</strong>
+                <timeago :datetime="server.status.created_at" locale="ru"></timeago>
               </li>
               <li><strong>IP:</strong> {{ server.server.dedic__ip }}</li>
               <li><strong>Dedic:</strong> {{ server.server.dedic__name }}</li>
@@ -167,7 +169,7 @@
           </CCardBody>
         </CCard>
 
-        <ServerLogs :server="server" :status="watchdog_status"></ServerLogs>
+        <ServerLogs :server="server" @loaded="updateWatchdogStatus"></ServerLogs>
 
       </CCol>
       <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
@@ -201,6 +203,7 @@ import Parsers from "@/services/Parsers";
  * @param server.server.dedic__password_single Пароль от простого пользователя
  * @param server.server.watchdog_port Порт веб интерфейса скрипта Watchdog
  * @param server.server.processes Список запущенных программ на вдс
+ * @param server.server.is_online запущен ли в данный момент сервер
  */
 export default {
   name: "Server",
@@ -279,6 +282,9 @@ export default {
       if (!open && accept) {
         Action.quickAction('reinstall', this.server.server.id);
       }
+    },
+    updateWatchdogStatus(state) {
+      this.watchdog_status = state;
     },
     saveFilterValue(value) {
       if ('username' in value) {

@@ -1,17 +1,20 @@
 #!./venv/bin/python3
+
 import sys
 
 from Configuration import Configuration
 from watcher import *
 
-VERSION = "4"
+VERSION = "4.0.1"
 
 config = Configuration()
 
 
 def run_command(command, args):
     # Запуск
-    # /start <Master, SR> <server_id> <protocol://domain:port> <port> <exe bin path>
+    # ./client.py start <Master, SR> <server_id> <protocol://domain:port> <port> <exe bin path>
+    # ./client.py start <Master, SR>
+    # ./client.py start
     if command == "start":
         if len(args) >= 4:
             cfg = Configuration(
@@ -34,6 +37,7 @@ def run_command(command, args):
         return True
 
     # Остановка
+    # ./client.py stop
     elif command == "stop":
         stop(Configuration())
         return True

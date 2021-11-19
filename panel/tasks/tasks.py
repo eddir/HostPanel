@@ -109,6 +109,14 @@ def server_task(server_id, operation):
             # Обновление управляющего скрипта в первых его версиях, когда ещё не была реализована тихая установка.
             server.update_caretaker_legacy()
 
+        elif operation == "monitor":
+            print("Monitor")
+            server.monitor()
+
+        elif operation == "stat":
+            print("status")
+            server.retrieve_stat()
+
     except Exception as e:
         print("Для сервера {0}: {1}".format(server_id, str(e)))
         pprint(''.join(traceback.format_tb(e.__traceback__)))
@@ -121,7 +129,6 @@ def server_task(server_id, operation):
 
 @background
 def package_task(package_id, operation, package_type):
-
     # Fix temporary (2006, 'MySQL server has gone away')
     # noinspection PyProtectedMember
     from django.db import close_old_connections

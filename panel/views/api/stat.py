@@ -10,7 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from HostPanel import settings
-from panel.exceptions import APIError, AuthorizationFailed
+from panel.exceptions import APIError
 from panel.models import Status, Server
 from panel.serializers import TaskSerializer, OnlineSerializer, StatusSerializer, ServerSerializer
 from panel.tasks import tasks
@@ -19,6 +19,7 @@ from panel.utils import get_caretaker_version, api_response
 
 # to be removed
 # todo: remove in feature major release
+# deprecated
 @method_decorator(csrf_exempt, name='dispatch')
 class LegacyStatusView(APIView):
     permission_classes = (AllowAny,)

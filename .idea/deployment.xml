@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="hostpanel.linksss.ru" autoUploadExternalChanges="true" compareModeInSync="TEXT">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="rostkov.pro" autoUploadExternalChanges="true" compareModeInSync="TEXT">
     <serverData>
-      <paths name="hostpanel.linksss.ru">
+      <paths name="rostkov.pro">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />

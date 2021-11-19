@@ -1,6 +1,8 @@
 import datetime
+from pprint import pprint
 
 from django.template.defaultfilters import filesizeformat
+from django.utils import timezone
 from django.utils.timezone import now
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
@@ -109,22 +111,18 @@ class ServerInstanceView(APIView):
         except IndexError:
             status = None
 
-        server_data['is_active'] = False
+        server_data['is_online'] = False
 
-        if status and status["condition"] is Status.Condition.RUNNING:
+        if status and status["condition"] == Status.Condition.RUNNING:
+
             # проверяем создан ли статус 10 минут назад
-            if (datetime.datetime.strptime(
-                    status["created_at"], "%Y-%m-%dT%H:%M:%S.%f%z"
-            ) - datetime.datetime.now()).seconds // 60 <= 10:
-                server_data['is_active'] = True
+            if (timezone.now() - status["created_at"]) <= datetime.timedelta(minutes=10):
+                server_data['is_online'] = True
 
             if server_obj.parent is None:
-                rooms = Online.objects.filter(
+                rooms = list(Online.objects.filter(
                     server__in=list(Server.objects.filter(parent=pk).values_list('id', flat=True))
-                ).values()
-
-            for key in ["hdd_available", "hdd_usage", "ram_available", "ram_usage"]:
-                status[key] = filesizeformat(status[key])
+                ))
 
         return api_response({
             "children": Server.objects.filter(parent=pk).exists(),
@@ -138,9 +136,8 @@ class ServerInstanceView(APIView):
                         condition=Status.Condition.RUNNING,
                         created_at__gte=(now() - datetime.timedelta(days=1))
                     ), many=True).data,
-                "online": list(Online.objects.filter(server=pk,
-                                                     created_at__gte=(
-                                                             now() - datetime.timedelta(days=1))).values()),
+                "online": list(
+                    Online.objects.filter(server=pk, created_at__gte=(now() - datetime.timedelta(days=1))).values()),
             }
         })
 

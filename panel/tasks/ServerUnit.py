@@ -1,14 +1,20 @@
 import os
 import shlex
 import tarfile
+from contextlib import suppress
 from datetime import datetime
 
 # noinspection PyProtectedMember
+import requests
+from background_task.models import Task
 from django.db import close_old_connections
+from django.utils import timezone
 
 from HostPanel import settings
 from panel.exceptions import ServerBadCommand
-from panel.models import Status
+from panel.models import Status, Server
+from panel.serializers import StatusSerializer
+from panel.tasks import tasks
 from panel.tasks.Client import Client
 
 
@@ -30,7 +36,7 @@ class ServerUnit(Client):
 
         self.upload_package()
 
-        self.command("ufw allow {0} comment 'Watchdog web flask'".format(self.model.watchdog_port), root=True)
+        self.command("ufw allow {0} comment 'watchdog web flask'".format(self.model.watchdog_port), root=True)
 
         print("Запуск клиента...")
         self.start()
@@ -54,7 +60,7 @@ class ServerUnit(Client):
         # REVERSE_DNS извлекается из локальных настроек
         # noinspection PyUnresolvedReferences
         cmd = \
-            "cd ~/HostPanel/Watchdog/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/caretaker.log &".format(
+            "cd ~/HostPanel/watchdog/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/watchdog.log &".format(
                 package,
                 self.model.id,
                 settings.REVERSE_DNS,
@@ -63,21 +69,25 @@ class ServerUnit(Client):
             )
         print(cmd)
         self.command(cmd)
-        # TODO: другой способ получить адрес для прода
+        # создать задачу с повторением каждую минуту на self.monitor
+        tasks.server_task(self.model.id, "monitor", repeat=60)
+        tasks.server_task(self.model.id, "stat", repeat=60*10)
         self.log("&2Сервер запущен.")
 
     def stop(self):
-        self.command("cd ~/HostPanel/Watchdog/ && ./client.py stop")
+        self.command("cd ~/HostPanel/watchdog/ && ./client.py stop")
 
         self.log("Сервер остановлен.")
         Status(server=self.model, condition=Status.Condition.STOPPED).save()
+        Task.objects.filter(task_name="panel.tasks.tasks.server_task").filter(
+            task_params__contains=self.model.id).delete()
 
     def start_watcher(self):
         """
         Запустить скрипт отслеживания
         """
-        print("cd ~/HostPanel/Watchdog/ && ./client.py start_watcher &")
-        self.command("cd ~/HostPanel/Watchdog/ && ./client.py start_watcher >> ~/HostPanel/caretaker.log &")
+        print("cd ~/HostPanel/watchdog/ && ./client.py start_watcher &")
+        self.command("cd ~/HostPanel/watchdog/ && ./client.py start_watcher >> ~/HostPanel/watchdog.log &")
         print("All right")
         self.log("Отслеживание возобновлено.")
 
@@ -85,7 +95,7 @@ class ServerUnit(Client):
         """
         Остановить работу скрипта без остановки игрового сервера
         """
-        self.command("cd ~/HostPanel/Watchdog/ && ./client.py stop_watcher")
+        self.command("cd ~/HostPanel/watchdog/ && ./client.py stop_watcher")
         self.log("Отслеживание приостановлено.")
 
     def reboot(self):
@@ -121,7 +131,7 @@ class ServerUnit(Client):
 
         if self.model.custom:
             # Зачистка
-            cmd = "rm -rf /home/{0}/HostPanel/Custom/ && rm -rf /home/{0}/HostPanel/Watchdog/ && " \
+            cmd = "rm -rf /home/{0}/HostPanel/Custom/ && rm -rf /home/{0}/HostPanel/watchdog/ && " \
                   "mkdir -p /home/{0}/HostPanel"
             self.command(cmd.format(self.model.dedic.user_single))
 
@@ -134,7 +144,7 @@ class ServerUnit(Client):
             rm = "~/HostPanel/custom_package.zip"
         elif self.model.parent:
             # Зачистка
-            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/Watchdog/ "
+            self.command("rm -rf /home/{0}/HostPanel/Pack/ && rm -rf /home/{0}/HostPanel/watchdog/ "
                          "&& mkdir -p /home/{0}/HostPanel".format(self.model.dedic.user_single))
             print("spawner")
             client.put(self.model.package.srpackage.spawner.path,
@@ -149,7 +159,7 @@ class ServerUnit(Client):
 
         else:
             # Зачистка
-            cmd = "rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/Watchdog/ && " \
+            cmd = "rm -rf /home/{0}/HostPanel/Master/ && rm -rf /home/{0}/HostPanel/watchdog/ && " \
                   "mkdir -p /home/{0}/HostPanel"
             self.command(cmd.format(self.model.dedic.user_single))
 
@@ -166,8 +176,8 @@ class ServerUnit(Client):
         self.upload_caretaker()
         self.disconnect(sftp=True)
 
-        cmd = """mkdir -p /home/{0}/HostPanel/Watchdog && \
-            {1} && rm ~/HostPanel/Watchdog.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
+        cmd = """mkdir -p /home/{0}/HostPanel/watchdog && \
+            {1} && rm ~/HostPanel/watchdog.tar.gz {2}""".format(self.model.dedic.user_single, unzip, rm)
         self.command(cmd, root=False)
         self.upload_config()
         print("Распаковано")
@@ -185,27 +195,27 @@ class ServerUnit(Client):
         self.command("echo %s > %s" % (content, path))
 
     def update_caretaker(self):
-        self.log("&eНачинается обновление Watchdog...")
+        self.log("&eНачинается обновление watchdog...")
 
         try:
             self.stop_watcher()
         except ServerBadCommand:
             pass
 
-        self.command("rm -rf ~/HostPanel/Watchdog")
+        self.command("rm -rf ~/HostPanel/watchdog")
         self.upload_caretaker()
         self.start_watcher()
-        self.log("&eОбновление Watchdog завершено")
+        self.log("&eОбновление watchdog завершено")
 
     def update_caretaker_legacy(self):
-        self.log("&eНачинается обновление Watchdog...")
+        self.log("&eНачинается обновление watchdog...")
 
         is_running = self.model.is_running()
 
         if is_running:
             self.stop()
 
-        self.command("rm -rf ~/HostPanel/Watchdog")
+        self.command("rm -rf ~/HostPanel/watchdog")
         self.upload_caretaker()
 
         if is_running:
@@ -222,36 +232,74 @@ class ServerUnit(Client):
         """
         client = self.get_sftp_client()
         # Упаковка файлов
-        tar = tarfile.open(settings.MEDIA_ROOT + 'Watchdog.tar.gz', "w:gz")
-        os.chdir(str(settings.BASE_DIR) + '/Watchdog/')
+        tar = tarfile.open(settings.MEDIA_ROOT + 'watchdog.tar.gz', "w:gz")
+        os.chdir(str(settings.BASE_DIR) + '/watchdog/')
 
         for name in os.listdir("."):
             tar.add(name)
         tar.close()
 
         print("Загрузка package.tar.gz для обновления скрипта")
-        self.command("mkdir -p /home/{0}/HostPanel/Watchdog".format(self.model.dedic.user_single))
-        client.put(settings.MEDIA_ROOT + 'Watchdog.tar.gz', '/home/%s/HostPanel/Watchdog.tar.gz'
+        self.command("mkdir -p /home/{0}/HostPanel/watchdog".format(self.model.dedic.user_single))
+        client.put(settings.MEDIA_ROOT + 'watchdog.tar.gz', '/home/%s/HostPanel/watchdog.tar.gz'
                    % self.model.dedic.user_single)
 
         # Распаковка
-        self.command("tar -xzvf /home/{0}/HostPanel/Watchdog.tar.gz --directory /home/{0}/HostPanel/Watchdog".format(
+        self.command("tar -xzvf /home/{0}/HostPanel/watchdog.tar.gz --directory /home/{0}/HostPanel/watchdog".format(
             self.model.dedic.user_single
         ))
 
         print("Установка virtualenv")
-        self.command("cd /home/{0}/HostPanel/Watchdog/ && virtualenv venv".format(
+        self.command("cd /home/{0}/HostPanel/watchdog/ && virtualenv venv".format(
             self.model.dedic.user_single
         ), debug=True)
 
         print("Установка зависимостей")
-        self.command("cd /home/{0}/HostPanel/Watchdog/ && "
+        self.command("cd /home/{0}/HostPanel/watchdog/ && "
                      "chmod +x client.py && "
                      "source ./venv/bin/activate && "
                      "pip install -r requirements.txt && "
                      "deactivate".format(self.model.dedic.user_single))
 
-        os.remove(settings.MEDIA_ROOT + 'Watchdog.tar.gz')
+        os.remove(settings.MEDIA_ROOT + 'watchdog.tar.gz')
+
+    def monitor(self):
+        with suppress(Exception):
+            print('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
+            req = requests.get('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
+            if req.json()['code'] == 0:
+                self.log("Monitor ok")
+                return
+
+        self.log("Monitor failed")
+
+    def retrieve_stat(self):
+        with suppress(Exception):
+            req = requests.get('http://{}:{}/stat/'.format(self.model.dedic.ip, self.model.watchdog_port))
+            if req.json()['code'] == 0:
+                data = req.json()['response']
+                stat = {
+                    'server': self.model.id,
+
+                    'cpu_usage': data['cpu_usage'],
+
+                    'mem_total': data['mem_total'],
+                    'mem_available': data['mem_available'],
+
+                    'disk_total': data['disk_total'],
+                    'disk_available': data['disk_available'],
+                }
+                serializer = StatusSerializer(data=stat)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+
+                server = Server.objects.get(id=data['server'])
+                server.dedic.last_listen = timezone.now()
+                server.dedic.connection = True
+                server.dedic.save()
+
+                server.processes = data['processes']
+                server.save()
 
     def warning(self, message):
         self.log("&e" + message)

@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from panel.exceptions import AUTH_FAILED, APIError, RESPONSE_OK
+from panel.exceptions import AUTH_FAILED, APIError, RESPONSE_OK, AUTH_WRONG_REFRESH_TOKEN
 
 
 @csrf_exempt
@@ -44,6 +44,9 @@ def telegram_login(request):
 @authentication_classes([])
 @permission_classes([])
 def token_refresh(request):
+    if "JWT-REFRESH" not in request.COOKIES:
+        raise APIError(AUTH_WRONG_REFRESH_TOKEN, "Токен просрочен")
+
     serializer = TokenRefreshSerializer(data={"refresh": request.COOKIES["JWT-REFRESH"]})
     serializer.is_valid(raise_exception=True)
     return jwt(request, serializer.validated_data['access'], serializer.validated_data['refresh'])

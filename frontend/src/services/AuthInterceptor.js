@@ -41,6 +41,10 @@ axios.interceptors.response.use(async response => {
                     if (tokenRequest.data.code === 100) {
                         window.location = "/#/login"
                         Vue.$toast.warning("Срок действия сессии истёк");
+                    } else if (response.data.code === 101) {
+                        window.location = "/#/login"
+                        Vue.$toast.warning("Срок действия сессии истёк");
+
                     } else {
                         handleError(tokenRequest);
                     }
@@ -62,6 +66,9 @@ axios.interceptors.response.use(async response => {
                 throw new Error();
             }
         }
+    } else if (response.data.code === 101) {
+        window.location = "/#/login"
+        Vue.$toast.warning("Срок действия сессии истёк");
     } else {
         throw new Error();
     }

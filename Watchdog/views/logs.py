@@ -1,25 +1,16 @@
-import getpass
 import json
 import os
 import uuid
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
+from pprint import pprint
 
-from flask import Flask, send_from_directory, abort, request
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello():
-    return {
-        'user': str(getpass.getuser()),
-        'version': '1.0'
-    }
+import requests
+from flask import request, send_from_directory, abort
+from requests import HTTPError
 
 
-@app.route('/logs/')
 def list_logs():
     """
     Возвращает список доступных для скачивания логов с указанием их размера
@@ -38,7 +29,6 @@ def list_logs():
     return json.dumps(logs)
 
 
-@app.route('/logs/download/<log_file>/')
 def get_log(log_file):
     """
     Возвращает файл лога по заданному имени, размеру в MB и отступу
@@ -66,7 +56,7 @@ def get_log(log_file):
         if not 0 < chunk_number < 1000:
             raise AssertionError("Номер части от 0 до 1000.")
 
-        chunk_number = str(chunk_number-1).rjust(3, "0")
+        chunk_number = str(chunk_number - 1).rjust(3, "0")
 
         log_path = os.path.join(str(Path.home()), "HostPanel", log_file)
         output_dir = os.path.join(str(Path.home()), "HostPanel", "Watchdog", "api", "static", uuid.uuid4().hex)
@@ -86,14 +76,13 @@ def get_log(log_file):
         if not os.path.isfile(str(output_path) + "." + str(chunk_number)):
             raise AssertionError("Не удалось извлечь указанную часть. Файл меньшего размера.")
 
-        return send_from_directory(output_dir, log_file+"."+chunk_number, as_attachment=True)
+        return send_from_directory(output_dir, log_file + "." + chunk_number, as_attachment=True)
     except FileNotFoundError:
         abort(404)
     except Exception as e:
         return str(e)
 
 
-@app.route('/logs/remove/<log_file>/', methods=['POST'])
 def remove_log(log_file):
     """
     Удаляет указанный лог
@@ -106,5 +95,17 @@ def remove_log(log_file):
     return "ok"
 
 
-def run_flask(port, debug=False):
-    app.run(host='0.0.0.0', port=port, debug=debug)
+def get_health(port: int):
+    """
+    ВОзвращает состояние True, если MST доступен, иначе False
+    :param port:
+    :return:
+    """
+    try:
+        print("http://51.195.97.80:#d/health".format(port))
+        req = requests.get("http://51.195.97.80:{}/health".format(port))
+        pprint(req.json())
+        return req.json()['code'] == 0
+    except (HTTPError, Exception) as e:
+        pprint(str(e))
+        return False

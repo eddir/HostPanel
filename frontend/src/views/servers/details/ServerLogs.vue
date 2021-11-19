@@ -47,8 +47,7 @@ export default {
   name: "ServerLogs",
   mixins: [Action, ServersAPI, Utils],
   props: {
-    server: Object,
-    status: Boolean
+    server: Object
   },
   data() {
     return {
@@ -74,7 +73,7 @@ export default {
   methods: {
     load() {
       ServersAPI.getLogs(this.server.server.id).then(logs => {
-        this.status = true;
+        this.$emit('loaded', true);
         this.logs = logs.data.response.map(log => {
           log['size_formatted'] = this.humanFileSize(log['size'], true);
           return log;

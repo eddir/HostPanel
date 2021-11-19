@@ -6,7 +6,7 @@ UNEXPECTED_ERROR = 1
 UNAUTHORIZED_ERROR = 2
 # сообщает о проблемах с предоставленным токеном авторизации. Токен устарел, либо недействительный.
 AUTH_FAILED = 100
-
+AUTH_WRONG_REFRESH_TOKEN = 101
 
 class APIError(Exception):
     """
