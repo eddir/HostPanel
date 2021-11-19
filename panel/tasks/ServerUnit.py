@@ -310,7 +310,6 @@ class ServerUnit(Client):
 
     def monitor(self):
         if self.model.is_running():
-            send_telegram_alert("Проверяем статус сервера")
             if not self.check_online():
                 self.troubleshooting()
 
