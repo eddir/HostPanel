@@ -102,8 +102,7 @@ def get_health(port: int):
     :return:
     """
     try:
-        print("http://51.195.97.80:#d/health".format(port))
-        req = requests.get("http://51.195.97.80:{}/health".format(port))
+        req = requests.get("http://127.0.0.1:{}/health".format(port))
         pprint(req.json())
         return req.json()['code'] == 0
     except (HTTPError, Exception) as e:

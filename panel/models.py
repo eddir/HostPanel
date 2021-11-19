@@ -1,5 +1,6 @@
 import datetime
 import os
+import re
 
 from background_task.models import Task
 from django.db import models
@@ -110,6 +111,12 @@ class Server(models.Model):
 
     def is_running(self):
         return self.get_last_status().condition == Status.Condition.RUNNING
+
+    def get_mst_web_port(self):
+        try:
+            return int(re.search('mstWebPort=(.+?)\n', self.config).group(1).strip())
+        except (AttributeError, ValueError,):
+            return 1555
 
     class Meta:
         ordering = ['-id']

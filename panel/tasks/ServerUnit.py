@@ -1,10 +1,10 @@
 import os
+import re
 import shlex
 import tarfile
 from contextlib import suppress
 from datetime import datetime
 
-# noinspection PyProtectedMember
 import requests
 from background_task.models import Task
 # noinspection PyProtectedMember
@@ -37,7 +37,12 @@ class ServerUnit(Client):
 
         self.upload_package()
 
-        self.command("ufw allow {0} comment 'watchdog web flask'".format(self.model.watchdog_port), root=True)
+        self.command(
+            "ufw allow {0} comment 'Watchdog web flask' && "
+            "ufw allow {1} comment 'MST web health'".format(
+                self.model.watchdog_port,
+                self.model.get_mst_web_port()),
+            root=True)
 
         print("Запуск клиента...")
         self.start()
@@ -61,18 +66,22 @@ class ServerUnit(Client):
         # REVERSE_DNS извлекается из локальных настроек
         # noinspection PyUnresolvedReferences
         cmd = \
-            "cd ~/HostPanel/watchdog/ && ./client.py start {0} {1} {2} {3} {4} >> ~/HostPanel/watchdog.log &".format(
+            "cd ~/HostPanel/watchdog/ && ./client.py start {0} {1} {2} {3} {4} {5} >> ~/HostPanel/watchdog.log &".format(
                 package,
                 self.model.id,
-                settings.REVERSE_DNS,
+                settings.REVERSE_DNS.strip(),
                 self.model.watchdog_port,
+                self.model.get_mst_web_port(),
                 bin_path
             )
+
         print(cmd)
         self.command(cmd)
+
         # создать задачу с повторением каждую минуту на self.monitor
         tasks.server_task(self.model.id, "monitor", repeat=60)
-        tasks.server_task(self.model.id, "stat", repeat=60*10)
+        tasks.server_task(self.model.id, "stat", repeat=60 * 10)
+
         self.log("&2Сервер запущен.")
 
     def stop(self):
@@ -269,10 +278,7 @@ class ServerUnit(Client):
             print('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
             req = requests.get('http://{}:{}/status/'.format(self.model.dedic.ip, self.model.watchdog_port))
             if req.json()['code'] == 0:
-                self.log("Monitor ok")
                 return
-
-        self.log("Monitor failed")
 
     def retrieve_stat(self):
         with suppress(Exception):

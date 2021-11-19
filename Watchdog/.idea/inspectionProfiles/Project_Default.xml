@@ -1,0 +1,120 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="21">
+            <item index="0" class="java.lang.String" itemvalue="v-for" />
+            <item index="1" class="java.lang.String" itemvalue="v-text" />
+            <item index="2" class="java.lang.String" itemvalue="v-bind:class" />
+            <item index="3" class="java.lang.String" itemvalue="v-if" />
+            <item index="4" class="java.lang.String" itemvalue="@click" />
+            <item index="5" class="java.lang.String" itemvalue="v-bind:href" />
+            <item index="6" class="java.lang.String" itemvalue="v-model" />
+            <item index="7" class="java.lang.String" itemvalue="true-value" />
+            <item index="8" class="java.lang.String" itemvalue="false-value" />
+            <item index="9" class="java.lang.String" itemvalue="@click.prevent" />
+            <item index="10" class="java.lang.String" itemvalue="v-else-if" />
+            <item index="11" class="java.lang.String" itemvalue="v-bind:id" />
+            <item index="12" class="java.lang.String" itemvalue="@change" />
+            <item index="13" class="java.lang.String" itemvalue=":value" />
+            <item index="14" class="java.lang.String" itemvalue="v-else" />
+            <item index="15" class="java.lang.String" itemvalue="v-bind:value" />
+            <item index="16" class="java.lang.String" itemvalue="v-on:change" />
+            <item index="17" class="java.lang.String" itemvalue="v-bind:aria-valuenow" />
+            <item index="18" class="java.lang.String" itemvalue="v-bind:style" />
+            <item index="19" class="java.lang.String" itemvalue="v-html" />
+            <item index="20" class="java.lang.String" itemvalue="ref" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="56">
+            <item index="0" class="java.lang.String" itemvalue="mysqlclient" />
+            <item index="1" class="java.lang.String" itemvalue="kazam" />
+            <item index="2" class="java.lang.String" itemvalue="unity-scope-colourlovers" />
+            <item index="3" class="java.lang.String" itemvalue="Brlapi" />
+            <item index="4" class="java.lang.String" itemvalue="ufw" />
+            <item index="5" class="java.lang.String" itemvalue="pycups" />
+            <item index="6" class="java.lang.String" itemvalue="pycairo" />
+            <item index="7" class="java.lang.String" itemvalue="unity-scope-zotero" />
+            <item index="8" class="java.lang.String" itemvalue="macaroonbakery" />
+            <item index="9" class="java.lang.String" itemvalue="distro-info" />
+            <item index="10" class="java.lang.String" itemvalue="unity-scope-yelp" />
+            <item index="11" class="java.lang.String" itemvalue="systemd-python" />
+            <item index="12" class="java.lang.String" itemvalue="PyNaCl" />
+            <item index="13" class="java.lang.String" itemvalue="sos" />
+            <item index="14" class="java.lang.String" itemvalue="lxml" />
+            <item index="15" class="java.lang.String" itemvalue="language-selector" />
+            <item index="16" class="java.lang.String" itemvalue="unattended-upgrades" />
+            <item index="17" class="java.lang.String" itemvalue="service-identity" />
+            <item index="18" class="java.lang.String" itemvalue="cryptography" />
+            <item index="19" class="java.lang.String" itemvalue="reportlab" />
+            <item index="20" class="java.lang.String" itemvalue="python-apt" />
+            <item index="21" class="java.lang.String" itemvalue="SecretStorage" />
+            <item index="22" class="java.lang.String" itemvalue="bcrypt" />
+            <item index="23" class="java.lang.String" itemvalue="psutil" />
+            <item index="24" class="java.lang.String" itemvalue="paramiko" />
+            <item index="25" class="java.lang.String" itemvalue="unity-scope-openclipart" />
+            <item index="26" class="java.lang.String" itemvalue="pygobject" />
+            <item index="27" class="java.lang.String" itemvalue="pymacaroons" />
+            <item index="28" class="java.lang.String" itemvalue="unity-scope-chromiumbookmarks" />
+            <item index="29" class="java.lang.String" itemvalue="defer" />
+            <item index="30" class="java.lang.String" itemvalue="netifaces" />
+            <item index="31" class="java.lang.String" itemvalue="pycurl" />
+            <item index="32" class="java.lang.String" itemvalue="onboard" />
+            <item index="33" class="java.lang.String" itemvalue="cffi" />
+            <item index="34" class="java.lang.String" itemvalue="unity-scope-virtualbox" />
+            <item index="35" class="java.lang.String" itemvalue="apturl" />
+            <item index="36" class="java.lang.String" itemvalue="pycrypto" />
+            <item index="37" class="java.lang.String" itemvalue="unity-scope-manpages" />
+            <item index="38" class="java.lang.String" itemvalue="cupshelpers" />
+            <item index="39" class="java.lang.String" itemvalue="pyOpenSSL" />
+            <item index="40" class="java.lang.String" itemvalue="cloud-init" />
+            <item index="41" class="java.lang.String" itemvalue="louis" />
+            <item index="42" class="java.lang.String" itemvalue="ubuntu-drivers-common" />
+            <item index="43" class="java.lang.String" itemvalue="system-service" />
+            <item index="44" class="java.lang.String" itemvalue="unity-scope-firefoxbookmarks" />
+            <item index="45" class="java.lang.String" itemvalue="xkit" />
+            <item index="46" class="java.lang.String" itemvalue="xdiagnose" />
+            <item index="47" class="java.lang.String" itemvalue="unity-scope-devhelp" />
+            <item index="48" class="java.lang.String" itemvalue="unity-scope-tomboy" />
+            <item index="49" class="java.lang.String" itemvalue="unity-scope-texdoc" />
+            <item index="50" class="java.lang.String" itemvalue="usb-creator" />
+            <item index="51" class="java.lang.String" itemvalue="command-not-found" />
+            <item index="52" class="java.lang.String" itemvalue="unity-scope-calculator" />
+            <item index="53" class="java.lang.String" itemvalue="PAM" />
+            <item index="54" class="java.lang.String" itemvalue="Pillow" />
+            <item index="55" class="java.lang.String" itemvalue="Twisted" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+        </list>
+      </option>
+      <option name="ignoredBaseClasses">
+        <list>
+          <option value="unittest.TestCase" />
+          <option value="unittest.case.TestCase" />
+          <option value="parser.Parser" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="watchdog.views.status.views" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

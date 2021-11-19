@@ -71,7 +71,6 @@ class DedicUnit(Client):
                         'sudo ufw allow 1500:1600/udp comment "MST spawner" && '
                         'sudo ufw allow 2323,5000,5056/tcp comment "MST master" && '
                         'sudo ufw allow 2323,5000,5056/udp comment "MST master" && '
-                        'sudo ufw allow 8080 comment "MST web interface" && '
                         'sudo ufw allow 8000 comment "Watchdog"'
 
                 ).format(

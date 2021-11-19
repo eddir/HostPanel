@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="3b6259df-8608-4678-be56-1060fa48e3b6" name="rostkov.pro" url="http://rostkov.pro">
+      <webServer id="92ba3b02-7c4c-45fd-b3a8-d461e00237bb" name="rostkov.pro hostpanel">
         <fileTransfer rootFolder="/home/eddir/job/HostPanel" accessType="SFTP" host="rostkov.pro" port="22" sshConfigId="cd66b2a6-1f62-44a6-b420-7dd6549192f1" sshConfig="eddir@rostkov.pro:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />

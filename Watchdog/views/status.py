@@ -1,12 +1,9 @@
 import getpass
-
-# todo: в проде это работает без ошибок. Здесь в IDEA почему не так?
-# надо создать отдельный проект в IDEA, а здесь папку заигнорить, чтобы ошибок не было ложных
 import json
-
 import psutil
-from views.logs import get_health
 
+import app
+from views.logs import get_health
 from utils import get_processes
 
 
@@ -15,7 +12,7 @@ def status():
     Возвращает состояние сервере
     :return:
     """
-    if get_health(1555):
+    if get_health(app.config.health_port):
         return {
             'code': 0,
             'response': "ok"
@@ -50,5 +47,6 @@ def stat():
 def ping():
     return {
         'user': str(getpass.getuser()),
-        'version': "1.0"
+        'version': "4.1",
+        'mstWebPort': app.config.health_port
     }

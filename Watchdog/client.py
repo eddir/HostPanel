@@ -5,24 +5,26 @@ import sys
 from Configuration import Configuration
 from watcher import *
 
-VERSION = "4.0.1"
+VERSION = "4.1"
 
 config = Configuration()
 
 
 def run_command(command, args):
     # Запуск
-    # ./client.py start <Master, SR> <server_id> <protocol://domain:port> <port> <exe bin path>
+    # todo: слишком много аргументов. Придумать способ передавать конфигурацию файлом или запросом.
+    # ./client.py start <Master, SR> <server_id> <protocol://domain:port> <watchdog_ port> <health_port> <exe bin path>
     # ./client.py start <Master, SR>
     # ./client.py start
     if command == "start":
-        if len(args) >= 4:
+        if len(args) >= 6:
             cfg = Configuration(
                 package=args[0],
                 server_id=args[1],
                 panel_address=args[2],
                 watchdog_port=args[3],
-                bin_path=' '.join(args[4:])
+                health_port=args[4],
+                bin_path=' '.join(args[5:]),
             )
             watch(start(cfg))
         elif len(args) == 1:

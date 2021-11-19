@@ -13,8 +13,7 @@ def watch(configuration):
     configuration.watcher_pid = os.getpid()
     configuration.save()
 
-    print(configuration.watchdog_port)
-    run_flask(configuration.watchdog_port)
+    run_flask(configuration)
 
 
 def start(configuration):
