@@ -6,9 +6,7 @@
           <CCardHeader>
             {{ server.server.name }}
 
-            <CBadge v-if="server.server.is_online" :color="server.status.condition.badge">
-              {{ server.status.condition.message }}
-            </CBadge>
+            <CBadge v-if="server.server.is_online" color="success">Онлайн</CBadge>
             <CBadge v-else color="danger">Не в сети</CBadge>
           </CCardHeader>
           <CCardBody>
