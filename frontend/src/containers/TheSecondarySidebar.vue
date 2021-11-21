@@ -43,7 +43,7 @@ export default {
   methods: {
     update() {
       ServersAPI.getTasks().then(tasks => {
-        this.tasks = tasks.data.response.map(task => {
+        this.tasks = tasks.data.response.filter(task => task['repeat'] === 0).map(task => {
           let actions = {
             "init": "Установка",
             "start": "Запуск",
@@ -57,8 +57,6 @@ export default {
             "update_caretaker_legacy": "Обновление скрипта",
             "update_caretaker": "Обновление скрипта",
             "reinstall": "Переустановка",
-            "monitor": "Мониторинг",
-            "stat": "Мониторинг"
           }
           let states = {
             "queue": "cil-clock",
@@ -85,7 +83,7 @@ export default {
             state_icon: icon,
             state_color: color
           }
-        })
+        });
       });
     }
   },
