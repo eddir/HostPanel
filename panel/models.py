@@ -110,7 +110,8 @@ class Server(models.Model):
         ).last()
 
     def is_running(self):
-        return self.get_last_status().condition == Status.Condition.RUNNING
+        status = self.get_last_status()
+        return status and status.condition == Status.Condition.RUNNING
 
     def get_mst_web_port(self):
         try:
