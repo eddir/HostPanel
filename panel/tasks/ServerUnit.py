@@ -3,7 +3,6 @@ import shlex
 import tarfile
 from contextlib import suppress
 from datetime import datetime
-from pprint import pprint
 from time import sleep
 
 import requests
@@ -321,11 +320,6 @@ class ServerUnit(Client):
         except RequestException:
             return False
 
-    # 5. Watchdog пытается перезапустить MST
-    # 6. Ждёт минуту
-    #     1. Ничего не вышло - докладывает в панель - панель пытается переустановить сервер и докладывает
-    #     результат в телегу
-    #     2. MST запущен - докладывает всё туда же
     def troubleshooting(self):
         self.stop_monitoring()
         sleep(2)
@@ -338,17 +332,10 @@ class ServerUnit(Client):
         self.start()
 
         if not self.check_online():
+            tasks.server_task(self.model.id, "stop_monitor")
             self.log("Перезапуск заверщился неуспешно. Переустановливаю.")
-            send_telegram_alert("Не удалось перезапустить сервер {} (#{}). "
-                                "Он будет в скором времени переустановлен".format(self.model.name, self.model.id))
-
-            self.reinstall()
-
-            if not self.check_online():
-                tasks.server_task(self.model.id, "stop_monitor")
-                self.log("Переустановка завершилась неудачно. Не удалось автоматически решить проблему.")
-                send_telegram_alert("Не удалось поднять сервер {} (#{}) .".format(self.model.name, self.model.id))
-                return
+            send_telegram_alert("Сервер {} (#{}) не поднимается.".format(self.model.name, self.model.id))
+            return
 
         self.log("Диагностика завершилась успехом.")
 
