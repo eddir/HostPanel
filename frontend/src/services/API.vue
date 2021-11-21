@@ -149,6 +149,9 @@ export default {
   getLogs(server_id) {
     return axios.get(`${REST_URL}watchdog/logs/${server_id}/`);
   },
+  getStat(server_id) {
+    return axios.get(`${REST_URL}watchdog/stat/${server_id}/`);
+  },
   downloadLog(server_id, log_file, size, part) {
     window.open(`${REST_URL}watchdog/logs/${server_id}/download/${log_file}?size=${size}&number=${part}`);
   },

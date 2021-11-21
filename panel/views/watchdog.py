@@ -46,6 +46,16 @@ class LogsRemoveView(APIView):
     def post(request, pk, file):
         server = Server.objects.get(pk=pk)
         data = requests.post("http://" + server.dedic.ip + ":" + str(server.watchdog_port) + "/logs/remove/" + file)
-        pprint(data.text)
         return api_response("Файл удалён")
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class WatchdogStatusView(APIView):
+
+    @staticmethod
+    def get(request, pk):
+        server = Server.objects.get(pk=pk)
+        data = requests.get("http://" + server.dedic.ip + ":" + str(server.watchdog_port) + "/stat/")
+        pprint(data)
+        return HttpResponse(data)
 

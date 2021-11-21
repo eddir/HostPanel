@@ -14,17 +14,20 @@
           <CCardBody>
             <ul class="list-unstyled">
               <li>
-                <strong>Online:</strong>
+                <strong>Online: </strong>
                 <timeago :datetime="server.status.created_at" locale="ru"></timeago>
               </li>
-              <li><strong>IP:</strong> {{ server.server.dedic__ip }}</li>
-              <li><strong>Dedic:</strong> {{ server.server.dedic__name }}</li>
-              <li><strong>Root:</strong> {{ server.server.dedic__user_root }}</li>
-              <li><strong>Root пароль:</strong> {{ server.server.dedic__password_root }}</li>
-              <li><strong>User:</strong> {{ server.server.dedic__user_single }}</li>
-              <li><strong>User пароль:</strong> {{ server.server.dedic__password_single }}</li>
-              <li><strong>Сборка:</strong> {{ server.server.package.name }}</li>
-              <li><strong>Watchdog:</strong>
+              <li><strong>IP: </strong> {{ server.server.dedic__ip }}</li>
+              <li><strong>Dedic: </strong> {{ server.server.dedic__name }}</li>
+              <li><strong>Root: </strong> {{ server.server.dedic__user_root }}</li>
+              <li><strong>Root пароль: </strong> {{ server.server.dedic__password_root }}</li>
+              <li><strong>User: </strong> {{ server.server.dedic__user_single }}</li>
+              <li><strong>User пароль: </strong> {{ server.server.dedic__password_single }}</li>
+              <li><strong>Сборка: </strong> {{ server.server.package.name }}</li>
+              <li><strong>Состояние: </strong>
+                <CBadge :color="server.status.condition.badge">{{ server.status.condition.message }}</CBadge>
+              </li>
+              <li><strong>Watchdog: </strong>
                 <CBadge v-if="watchdog_status" color="success">Доступен</CBadge>
                 <CBadge v-else color="danger">Нет связи</CBadge>
               </li>
@@ -92,58 +95,58 @@
           </CCardBody>
         </CCard>
 
-        <CCard v-if="server.status.cpu_usage !== null">
+        <CCard v-if="stat.cpu_usage !== null">
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">CPU</div>
-              <strong>{{ server.status.cpu_usage }}%</strong>
+              <strong>{{ stat.cpu_usage }}%</strong>
               <CProgress
                   class="progress-xs mt-2"
                   :precision="1"
                   color="success"
-                  :value="server.status.cpu_usage"
+                  :value="stat.cpu_usage"
               />
             </CCol>
           </CRow>
         </CCard>
 
-        <CCard v-if="server.status.mem_total">
+        <CCard v-if="stat.mem_total">
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">Memory</div>
-              <strong>{{ server.status.mem_usage }} MB
-                ({{ server.status.mem_percent }}%)</strong>
+              <strong>{{ stat.mem_usage }} MB
+                ({{ stat.mem_percent }}%)</strong>
               <CProgress
                   class="progress-xs mt-2"
                   :precision="1"
-                  :color="color(server.status.mem_percent)"
-                  :value="server.status.mem_percent"
+                  :color="color(stat.mem_percent)"
+                  :value="stat.mem_percent"
               />
             </CCol>
           </CRow>
         </CCard>
 
-        <CCard v-if="server.status.disk_total">
+        <CCard v-if="stat.disk_total">
           <CRow class="text-center">
             <CCol md sm="12" class="m-sm-2 m-0">
               <div class="text-muted">Диск</div>
-              <strong>{{ server.status.disk_usage }} MB
-                ({{ server.status.disk_percent }}%)</strong>
+              <strong>{{ stat.disk_usage }} MB
+                ({{ stat.disk_percent }}%)</strong>
               <CProgress
                   class="progress-xs mt-2"
                   :precision="1"
-                  :color="color(server.status.disk_percent)"
-                  :value="server.status.disk_percent"
+                  :color="color(stat.disk_percent)"
+                  :value="stat.disk_percent"
               />
             </CCol>
           </CRow>
         </CCard>
 
-        <CCard v-if="server.server.processes">
+        <CCard v-if="stat.processes">
           <CCardHeader>Процессы</CCardHeader>
           <CCardBody>
             <CDataTable
-                :items="server.server.processes"
+                :items="stat.processes"
                 :fields="processesFields"
                 column-filter
                 table-filter
@@ -211,6 +214,16 @@ export default {
   data() {
     return {
       server: null,
+      stat: {
+        cpu_usage: null,
+        mem_usage: null,
+        mem_available: null,
+        mem_total: null,
+        disk_usage: null,
+        disk_available: null,
+        disk_total: null,
+      },
+
       processesFields: [
         {key: 'pid', label: 'PID'},
         {key: 'name', label: 'Процесс'},
@@ -227,15 +240,22 @@ export default {
       loadInterval: null,
 
       username: undefined,
+
+      updateInterval: 5, // сек, как часто обновлять данные о процессах и cpu/mem usage
+      firstLoad: true, // флаг для начала отслеживания статистики
     }
   },
   components: {ServerConfig, ServerPackage, 'ServerLogs': ServerLogs},
   created() {
     this.load();
-    this.loadInterval = setInterval(this.load, 10 * 1000);
+    this.loadStat();
+    this.loadIntervals = [
+        setInterval(this.load, 10 * 1000),
+        setInterval(this.loadStat, this.updateInterval * 1000),
+    ];
   },
   destroyed() {
-    clearInterval(this.loadInterval);
+    this.loadIntervals.forEach(interval => clearInterval(interval));
   },
   updated() {
     if (this.server && this.server.status) {
@@ -247,14 +267,12 @@ export default {
     load() {
       ServersAPI.getServer(this.$route.params.id).then((server) => {
         let server_data = server.data.response;
+        
         server_data.server.log = server_data.server.log ? Parsers.parseLog(server_data.server.log) : "Нет данных";
         if (server_data.status) {
           server_data.status.condition = Parsers.parseStatus(server_data.status.condition);
-          server_data.status.mem_usage = server_data.status.mem_total - server_data.status.mem_available;
-          server_data.status.mem_percent = Math.round(server_data.status.mem_usage / server_data.status.mem_total * 100)
-          server_data.status.disk_usage = server_data.status.disk_total - server_data.status.disk_available;
-          server_data.status.disk_percent = Math.round(server_data.status.disk_usage / server_data.status.disk_total * 100)
         }
+        
         if (server_data.server.processes) {
           server_data.server.processes = JSON.parse(server_data.server.processes);
         }
@@ -271,7 +289,29 @@ export default {
         if (this.username === undefined) {
           this.username = this.server.server.dedic__user_single;
         }
+
+        if (this.firstLoad && server_data.server.is_online) {
+          this.firstLoad = false;
+          this.loadStat(true);
+        }
       });
+    },
+    loadStat(force = false) {
+      if (force || (this.server && this.server.server.is_online)) {
+        ServersAPI.getStat(this.$route.params.id).then(response => {
+          // todo: переделать этот код. Очен спешил.
+          this.stat.cpu_usage = response.data.response.cpu_usage;
+          this.stat.mem_available = response.data.response.mem_available;
+          this.stat.mem_total = response.data.response.mem_total;
+          this.stat.mem_usage = response.data.response.mem_total - this.stat.mem_available;
+          this.stat.mem_percent = Math.round(this.stat.mem_usage / this.stat.mem_total * 100);
+          this.stat.disk_available = response.data.response.disk_available;
+          this.stat.disk_total = response.data.response.disk_total;
+          this.stat.disk_usage = this.stat.disk_total - this.stat.disk_available;
+          this.stat.disk_percent = Math.round(this.stat.disk_usage / this.stat.disk_total * 100)
+          this.stat.processes = JSON.parse(response.data.response.processes);
+        });
+      }
     },
     updateConfig(config) {
       Action.serverAction("update_config", this.server.server.id, config);

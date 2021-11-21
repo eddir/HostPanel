@@ -337,7 +337,7 @@ class ServerUnit(Client):
 
         if not self.check_online():
             tasks.server_task(self.model.id, "stop_monitor")
-            self.log("Перезапуск заверщился неуспешно. Переустановливаю.")
+            self.log("Перезапуск заверщился неуспешно.")
             send_telegram_alert("Сервер {} (#{}) не поднимается.".format(self.model.name, self.model.id))
             return
         else:

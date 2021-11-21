@@ -7,7 +7,7 @@ from .views.server import ServerView, ForgetServer, DestroyServer, ServerInstanc
 from .views.settings import TelegramSubscriptionsView, TelegramSubscriberView, VersionView, PingView
 from .views.stat import OnlineView, StatusView, TaskView, LegacyStatusView
 from .views.users import UsersView
-from .views.watchdog import LogsView, LogsDownloadView, LogsRemoveView
+from .views.watchdog import LogsView, LogsDownloadView, LogsRemoveView, WatchdogStatusView
 from .views.webhook import WebhookPush
 
 app_name = 'panel'
@@ -57,5 +57,6 @@ urlpatterns = [
 
     path('api/watchdog/logs/<int:pk>/', LogsView.as_view()),
     path('api/watchdog/logs/<int:pk>/download/<str:file>/', LogsDownloadView.as_view()),
-    path('api/watchdog/logs/<int:pk>/remove/<str:file>/', LogsRemoveView.as_view())
+    path('api/watchdog/logs/<int:pk>/remove/<str:file>/', LogsRemoveView.as_view()),
+    path('api/watchdog/stat/<int:pk>/', WatchdogStatusView.as_view())
 ]
