@@ -169,7 +169,7 @@
           </CCardBody>
         </CCard>
 
-        <ServerLogs :server="server" @loaded="updateWatchdogStatus"></ServerLogs>
+        <ServerLogs :server="server" @loaded="updateWatchdogStatus" ref="ServerLogs"></ServerLogs>
 
       </CCol>
       <CModal title="Удаление сервера" color="danger" :show.sync="deleteModal" @update:show="updateRemoveModal">
@@ -229,7 +229,7 @@ export default {
       username: undefined,
     }
   },
-  components: {ServerConfig, ServerPackage, ServerLogs},
+  components: {ServerConfig, ServerPackage, 'ServerLogs': ServerLogs},
   created() {
     this.load();
     this.loadInterval = setInterval(this.load, 10 * 1000);
@@ -258,7 +258,15 @@ export default {
         if (server_data.server.processes) {
           server_data.server.processes = JSON.parse(server_data.server.processes);
         }
+
+        // Если поменялся статус сервера онлайн, то нужно обновить информацию в табличке с логами
+        let is_changed = this.server && this.server.server.is_online !== server_data.server.is_online;
+
         this.server = server_data;
+
+        if (is_changed) {
+          this.$refs.ServerLogs.retry(this.server.server.is_online);
+        }
 
         if (this.username === undefined) {
           this.username = this.server.server.dedic__user_single;
