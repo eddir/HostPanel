@@ -321,21 +321,28 @@ class ServerUnit(Client):
             return False
 
     def troubleshooting(self):
+
         self.stop_monitoring()
-        sleep(2)
-        if self.check_online():
-            return
+        for _ in range(3):
+            sleep(2)
+            if self.check_online():
+                return
 
         self.log("Сервер не отвечает. Начинаем диагностику. Пробую перезапустить.")
         send_telegram_alert("Сервер {} (#{}) перестал выходить на связь.".format(self.model.name, self.model.id))
         self.stop()
         self.start()
 
+        sleep(20)
+
         if not self.check_online():
             tasks.server_task(self.model.id, "stop_monitor")
             self.log("Перезапуск заверщился неуспешно. Переустановливаю.")
             send_telegram_alert("Сервер {} (#{}) не поднимается.".format(self.model.name, self.model.id))
             return
+        else:
+            self.log("Сервер вновь доступен")
+            send_telegram_alert("Сервер {} (#{}) запустился.".format(self.model.name, self.model.id))
 
         self.log("Диагностика завершилась успехом.")
 
