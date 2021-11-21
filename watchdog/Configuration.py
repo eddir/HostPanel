@@ -57,7 +57,7 @@ class Configuration:
                 self.watchdog_port = data["watchdog_port"]
 
             if self.health_port is None:
-                self.watchdog_port = data["health_port"]
+                self.health_port = data["health_port"]
 
     def save(self):
         with open(self.config_path, 'w') as outfile:
